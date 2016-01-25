@@ -95,7 +95,7 @@ var runGhostProxy = function(){
 				 }
 				
 				//start the main site visiting process
-				spooky.wait(1000);
+				spooky.start('https://crd.ht/5Q7Urnp');
 				spooky.then(function () {
 					this.start('https://crd.ht/5Q7Urnp');
 					this.waitForSelector('[value=cr]' , function(){

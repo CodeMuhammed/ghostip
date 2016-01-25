@@ -95,15 +95,18 @@ var runGhostProxy = function(){
 				 }
 				
 				//start the main site visiting process
-				spooky.start('https://crd.ht/43xknrA');
+				spooky.wait(1000);
 				spooky.then(function () {
-					
-					this.start('https://crd.ht/5Q7Urnp').thenClick('[value=cr]' , function() {
-					  this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-							return document.title;
-					   }));
-					   phantom.clearCookies();
+					this.start('https://crd.ht/5Q7Urnp');
+					this.waitForSelector('[value=cr]' , function(){
+						this.thenClick('[value=cr]' , function() {
+						  this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+								return document.title;
+						   }));
+						   phantom.clearCookies();
+						});
 					});
+					
 				});
 				spooky.run();
 					
@@ -153,7 +156,7 @@ app.get('/', function(request, response) {
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=500 && currentMin>30) || currentMin>30){
+	if((counter>=500 && currentMin>20) || currentMin>20){
 		 process.exit(0); 
 	}
 } , 60000);

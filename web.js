@@ -3,6 +3,8 @@
 var spooky = require("spooky");
 var request = require('request');
 var curl = require('curlrequest');
+var express = require("express");
+var app = express();
 
 urls = [
 	   'https://crd.ht/43xknrA'
@@ -141,3 +143,22 @@ var runGhostProxy = function(){
 	  return;
 };
 runGhostProxy();
+
+//app.use(express.logger());
+app.get('/', function(request, response) {
+    response.send(Greeting+" visited "+counter+" times ");
+});
+
+//restarts the app after every 500 visits and 20 minutes of app's uptime
+var currentMin = 0;
+setInterval(function(){
+	currentMin++;
+	if((counter>=500 && currentMin>30) || currentMin>30){
+		 process.exit(0); 
+	}
+} , 60000);
+
+var port = process.env.PORT || 5005;
+app.listen(port, function() {
+    console.log("Listening on " + port);
+});

@@ -91,6 +91,7 @@ var runGhostProxy = function(){
 				
 				//start the main site visiting process
 				spooky.start('http://www.palingram.com/ads-test.html');
+				
 				spooky.then(function () {
 					this.urls = [
 					  'https://crd.ht/5Q7Urnp',
@@ -106,7 +107,13 @@ var runGhostProxy = function(){
 					  'https://crd.ht/Gsx25KY',
 					  'https://crd.ht/8TzwpyX',
 					  'https://crd.ht/9Ua166d',
-					  'https://crd.ht/43xknrA'
+					  'https://crd.ht/43xknrA',
+					  'https://crd.ht/7bbh5Qt',
+					  'https://crd.ht/3BndR4T',
+					  'https://crd.ht/As5qS5F',
+					  'https://crd.ht/6hSjjMi',
+					  'https://crd.ht/96aJ3bm',
+					  'https://crd.ht/3Jn7y2G'
 					 ];
 					this.count= 0;
 					
@@ -122,9 +129,7 @@ var runGhostProxy = function(){
 								}
 								else{
 									 phantom.clearCookies();
-									 this.evaluate(function () {
-										 console.log('visited ' +this.count);
-									 });
+									 this.emit('notify', 'Hey, we have visited '+this.count+' timmes');
 									 this.count++;
 									 this.clear();
 									 this.visitAll();
@@ -164,10 +169,16 @@ var runGhostProxy = function(){
 
 			spooky.on('hi', function (greeting) {
 				console.log(greeting);
-				counter+=14;
+				counter+=20;
 				Greeting = greeting;
 				spooky.destroy();
 				runGhostProxy();
+			});
+			
+			
+			
+			spooky.on('notify', function (notify) {
+				console.log(notify);
 			});
 
       }

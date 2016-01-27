@@ -106,7 +106,7 @@ var runGhostProxy = function(){
 				spooky.start('http://www.palingram.com/ads-test.html');
 				spooky.then(function () {
 					this.urls = [
-					  'https://crd.ht/5Q7Urnp'
+					  'https://crd.ht/71wMWN3'
 					 ];
 					this.count= 0;
 					

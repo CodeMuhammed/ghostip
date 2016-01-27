@@ -8,6 +8,7 @@ var app = express();
 	
 var Greeting = 'Hello ghost';
 var counter = 0;
+var visitedIp = [];
 
 var runGhostProxy = function(){
 	console.log('starting ghost');
@@ -28,10 +29,19 @@ var runGhostProxy = function(){
 		 });
 	};
 	getIp();
+	
 	 function testIP(ip){
 		 console.log('testing proxy');
 		 if(ip.indexOf('http')>=0 && ip.indexOf('https')<0){
 			 console.log('http proxy gotten');
+			 //check if proxy has already been used for this round
+			 if(visitedIp.indexOf(ip)>=0){
+				 console.log('ip already visited');
+				  runGhostProxy();
+			 }
+			 else {
+				 visitedIp.push(ip);
+			 }
 		 }
 		 else{
 			 console.log('Not http proxy');
@@ -55,7 +65,10 @@ var runGhostProxy = function(){
 				 else {
 					 if(res){
 						 console.log('test done');
-						 continueT(ip);
+						 //wait an appropriate amount of time before making request
+						  setTimeout(function(){
+							 continueT(ip);
+						 } , 20000);
 					 }
 					 else {
 						  console.log('invalid proxy');
@@ -91,29 +104,9 @@ var runGhostProxy = function(){
 				
 				//start the main site visiting process
 				spooky.start('http://www.palingram.com/ads-test.html');
-				
 				spooky.then(function () {
 					this.urls = [
-					  'https://crd.ht/5Q7Urnp',
-					  'https://crd.ht/AubKZrd',
-					  'https://crd.ht/5hpzV51',
-					  'https://crd.ht/52NdGeA',
-					  'https://crd.ht/DQy7Gxh',
-					  'https://crd.ht/HAH3C26',
-					  'https://crd.ht/CprrR2t',
-					  'https://crd.ht/EDsT5nM',
-					  'https://crd.ht/HJXP3f5',
-					  'https://crd.ht/6iqA42M',
-					  'https://crd.ht/Gsx25KY',
-					  'https://crd.ht/8TzwpyX',
-					  'https://crd.ht/9Ua166d',
-					  'https://crd.ht/43xknrA',
-					  'https://crd.ht/7bbh5Qt',
-					  'https://crd.ht/3BndR4T',
-					  'https://crd.ht/As5qS5F',
-					  'https://crd.ht/6hSjjMi',
-					  'https://crd.ht/96aJ3bm',
-					  'https://crd.ht/3Jn7y2G'
+					  'https://crd.ht/5Q7Urnp'
 					 ];
 					this.count= 0;
 					
@@ -169,13 +162,11 @@ var runGhostProxy = function(){
 
 			spooky.on('hi', function (greeting) {
 				console.log(greeting);
-				counter+=20;
+				counter+=1;
 				Greeting = greeting;
 				spooky.destroy();
 				runGhostProxy();
 			});
-			
-			
 			
 			spooky.on('notify', function (notify) {
 				console.log(notify);

@@ -11,7 +11,6 @@ var Spooky = require('spooky');
 //run main non ip address changing bot
 var gGreeting = 'Hello World';
 var counter = 0;
-console.log(gGreeting);
 
 var spooky = new Spooky({
         child: {
@@ -20,8 +19,7 @@ var spooky = new Spooky({
         casper: {
 			 pageSettings: {
 				loadImages:  true,
-				loadPlugins: false,
-				clearMemoryCaches:true	
+				loadPlugins: false
 			},
             logLevel: 'info',
             verbose: true
@@ -32,50 +30,18 @@ var spooky = new Spooky({
             e.details = err;
             throw e;
         }
-				/** 
-		 * Auto waitForResource on all Ajax requests.
-		 * Inserts a 250ms delay after load to allow any page renders with response   
-		 */
-		spooky.options.onResourceRequested = function (spooky, requestData){
-			//is this Ajax..
-			var isAjax = requestData.headers.some(function(header) {
-				return (header.name == "X-Requested-With" && header.value == "XMLHttpRequest");
-			});
-
-			if(isAjax){
-				spooky.waitForResource(requestData.url, function(){
-					spooky.wait(250); //wait quarter of a sec for any page render after an ajax load...
-				}, function(){
-					console.error("AJAX request for " + requestData.url + " timed out.")
-				}, 10000);
-			}
-		}
 		
+		spooky.emit('Clog' , 'hello clog');
 		
-		spooky.start('https://1.hidemyass.com/ip-1');
+		spooky.start('http://localhost:3002/test');
 		spooky.then(function() {
-			this.fillSelectors('form', {
-				'input[name="u"]': 'http://www.palingram.com/ads-test.html'
-			}, true);
-		});
-
-		spooky.waitFor(function check() {
-			return this.evaluate(function() {
-				return document.querySelectorAll('iframe').length > 8;
-			});
-		}, function then() {
-			this.evaluate(function() {
-				console.log('moving on to the next one');
-			});
-			this.then(function() {
-			    this.emit('palingram.loaded');
-			});
 			
-		}, function timeout() {
-		    process.exit(0);
-		} , 20000);
-				
+		});
         spooky.run(); 
+});
+
+spooky.on('Clog', function (log) {
+    console.log(log);
 });
 
 spooky.on('error', function (e, stack) {
@@ -85,7 +51,6 @@ spooky.on('error', function (e, stack) {
         console.log(stack);
     }
 });
-
 
 // Uncomment this block to see all of the things Casper has to say.
 // There are a lot.
@@ -141,6 +106,8 @@ spooky.on('log', function (log) {
         console.log(log.message.replace(/ \- .*/, ''));
     }
 });
+
+
 
 
 //app.use(express.logger());

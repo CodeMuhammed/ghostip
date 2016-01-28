@@ -19,7 +19,7 @@ var runGhostProxy = function(){
 				 console.log('cannot get ip address');
 				 setTimeout(function(){
 					  runGhostProxy();
-				 }, 3000);
+				 }, 1000);
 			 } 
 			 else {
 				 console.log(JSON.parse(body).curl);
@@ -61,7 +61,7 @@ var runGhostProxy = function(){
 							 //wait an appropriate amount of time before making request
 							  setTimeout(function(){
 								 continueT(ip);
-							 } , 20000);
+							 } , 1000);
 						 }
 						 else {
 							  console.log('invalid proxy');

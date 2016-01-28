@@ -16,10 +16,8 @@ var runGhostProxy = function(){
 		console.log('getting ip');
 		request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
 			 if(err){
-				 console.log('cannot get ip address');
-				 setTimeout(function(){
-					  runGhostProxy();
-				 }, 1000);
+				 console.log('cannot get ip address'); 
+				 runGhostProxy();
 			 } 
 			 else {
 				 console.log(JSON.parse(body).curl);
@@ -58,10 +56,7 @@ var runGhostProxy = function(){
 					 else {
 						 if(res){
 							 console.log('test done');
-							 //wait an appropriate amount of time before making request
-							  setTimeout(function(){
-								 continueT(ip);
-							 } , 1000);
+							 continueT(ip);
 						 }
 						 else {
 							  console.log('invalid proxy');

@@ -14,7 +14,7 @@ var runGhostProxy = function(){
 	console.log('starting ghost');
 	function getIp(){
 		console.log('getting ip');
-		request.get('http://gimmeproxy.com/api/get/8bb99df808d75d71ee1bdd9e5d/?timeout=20000' , function(err , response , body){
+		request.get('http://gimmeproxy.com/api/get/8bb99df808d75d71ee1bdd9e5d/?timeout=5000' , function(err , response , body){
 			 if(err){
 				 console.log('cannot get ip address');
 				 setTimeout(function(){

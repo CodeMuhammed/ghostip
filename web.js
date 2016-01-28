@@ -35,9 +35,11 @@ var runGhostProxy = function(){
 			 console.log('ip already visited');
 			  runGhostProxy();
 		 }
+		 else if(!(ip.indexOf('http')>=0 && ip.indexOf('https')<=0)){
+			  console.log('Not http proxy');
+			  runGhostProxy();
+		 }
 		 else {
-			 visitedIp.push(ip);
-			 
 			 var options = {
 				url: 'https://credhot.com',
 				retries: 5,
@@ -56,6 +58,7 @@ var runGhostProxy = function(){
 					 else {
 						 if(res){
 							 console.log('test done');
+							 visitedIp.push(ip);
 							 continueT(ip);
 						 }
 						 else {

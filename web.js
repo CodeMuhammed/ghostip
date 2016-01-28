@@ -146,7 +146,6 @@ var runGhostProxy = function(){
 					console.log(stack);
 				}
 				//spooky.removeAllListeners();
-				spooky.destroy();
 				runGhostProxy();
 			});
 
@@ -163,7 +162,6 @@ var runGhostProxy = function(){
 				console.log(greeting);
 				counter+=1;
 				Greeting = greeting;
-				spooky.destroy();
 				runGhostProxy();
 			});
 			

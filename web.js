@@ -31,52 +31,46 @@ var runGhostProxy = function(){
 	
 	 function testIP(ip){
 		 console.log('testing proxy');
-		 if(ip.indexOf('http')>=0 && ip.indexOf('https')<0){
-			 console.log('http proxy gotten');
-			 //check if proxy has already been used for this round
-			 if(visitedIp.indexOf(ip)>=0){
-				 console.log('ip already visited');
-				  runGhostProxy();
-			 }
-			 else {
-				 visitedIp.push(ip);
-			 }
-		 }
-		 else{
-			 console.log('Not http proxy');
+		 
+		 //check if proxy has already been used for this round
+		 if(visitedIp.indexOf(ip)>=0){
+			 console.log('ip already visited');
 			  runGhostProxy();
 		 }
-		 var options = {
-			url: 'https://credhot.com',
-			retries: 5,
-			headers: {
-				'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
-			},
-			timeout: 18,
-			proxy: ip
-		 };
-		
-		 curl.request(options, function(err, res) {
-			   if(err){
-					 console.log('Cannot test proxy');
-					 runGhostProxy();
-				 } 
-				 else {
-					 if(res){
-						 console.log('test done');
-						 //wait an appropriate amount of time before making request
-						  setTimeout(function(){
-							 continueT(ip);
-						 } , 20000);
-					 }
+		 else {
+			 visitedIp.push(ip);
+			 
+			 var options = {
+				url: 'https://credhot.com',
+				retries: 5,
+				headers: {
+					'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
+				},
+				timeout: 18,
+				proxy: ip
+			 };
+			
+			 curl.request(options, function(err, res) {
+				   if(err){
+						 console.log('Cannot test proxy');
+						 runGhostProxy();
+					 } 
 					 else {
-						  console.log('invalid proxy');
-						  runGhostProxy();
+						 if(res){
+							 console.log('test done');
+							 //wait an appropriate amount of time before making request
+							  setTimeout(function(){
+								 continueT(ip);
+							 } , 20000);
+						 }
+						 else {
+							  console.log('invalid proxy');
+							  runGhostProxy();
+						 }
+						
 					 }
-					
-				 }
-		 });
-		
+			 });
+	     }
 	 }
 	function continueT(ip){
 	
@@ -85,7 +79,6 @@ var runGhostProxy = function(){
 		var spooky = new Spooky(
 			 {
 				child: {
-					transport: 'http',
 					proxy: ip
 				},
 				casper: {
@@ -117,7 +110,7 @@ var runGhostProxy = function(){
 									phantom.clearCookies();
 									this.emit('hi', 'Hello, from ' + this.evaluate(function () {
 										return document.title;
-									}));
+									})); 
 								}
 								else{
 									 phantom.clearCookies();
@@ -188,7 +181,7 @@ setInterval(function(){
 	}
 } , 60000);
 
-var port = process.env.PORT || 5005;
+var port = process.env.PORT || 5003;
 app.listen(port, function() {
     console.log("Listening on " + port);
 });

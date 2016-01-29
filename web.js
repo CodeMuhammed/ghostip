@@ -4,36 +4,60 @@ var spooky = require("spooky");
 var request = require('request');
 var curl = require('curlrequest');
 var express = require("express");
+var LineByLineReader = require('line-by-line');
 var app = express();
-	
+
 var Greeting = 'Hello ghost';
 var counter = 0;
+var currentIp = 0;
 var visitedIp = [];
+var localIps = [];
+
+//Read lines of ip use them to make request before resulting to gimmeproxy
+lr = new LineByLineReader('gp.txt');
+lr.on('error', function (err) {
+	console.log('error while reading file');
+});
+
+lr.on('line', function (line) {
+	localIps.push(line);
+});
+
+lr.on('end', function () {
+	console.log(localIps.length);
+	runGhostProxy();
+});
 
 var runGhostProxy = function(){ 
 	console.log('starting ghost');
 	function getIp(){
-		console.log('getting ip');
-		request.get('http://gimmeproxy.com/api/get/8bb99df808d75d71ee1bdd9e5d/?timeout=1' , function(err , response , body){
-			 if(err){
-				 console.log('cannot get ip address'); 
-				 runGhostProxy();
-			 } 
-			 else {
-				 console.log(JSON.parse(body).curl);
-				 testIP(JSON.parse(body).curl);
-			 }
-		 });
+		if(currentIp<localIps.length){
+			console.log('getting local ip');
+			testIP('http://'+localIps[currentIp]);
+		}
+		else{
+			request.get('http://gimmeproxy.com/api/get/8bb99df808d75d71ee1bdd9e5d/?timeout=1' , function(err , response , body){
+				 if(err){
+					 console.log('cannot get ip address'); 
+					 runGhostProxy();
+				 } 
+				 else {
+					 console.log(JSON.parse(body).curl);
+					 testIP(JSON.parse(body).curl);
+				 }
+			 });
+		}
 	};
 	getIp();
 	
-	 function testIP(ip){
+	function testIP(ip){
+		 currentIp++;
 		 console.log('testing proxy');
 		 
 		 //check if proxy has already been used for this round
 		 if(visitedIp.indexOf(ip)>=0){
 			 console.log('ip already visited');
-			  runGhostProxy();
+			 runGhostProxy();
 		 }
 		 else if(!(ip.indexOf('http')>=0 && ip.indexOf('https')<=0)){
 			  console.log('Not http proxy');
@@ -137,7 +161,6 @@ var runGhostProxy = function(){
 				if (stack) {
 					console.log(stack);
 				}
-				//spooky.removeAllListeners();
 				runGhostProxy();
 			});
 
@@ -148,7 +171,7 @@ var runGhostProxy = function(){
 			spooky.on('console', function (line) {
 				console.log(line);
 			});
-			*/
+			*/ 
 
 			spooky.on('hi', function (greeting) {
 				console.log(greeting);
@@ -164,7 +187,6 @@ var runGhostProxy = function(){
       }
 	  return;
 };
-runGhostProxy();
 
 //app.use(express.logger());
 app.get('/', function(request, response) {
@@ -175,7 +197,7 @@ app.get('/', function(request, response) {
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=500 && currentMin>40) || currentMin>40){
+	if((counter>=1000 && currentMin>120) || currentMin>120){
 		 process.exit(0); 
 	}
 } , 60000);

@@ -37,7 +37,7 @@ var runGhostProxy = function(){
 			testIP('http://'+localIps[currentIp]);
 		}
 		else{
-			request.get('http://gimmeproxy.com/api/get/8bb99df78ed75dklee1jkd9e5d/?timeout=1' , function(err , response , body){
+			request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
 				 if(err){
 					 console.log('cannot get ip address'); 
 					 runGhostProxy();
@@ -123,8 +123,9 @@ var runGhostProxy = function(){
 				spooky.start('http://www.palingram.com/ads-test.html');
 				spooky.then(function () {
 					this.urls = [
+					    ['https://crd.ht/71wMWN3' , '[value=cr]'],
 					    ['http://cur.lv/ur5hp' , 'a#skip-ad.btn.btn-inverse'],
-						['https://crd.ht/71wMWN3' , '[value=cr]']
+						
 					];
 					this.count= 0;
 					

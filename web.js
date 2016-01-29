@@ -32,7 +32,7 @@ lr.on('end', function () {
 var runGhostProxy = function(){ 
 	console.log('starting ghost');
 	function getIp(){
-		if(1==2){
+		if(currentIp<localIps.length){
 			console.log('getting local ip');
 			testIP('http://'+localIps[currentIp]);
 		}

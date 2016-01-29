@@ -144,7 +144,7 @@ var runGhostProxy = function(){
 									 //this.emit('notify', 'Hey, we have visited '+this.count+' timmes');]
 									 this.count++;
 									 this.clear();
-									 this.visitAll(urls[this.count]);
+									 this.visitAll(this.urls[this.count]);
 								} 
 							   
 							});

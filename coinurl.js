@@ -122,9 +122,9 @@ var runGhostProxy = function(){
 				spooky.start('http://www.palingram.com/ads-test.html');
 				spooky.then(function () {
 					this.urls = [
-					    //['http://cur.lv/ur5hp' , 'a#skip-ad.btn.btn-inverse'],
-						//['https://crd.ht/71wMWN3' , '[value=cr]']
-					 ];
+					    ['http://cur.lv/ur5hp' , 'a#skip-ad.btn.btn-inverse'],
+						['https://crd.ht/71wMWN3' , '[value=cr]']
+					];
 					this.count= 0;
 					
 					this.visitAll = function(detail){

@@ -17,6 +17,7 @@ var localIps = [];
 lr = new LineByLineReader('gp.txt');
 lr.on('error', function (err) {
 	console.log('error while reading file');
+	runGhostProxy();
 });
 
 lr.on('line', function (line) {
@@ -102,6 +103,7 @@ var runGhostProxy = function(){
 		var spooky = new Spooky(
 			 {
 				child: {
+					transport: 'http',
 					proxy: ip
 				},
 				casper: {
@@ -137,7 +139,7 @@ var runGhostProxy = function(){
 								}
 								else{
 									 phantom.clearCookies();
-									 this.emit('notify', 'Hey, we have visited '+this.count+' timmes');
+									 //this.emit('notify', 'Hey, we have visited '+this.count+' timmes');]
 									 this.count++;
 									 this.clear();
 									 this.visitAll();
@@ -179,10 +181,6 @@ var runGhostProxy = function(){
 				Greeting = greeting;
 				runGhostProxy();
 			});
-			
-			spooky.on('notify', function (notify) {
-				console.log(notify);
-			});
 
       }
 	  return;
@@ -193,11 +191,11 @@ app.get('/', function(request, response) {
     response.send(Greeting+" visited "+counter+" times ");
 });
 
-//restarts the app after every 500 visits and 20 minutes of app's uptime
+//restarts the app after every 1000 visits and 120 minutes of app's uptime
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=1000 && currentMin>120) || currentMin>120){
+	if((counter>=1000 && currentMin>120) || currentMin>120){ 
 		 process.exit(0); 
 	}
 } , 60000);

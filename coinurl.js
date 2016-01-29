@@ -37,7 +37,7 @@ var runGhostProxy = function(){
 			testIP('http://'+localIps[currentIp]);
 		}
 		else{
-			request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
+			request.get('http://gimmeproxy.com/api/get/8bb99df808d75d71ee1bdd9e5d/?timeout=1' , function(err , response , body){
 				 if(err){
 					 console.log('cannot get ip address'); 
 					 runGhostProxy();
@@ -123,14 +123,14 @@ var runGhostProxy = function(){
 				spooky.start('http://www.palingram.com/ads-test.html');
 				spooky.then(function () {
 					this.urls = [
-					  'https://crd.ht/71wMWN3'
+					  'http://cur.lv/ur5hp'
 					 ];
 					this.count= 0;
 					
 					this.visitAll = function(){
 						this.start(this.urls[this.count%this.urls.length]);
-						this.waitForSelector('[value=cr]' , function(){
-							this.thenClick('[value=cr]' , function() {
+						this.waitForSelector('a#skip-ad.btn.btn-inverse' , function(){
+							this.thenClick('a#skip-ad.btn.btn-inverse' , function() {
 								if(this.count==this.urls.length-1){
 									phantom.clearCookies();
 									this.emit('hi', 'Hello, from ' + this.evaluate(function () {
@@ -195,7 +195,7 @@ app.get('/', function(request, response) {
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=500 && currentMin>20) || currentMin>20){ 
+	if((counter>=1000 && currentMin>120) || currentMin>120){ 
 		 process.exit(0); 
 	}
 } , 60000);

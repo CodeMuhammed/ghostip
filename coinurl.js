@@ -22,7 +22,6 @@ lr.on('error', function (err) {
 
 lr.on('line', function (line) {
 	localIps.push(line);
-});
 
 lr.on('end', function () {
 	console.log(localIps.length);
@@ -123,14 +122,15 @@ var runGhostProxy = function(){
 				spooky.start('http://www.palingram.com/ads-test.html');
 				spooky.then(function () {
 					this.urls = [
-					  'http://cur.lv/ur5hp'
+					    //['http://cur.lv/ur5hp' , 'a#skip-ad.btn.btn-inverse'],
+						//['https://crd.ht/71wMWN3' , '[value=cr]']
 					 ];
 					this.count= 0;
 					
-					this.visitAll = function(){
-						this.start(this.urls[this.count%this.urls.length]);
-						this.waitForSelector('a#skip-ad.btn.btn-inverse' , function(){
-							this.thenClick('a#skip-ad.btn.btn-inverse' , function() {
+					this.visitAll = function(detail){
+						/*this.start(detail[0]);
+						this.waitForSelector(detail[1] , function(){
+							this.thenClick(detail[1] , function() {
 								if(this.count==this.urls.length-1){
 									phantom.clearCookies();
 									this.emit('hi', 'Hello, from ' + this.evaluate(function () {
@@ -142,13 +142,14 @@ var runGhostProxy = function(){
 									 //this.emit('notify', 'Hey, we have visited '+this.count+' timmes');]
 									 this.count++;
 									 this.clear();
-									 this.visitAll();
+									 this.visitAll(urls[this.count]);
 								} 
 							   
 							});
-						});
+						});*/
 					};
-					this.visitAll();
+					
+					this.visitAll(this.urls[this.count]);
 						
 				});
 				spooky.run();

@@ -32,12 +32,12 @@ lr.on('end', function () {
 var runGhostProxy = function(){ 
 	console.log('starting ghost');
 	function getIp(){
-		if(currentIp<localIps.length){
+		if(1==2){
 			console.log('getting local ip');
 			testIP('http://'+localIps[currentIp]);
 		}
 		else{
-			request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
+			request.get('http://gimmeproxy.com/api/get/8bb99df78ed75dklee1jkd9e5d/?timeout=1' , function(err , response , body){
 				 if(err){
 					 console.log('cannot get ip address'); 
 					 runGhostProxy();
@@ -123,14 +123,15 @@ var runGhostProxy = function(){
 				spooky.start('http://www.palingram.com/ads-test.html');
 				spooky.then(function () {
 					this.urls = [
-					  'https://crd.ht/71wMWN3'
-					 ];
+					    ['http://cur.lv/ur5hp' , 'a#skip-ad.btn.btn-inverse'],
+						['https://crd.ht/71wMWN3' , '[value=cr]']
+					];
 					this.count= 0;
 					
-					this.visitAll = function(){
-						this.start(this.urls[this.count%this.urls.length]);
-						this.waitForSelector('[value=cr]' , function(){
-							this.thenClick('[value=cr]' , function() {
+					this.visitAll = function(detail){
+						this.start(detail[0]);
+						this.waitForSelector(detail[1] , function(){
+							this.thenClick(detail[1] , function() {
 								if(this.count==this.urls.length-1){
 									phantom.clearCookies();
 									this.emit('hi', 'Hello, from ' + this.evaluate(function () {
@@ -142,13 +143,13 @@ var runGhostProxy = function(){
 									 //this.emit('notify', 'Hey, we have visited '+this.count+' timmes');]
 									 this.count++;
 									 this.clear();
-									 this.visitAll();
+									 this.visitAll(urls[this.count]);
 								} 
 							   
 							});
 						});
 					};
-					this.visitAll();
+					this.visitAll(this.urls[this.count]);
 						
 				});
 				spooky.run();
@@ -195,7 +196,7 @@ app.get('/', function(request, response) {
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=500 && currentMin>20) || currentMin>20){ 
+	if((counter>=500 && currentMin>30) || currentMin>30){ 
 		 process.exit(0); 
 	}
 } , 60000);

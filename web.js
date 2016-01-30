@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var spooky = require("spooky");
+var Spooky = require("spooky");
 var request = require('request');
 var curl = require('curlrequest');
 var express = require("express");
@@ -16,36 +16,39 @@ var herokuAppsUrls = [];
 
 
 //Read lines of ip use them to make request before resulting to gimmeproxy
-lr = new LineByLineReader('rawProxy.txt');
-lr.on('error', function (err) {
-	console.log('error while reading file');
-	Greeting = err;
-});
+function getLocalProxy(){
+	lr = new LineByLineReader('rawProxy.txt');
+	lr.on('error', function (err) {
+		console.log('error while reading file');
+		Greeting = err;
+	});
 
-lr.on('line', function (line) {
-	localIps.push(line.toString());
-});
+	lr.on('line', function (line) {
+		localIps.push(line.toString());
+	});
 
-lr.on('end', function () {
-    var nr = [];
-	var i;
-	for(i=0; i<localIps.length; i++){
-	    if(localIps[i].length>30){
-			var temp = localIps[i].substr(localIps[i].indexOf('\t')).trim();
-			temp = temp.substr(0 , temp.indexOf('\tflag'));
-			temp=temp.trim();
-			var ip = temp.substr(0 , temp.indexOf(' ')).trim();
-			var port = temp.substr(temp.indexOf('\t')).trim();
-			nr.push(ip+':'+port);
+	lr.on('end', function () {
+		var nr = [];
+		var i;
+		for(i=0; i<localIps.length; i++){
+			if(localIps[i].length>30){
+				var temp = localIps[i].substr(localIps[i].indexOf('\t')).trim();
+				temp = temp.substr(0 , temp.indexOf('\tflag'));
+				temp=temp.trim();
+				var ip = temp.substr(0 , temp.indexOf(' ')).trim();
+				var port = temp.substr(temp.indexOf('\t')).trim();
+				nr.push(ip+':'+port);
+			}
 		}
-	}
-    
-	localIps = nr;
-	console.log(localIps);  
-	
-	//
-	pingGhostWhite();
-});
+		
+		localIps = nr;
+		console.log(localIps);  
+		
+		//
+		pingGhostWhite();
+	});
+}
+getLocalProxy();
 
 function pingGhostWhite(){
     console.log('heroku ping here');
@@ -105,7 +108,6 @@ var runGhostProxy = function(){
 					 runGhostProxy();
 				 } 
 				 else {
-					 console.log(JSON.parse(body).curl);
 					 testIP(JSON.parse(body).curl);
 				 }
 			 });
@@ -128,12 +130,12 @@ var runGhostProxy = function(){
 		 }
 		 else {
 			 var options = {
-				url: 'https://credhot.com',
+				url: 'https://fg1.herokuapp.com',
 				retries: 5,
 				headers: {
 					'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
 				},
-				timeout: 20,
+				timeout: 15,
 				proxy: ip
 			 };
 			
@@ -156,12 +158,11 @@ var runGhostProxy = function(){
 					 }
 			 });
 	     }
-	 }
-	 
+	}
+	
 	function continueT(ip){
 	
 		console.log('process starting '+ip);
-		var Spooky = require('spooky');
 		var spooky = new Spooky(
 			 {
 				child: {
@@ -182,39 +183,31 @@ var runGhostProxy = function(){
 				 }
 				
 				//start the main site visiting process
-				spooky.start('http://www.palingram.com/ads-test.html');
-				spooky.then(function () {
-					this.urls = [
-					    ['https://crd.ht/71wMWN3' , '[value=cr]'],
-					    ['http://cur.lv/ur5hp' , 'a#skip-ad.btn.btn-inverse'],
-						
-					];
-					this.count= 0;
-					
-					this.visitAll = function(detail){
-						this.start(detail[0]);
-						this.waitForSelector(detail[1] , function(){
-							this.thenClick(detail[1] , function() {
-								if(this.count==this.urls.length-1){
-									phantom.clearCookies();
-									this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-										return document.title;
-									})); 
-								}
-								else{
-									 phantom.clearCookies();
-									 //this.emit('notify', 'Hey, we have visited '+this.count+' timmes');]
-									 this.count++;
-									 this.clear();
-									 this.visitAll(this.urls[this.count]);
-								} 
-							   
-							});
-						});
-					};
-					this.visitAll(this.urls[this.count]);
-						
-				});
+				console.log('here init');
+				spooky.urls = [
+					['https://crd.ht/71wMWN3' , '[value=cr]'],
+					['http://cur.lv/ur5hp' , 'a#skip-ad.btn.btn-inverse'],
+				];
+				spooky.count= 0;
+				
+				spooky.visitAll = function(detail){
+					spooky.start(detail[0])
+					spooky.thenClick(detail[1] , function() {
+							if(this.count==2){
+								phantom.clearCookies();
+								this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+									return document.title;
+								})); 
+							}
+							else{
+								 phantom.clearCookies();
+								 this.count++;
+								 this.visitAll(this.urls[this.count]);
+							} 
+						   
+					});
+				};
+				spooky.visitAll(spooky.urls[spooky.count]);
 				spooky.run();
 					
 			});
@@ -227,22 +220,23 @@ var runGhostProxy = function(){
 				if (stack) {
 					console.log(stack);
 				}
+				spooky.destroy();
 				runGhostProxy();
 			});
 
-			/*
+			
 			// Uncomment this block to see all of the things Casper has to say.
 			// There are a lot.
 			// He has opinions.
 			spooky.on('console', function (line) {
 				console.log(line);
 			});
-			*/ 
-
+			 
 			spooky.on('hi', function (greeting) {
 				console.log(greeting);
 				counter+=1;
 				Greeting = greeting;
+				spooky.destroy();
 				runGhostProxy();
 			});
 
@@ -255,7 +249,7 @@ app.get('/', function(request, response) {
     response.send(Greeting+" visited "+counter+" times ");
 });
 
-//restarts the app after every 1000 visits and 120 minutes of app's uptime
+//restarts the app after every 500 visits and 40 minutes of app's uptime
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;

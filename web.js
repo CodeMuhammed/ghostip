@@ -12,27 +12,89 @@ var counter = 0;
 var currentIp = 0;
 var visitedIp = [];
 var localIps = [];
+var herokuAppsUrls = [];
+
 
 //Read lines of ip use them to make request before resulting to gimmeproxy
-lr = new LineByLineReader('gp.txt');
+lr = new LineByLineReader('rawProxy.txt');
 lr.on('error', function (err) {
 	console.log('error while reading file');
-	runGhostProxy();
+	Greeting = err;
 });
 
 lr.on('line', function (line) {
-	localIps.push(line);
+	localIps.push(line.toString());
 });
 
 lr.on('end', function () {
-	console.log(localIps.length);
-	runGhostProxy();
+    var nr = [];
+	var i;
+	for(i=0; i<localIps.length; i++){
+	    if(localIps[i].length>30){
+			var temp = localIps[i].substr(localIps[i].indexOf('\t')).trim();
+			temp = temp.substr(0 , temp.indexOf('\tflag'));
+			temp=temp.trim();
+			var ip = temp.substr(0 , temp.indexOf(' ')).trim();
+			var port = temp.substr(temp.indexOf('\t')).trim();
+			nr.push(ip+':'+port);
+		}
+	}
+    
+	localIps = nr;
+	console.log(localIps);  
+	
+	//
+	pingGhostWhite();
 });
+
+function pingGhostWhite(){
+    console.log('heroku ping here');
+    //Read lines of ip use them to make request before resulting to gimmeproxy
+	ha = new LineByLineReader('herokuapps.txt');
+	ha.on('error', function (err) {
+		console.log('error while reading file');
+	});
+
+	ha.on('line', function (line) {
+		herokuAppsUrls.push(line.toString());
+	});
+
+	ha.on('end', function () {
+	   console.log(herokuAppsUrls);
+	   
+	   //do pinging
+	   var currentUrl = 0;
+	   function doPing(){
+	       if(currentUrl < herokuAppsUrls.length){
+		        request.get(herokuAppsUrls[currentUrl] , function(err , response , body){
+					 if(err){
+						 console.log(err);
+						 currentUrl++;					 
+						 doPing();
+					 } 
+					 else {
+					     Greeting = herokuAppsUrls[currentUrl]+' test done';
+						 console.log(herokuAppsUrls[currentUrl]+' test done'); 
+						 currentUrl++;					 
+						 doPing();
+					 }
+				 });
+		   }
+		   else{
+		      console.log('Pinging done');
+			  runGhostProxy();
+		      return;
+		   }  
+	   };
+	   
+	   doPing();
+	});
+}
 
 var runGhostProxy = function(){ 
 	console.log('starting ghost');
 	function getIp(){
-		if(1==2){
+		if(currentIp<localIps.length){
 			console.log('getting local ip');
 			testIP('http://'+localIps[currentIp]);
 		}
@@ -197,7 +259,8 @@ app.get('/', function(request, response) {
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=500 && currentMin>30) || currentMin>30){ 
+	if((counter>=500 && currentMin>40) || currentMin>40){ 
+	    //ping other apps before restarting 
 		 process.exit(0); 
 	}
 } , 60000);

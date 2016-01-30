@@ -16,7 +16,7 @@ var herokuAppsUrls = [];
 
 
 //Read lines of ip use them to make request before resulting to gimmeproxy
-function getLocalProxy(){
+function getLocalProxy1(){
 	lr = new LineByLineReader('rawProxy.txt');
 	lr.on('error', function (err) {
 		console.log('error while reading file');
@@ -42,6 +42,26 @@ function getLocalProxy(){
 		}
 		
 		localIps = nr;
+		console.log(localIps);  
+		
+		//
+		pingGhostWhite();
+	});
+}
+
+//Read lines of ip use them to make request before resulting to gimmeproxy
+function getLocalProxy(){
+	lr = new LineByLineReader('proxies.txt');
+	lr.on('error', function (err) {
+		console.log('error while reading file');
+		Greeting = err;
+	});
+
+	lr.on('line', function (line) {
+		localIps.push(line.toString());
+	});
+
+	lr.on('end', function () {
 		console.log(localIps);  
 		
 		//

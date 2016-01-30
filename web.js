@@ -184,30 +184,36 @@ var runGhostProxy = function(){
 				
 				//start the main site visiting process
 				console.log('here init');
-				spooky.urls = [
-					['https://crd.ht/71wMWN3' , '[value=cr]'],
-					['http://cur.lv/ur5hp' , 'a#skip-ad.btn.btn-inverse'],
-				];
-				spooky.count= 0;
-				
-				spooky.visitAll = function(detail){
-					spooky.start(detail[0])
-					spooky.thenClick(detail[1] , function() {
-							if(this.count==2){
-								phantom.clearCookies();
-								this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-									return document.title;
-								})); 
-							}
-							else{
-								 phantom.clearCookies();
-								 this.count++;
-								 this.visitAll(this.urls[this.count]);
-							} 
-						   
-					});
-				};
-				spooky.visitAll(spooky.urls[spooky.count]);
+				spooky.start('https://fg2.herokuapp.com');
+				spooky.then(function(){
+					 this.urls = [
+						['https://crd.ht/71wMWN3' , '[value=cr]'],
+						//['http://cur.lv/ur5hp' , 'a'],
+						//['http://www.linkbucks.com/fk8Y' , 'a']
+					];
+					this.count= 0;
+					
+					this.visitAll = function(detail){
+						this.start(detail[0])
+						this.thenClick(detail[1] , function() {
+								if(this.count==this.urls.length-1){
+									phantom.clearCookies();
+									this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+										return document.title;
+									})); 
+								}
+								else{
+									 phantom.clearCookies();
+									 this.count++;
+									 this.visitAll(this.urls[this.count]);
+								} 
+							   
+						});
+					};
+					this.visitAll(this.urls[this.count]);
+				});
+					
+					
 				spooky.run();
 					
 			});

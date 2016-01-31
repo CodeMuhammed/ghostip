@@ -62,9 +62,11 @@ function getLocalProxy(){
 
 	lr.on('end', function () {
 		console.log(localIps);  
-		
+		for(var i=0; i<localIps.length; i++){
+			console.log(localIps[i]);  
+		}
 		//
-		pingGhostWhite();
+		//pingGhostWhite();
 	});
 }
 

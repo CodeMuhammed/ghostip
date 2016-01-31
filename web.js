@@ -66,7 +66,7 @@ function getLocalProxy(){
 		pingGhostWhite();
 	});
 }
-getLocalProxy();
+getLocalProxy1();
 function pingGhostWhite(){
     console.log('heroku ping here');
     //Read lines of ip use them to make request before resulting to gimmeproxy

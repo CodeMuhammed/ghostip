@@ -46,7 +46,7 @@ function getLocalProxy1(){
 		getLocalProxy();
 	});
 };
-getLocalProxy1();
+
 
 //Read lines of ip use them to make request before resulting to gimmeproxy
 function getLocalProxy(){
@@ -62,14 +62,11 @@ function getLocalProxy(){
 
 	lr.on('end', function () {
 		console.log(localIps);  
-		for(var i=0; i<localIps.length; i++){
-			console.log(localIps[i]);  
-		}
-		//
-		//pingGhostWhite();
+		
+		pingGhostWhite();
 	});
 }
-
+getLocalProxy();
 function pingGhostWhite(){
     console.log('heroku ping here');
     //Read lines of ip use them to make request before resulting to gimmeproxy

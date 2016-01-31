@@ -14,30 +14,11 @@ var tested = [];
 var count = 0;
 
 
-var fs = require('fs');
-fs.open('./my_file.txt', 'a', function opened(err, fd) {
-if (err) { throw err; }
-var writeBuffer = new Buffer('writing\n this\n string'),
-bufferPosition = 0,
-bufferLength = writeBuffer.length, filePosition = null;
-fs.write( fd,
-writeBuffer,
-bufferPosition,
-bufferLength,
-filePosition,
-function wrote(err, written) {
-if (err) { throw err; }
-console.log('wrote ' + written + ' bytes');
-});
-});
-
-
 //Read lines of ip use them to make request before resulting to gimmeproxy
 function getLocalProxy(){
 	lr = new LineByLineReader('proxies.txt');
 	lr.on('error', function (err) {
 		console.log('error while reading file');
-		Greeting = err;
 	});
 
 	lr.on('line', function (line) {
@@ -45,12 +26,13 @@ function getLocalProxy(){
 	});
 
 	lr.on('end', function () {
-		console.log(proxies);  
+		//console.log(proxies);  
 		testProxies();
 	});
 }
+getLocalProxy();
 
-function testProxies(){
+var testProxies = function(){
 	if(count<proxies.length){
 		var options = {
 			url: 'https://fg1.herokuapp.com',
@@ -71,7 +53,7 @@ function testProxies(){
 				 else {
 					 if(res){
 						 console.log('test done');
-						 tested.push(ip);
+						 tested.push(proxies[count]);
 						 count++;
 						 testProxies();
 					 }

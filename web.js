@@ -66,7 +66,7 @@ function getLocalProxy(){
 		pingGhostWhite();
 	});
 }
-getLocalProxy1();
+
 function pingGhostWhite(){
     console.log('heroku ping here');
     //Read lines of ip use them to make request before resulting to gimmeproxy
@@ -111,6 +111,8 @@ function pingGhostWhite(){
 	});
 }
 
+//
+
 var runGhostProxy = function(){ 
 	console.log('starting ghost');
 	function getIp(){
@@ -125,6 +127,7 @@ var runGhostProxy = function(){
 					 runGhostProxy();
 				 } 
 				 else {
+					 console.log(JSON.parse(body).curl);
 					 testIP(JSON.parse(body).curl);
 				 }
 			 });
@@ -266,6 +269,8 @@ var runGhostProxy = function(){
       }
 	  return;
 };
+//
+runGhostProxy();
 
 //app.use(express.logger());
 app.get('/', function(request, response) {

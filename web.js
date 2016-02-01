@@ -123,7 +123,7 @@ var runGhostProxy = function(){
 			testIP('http://'+localIps[currentIp]);
 		}
 		else{
-			request.get('http://gimmeproxy.com/api/get//?timeout=0' , function(err , response , body){
+			request.get('http://gimmeproxy.com/api/get/3582af301a262cc0c917861d89121666/?timeout=0' , function(err , response , body){
 				 if(err){
 					 console.log('cannot get ip address'); 
 					 runGhostProxy();

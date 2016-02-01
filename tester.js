@@ -1,17 +1,45 @@
-//commit and push ghostip to github
-//Google how to read to file lineby line
-//google proxy-list.txt
-//use proxy checker to filter out the http proxies 
-//add them to proxies.txt
-//checkout bubblews
-//checkout ethereum
+/*
+**This module searches for new ip addresses and tests thhem for validity*/
 
+var request = require('request');
 var curl = require('curlrequest');
 var LineByLineReader = require('line-by-line');
 
-var proxies = [];
-var tested = [];
-var count = 0;
+var foundIps = [];
+var currentIp = 0;
+
+console.log('tester working');
+/*Read lines of ip use them to make request before resulting to gimmeproxy
+function getLocalProxy1(){
+	lr = new LineByLineReader('rawProxy.txt');
+	lr.on('error', function (err) {
+		console.log('error while reading file');
+		Greeting = err;
+	});
+
+	lr.on('line', function (line) {
+		localIps.push(line.toString());
+	});
+
+	lr.on('end', function () {
+		var nr = [];
+		var i;
+		for(i=0; i<localIps.length; i++){
+			if(localIps[i].length>30){
+				var temp = localIps[i].substr(localIps[i].indexOf('\t')).trim();
+				temp = temp.substr(0 , temp.indexOf('\tflag'));
+				temp=temp.trim();
+				var ip = temp.substr(0 , temp.indexOf(' ')).trim();
+				var port = temp.substr(temp.indexOf('\t')).trim();
+				nr.push(ip+':'+port);
+			}
+		}
+		
+		localIps = nr;
+		//
+		getLocalProxy();
+	});
+};
 
 
 //Read lines of ip use them to make request before resulting to gimmeproxy
@@ -19,56 +47,90 @@ function getLocalProxy(){
 	lr = new LineByLineReader('proxies.txt');
 	lr.on('error', function (err) {
 		console.log('error while reading file');
+		Greeting = err;
 	});
 
 	lr.on('line', function (line) {
-		proxies.push(line.toString());
+		localIps.push(line.toString());
 	});
 
 	lr.on('end', function () {
-		//console.log(proxies);  
-		testProxies();
+		console.log(localIps);  
+		
+		pingGhostWhite();
 	});
-}
-getLocalProxy();
+}*/
 
-var testProxies = function(){
-	if(count<proxies.length){
-		var options = {
+function getIp(){
+	request.get('http://gimmeproxy.com/api/get/3582af301a262cc0c917861d89121666/?timeout=0' , function(err , response , body){
+		 if(err){
+			 //console.log('cannot get ip address'); 
+			 getIp();
+		 } 
+		 else {
+			 console.log(JSON.parse(body).curl);
+			 testIP(JSON.parse(body).curl);
+		 }
+	 });
+};
+
+function testIP(ip){
+	 console.log('testing proxy');
+	 
+	 //Accepts both http and https proxies
+	 if(!(ip.indexOf('http')>=0 && ip.indexOf('https')<=0)){
+		  console.log('Not http proxy');
+		  getIp();
+	 }
+	 else {
+		 var options = {
 			url: 'https://fg1.herokuapp.com',
 			retries: 5,
 			headers: {
 				'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
 			},
 			timeout: 15,
-			proxy: proxies[count]
+			proxy: ip
 		 };
 		
 		 curl.request(options, function(err, res) {
 			   if(err){
 					 console.log('Cannot test proxy');
-					 count++;
-					 testProxies();
+					  getIp();;
 				 } 
 				 else {
 					 if(res){
 						 console.log('test done');
-						 tested.push(proxies[count]);
-						 count++;
-						 testProxies();
+						 foundIps.push(ip);
+						 getIp();
 					 }
 					 else {
 						  console.log('invalid proxy');
-						   count++;
-						   testProxies();
+						 getIp();;
 					 }
-					
 				 }
 		 });
+	 }
+}
+
+//Kick start the getting ip process
+getIp();
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
+
+//public function
+var nextIp = function(){
+	if(currentIp < foundIps.length){
+		currentIp++;
+		return foundIps[currentIp-1];
 	}
-	else {
-		console.log('test done '+tested.length+' proxies active of '+proxies.length);
-		//@todo write file out to tested.txt
-		return;
+	else{
+		return -1;
 	}
- }
+}
+
+//Exports important functions to calling program
+module.exports = {
+	nextIp : nextIp
+};

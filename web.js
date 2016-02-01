@@ -1,71 +1,16 @@
 #!/usr/bin/env node
 
-var Spooky = require("spooky");
+var Spooky = require('spooky');
 var request = require('request');
-var curl = require('curlrequest');
-var express = require("express");
 var LineByLineReader = require('line-by-line');
+var express = require('express');
+var tester = require('./tester');
 var app = express();
 
 var Greeting = 'Hello ghost';
 var counter = 0;
-var currentIp = 0;
-var visitedIp = [];
-var localIps = [];
 var herokuAppsUrls = [];
 
-
-//Read lines of ip use them to make request before resulting to gimmeproxy
-function getLocalProxy1(){
-	lr = new LineByLineReader('rawProxy.txt');
-	lr.on('error', function (err) {
-		console.log('error while reading file');
-		Greeting = err;
-	});
-
-	lr.on('line', function (line) {
-		localIps.push(line.toString());
-	});
-
-	lr.on('end', function () {
-		var nr = [];
-		var i;
-		for(i=0; i<localIps.length; i++){
-			if(localIps[i].length>30){
-				var temp = localIps[i].substr(localIps[i].indexOf('\t')).trim();
-				temp = temp.substr(0 , temp.indexOf('\tflag'));
-				temp=temp.trim();
-				var ip = temp.substr(0 , temp.indexOf(' ')).trim();
-				var port = temp.substr(temp.indexOf('\t')).trim();
-				nr.push(ip+':'+port);
-			}
-		}
-		
-		localIps = nr;
-		//
-		getLocalProxy();
-	});
-};
-
-
-//Read lines of ip use them to make request before resulting to gimmeproxy
-function getLocalProxy(){
-	lr = new LineByLineReader('proxies.txt');
-	lr.on('error', function (err) {
-		console.log('error while reading file');
-		Greeting = err;
-	});
-
-	lr.on('line', function (line) {
-		localIps.push(line.toString());
-	});
-
-	lr.on('end', function () {
-		console.log(localIps);  
-		
-		pingGhostWhite();
-	});
-}
 
 function pingGhostWhite(){
     console.log('heroku ping here');
@@ -110,76 +55,20 @@ function pingGhostWhite(){
 	   doPing();
 	});
 }
-
 pingGhostWhite();
-
-//
 
 var runGhostProxy = function(){ 
 	console.log('starting ghost');
-	function getIp(){
-		if(currentIp<localIps.length){
-			console.log('getting local ip');
-			testIP('http://'+localIps[currentIp]);
-		}
-		else{
-			request.get('http://gimmeproxy.com/api/get/3582af301a262cc0c917861d89121666/?timeout=0' , function(err , response , body){
-				 if(err){
-					 console.log('cannot get ip address'); 
-					 runGhostProxy();
-				 } 
-				 else {
-					 console.log(JSON.parse(body).curl);
-					 testIP(JSON.parse(body).curl);
-				 }
-			 });
-		}
-	};
-	getIp();
 	
-	function testIP(ip){
-		 currentIp++;
-		 console.log('testing proxy');
-		 
-		 //check if proxy has already been used for this round
-		 if(visitedIp.indexOf(ip)>=0){
-			 console.log('ip already visited');
-			 runGhostProxy();
-		 }
-		 else if(!(ip.indexOf('http')>=0 && ip.indexOf('https')<=0)){
-			  console.log('Not http proxy');
-			  runGhostProxy();
-		 }
-		 else {
-			 var options = {
-				url: 'https://fg1.herokuapp.com',
-				retries: 5,
-				headers: {
-					'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
-				},
-				timeout: 15,
-				proxy: ip
-			 };
-			
-			 curl.request(options, function(err, res) {
-				   if(err){
-						 console.log('Cannot test proxy');
-						 runGhostProxy();
-					 } 
-					 else {
-						 if(res){
-							 console.log('test done');
-							 visitedIp.push(ip);
-							 continueT(ip);
-						 }
-						 else {
-							  console.log('invalid proxy');
-							  runGhostProxy();
-						 }
-						
-					 }
-			 });
-	     }
+	var ip = tester.nextIp();
+	if(ip == -1){
+		setTimeout(function(){
+			console.log('No new proxy available');
+			runGhostProxy();
+		} , 60000);
+	}
+	else{
+		continueT(ip);
 	}
 	
 	function continueT(ip){
@@ -277,11 +166,11 @@ app.get('/', function(request, response) {
     response.send(Greeting+" visited "+counter+" times ");
 });
 
-//restarts the app after every 500 visits and 40 minutes of app's uptime
+//restarts the app after every 500 visits and 120 minutes of app's uptime
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=500 && currentMin>40) || currentMin>40){ 
+	if((counter>=500 && currentMin>120) || currentMin>120){ 
 	    //ping other apps before restarting 
 		 process.exit(0); 
 	}

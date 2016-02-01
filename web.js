@@ -111,6 +111,8 @@ function pingGhostWhite(){
 	});
 }
 
+pingGhostWhite();
+
 //
 
 var runGhostProxy = function(){ 
@@ -121,7 +123,7 @@ var runGhostProxy = function(){
 			testIP('http://'+localIps[currentIp]);
 		}
 		else{
-			request.get('http://gimmeproxy.com/api/get/14ae54be70be33b780003ad1f370e8a5/?timeout=0' , function(err , response , body){
+			request.get('http://gimmeproxy.com/api/get//?timeout=0' , function(err , response , body){
 				 if(err){
 					 console.log('cannot get ip address'); 
 					 runGhostProxy();
@@ -269,8 +271,6 @@ var runGhostProxy = function(){
       }
 	  return;
 };
-//
-runGhostProxy();
 
 //app.use(express.logger());
 app.get('/', function(request, response) {

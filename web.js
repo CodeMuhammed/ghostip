@@ -12,7 +12,7 @@ var counter = 0;
 var herokuAppsUrls = [];
 
 
-function pingGhostWhite(){
+function pingGhostWhite(cb){
     console.log('heroku ping here');
     //Read lines of ip use them to make request before resulting to gimmeproxy
 	ha = new LineByLineReader('herokuapps.txt');
@@ -47,25 +47,28 @@ function pingGhostWhite(){
 		   }
 		   else{
 		      console.log('Pinging done');
-			  runGhostProxy();
+			  cb();
 		      return;
 		   }  
 	   };
 	   
 	   doPing();
 	});
-}
-pingGhostWhite();
+};
 
 var runGhostProxy = function(){ 
 	console.log('starting ghost');
 	
 	var ip = tester.nextIp();
 	if(ip == -1){
+		console.log('No new proxy available will try again in 59secs');
 		setTimeout(function(){
-			console.log('No new proxy available');
 			runGhostProxy();
 		} , 60000);
+	}
+	else if(ip == -2){
+		console.log('Process stopped and all available ips visited exiting...');
+		process.exit(0);
 	}
 	else{
 		continueT(ip);
@@ -161,6 +164,8 @@ var runGhostProxy = function(){
 	  return;
 };
 
+pingGhostWhite(runGhostProxy);
+
 //app.use(express.logger());
 app.get('/', function(request, response) {
     response.send(Greeting+" visited "+counter+" times ");
@@ -170,9 +175,18 @@ app.get('/', function(request, response) {
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=500 && currentMin>120) || currentMin>120){ 
-	    //ping other apps before restarting 
-		 process.exit(0); 
+	if((counter>=0 && currentMin>120) || currentMin>120){ 
+	    //stop searching for  new ips
+		tester.stopSearch(function(){
+			console.log('searching stopped');
+		});
+	}
+	else {
+		if(currentMin==30 || currentMin==60 || currentMin==90){
+			pingGhostWhite(function(){
+				console.log('ghost white pinged');
+			});
+		}
 	}
 } , 60000);
 

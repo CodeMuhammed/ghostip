@@ -7,6 +7,7 @@ var LineByLineReader = require('line-by-line');
 
 var foundIps = [];
 var currentIp = 0;
+var sentinel = -1;
 
 console.log('tester working');
 /*Read lines of ip use them to make request before resulting to gimmeproxy
@@ -119,18 +120,25 @@ getIp();
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
 
-//public function
+//public functions
 var nextIp = function(){
 	if(currentIp < foundIps.length){
 		currentIp++;
 		return foundIps[currentIp-1];
 	}
 	else{
-		return -1;
+		return sentinel;
 	}
+}
+
+//
+var stopSearch = function(cb){
+	sentinel = -2;
+	cb();
 }
 
 //Exports important functions to calling program
 module.exports = {
-	nextIp : nextIp
+	nextIp : nextIp,
+	stopSearch : stopSearch
 };

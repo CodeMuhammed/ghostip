@@ -10,7 +10,7 @@ var app = express();
 var Greeting = 'Hello ghost';
 var counter = 0;
 var herokuAppsUrls = [];
-
+//
 
 function pingGhostWhite(cb){
     console.log('heroku ping here');

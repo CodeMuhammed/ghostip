@@ -10,57 +10,6 @@ var currentIp = 0;
 var sentinel = -1;
 
 console.log('tester working');
-/*Read lines of ip use them to make request before resulting to gimmeproxy
-function getLocalProxy1(){
-	lr = new LineByLineReader('rawProxy.txt');
-	lr.on('error', function (err) {
-		console.log('error while reading file');
-		Greeting = err;
-	});
-
-	lr.on('line', function (line) {
-		localIps.push(line.toString());
-	});
-
-	lr.on('end', function () {
-		var nr = [];
-		var i;
-		for(i=0; i<localIps.length; i++){
-			if(localIps[i].length>30){
-				var temp = localIps[i].substr(localIps[i].indexOf('\t')).trim();
-				temp = temp.substr(0 , temp.indexOf('\tflag'));
-				temp=temp.trim();
-				var ip = temp.substr(0 , temp.indexOf(' ')).trim();
-				var port = temp.substr(temp.indexOf('\t')).trim();
-				nr.push(ip+':'+port);
-			}
-		}
-		
-		localIps = nr;
-		//
-		getLocalProxy();
-	});
-};
-
-
-//Read lines of ip use them to make request before resulting to gimmeproxy
-function getLocalProxy(){
-	lr = new LineByLineReader('proxies.txt');
-	lr.on('error', function (err) {
-		console.log('error while reading file');
-		Greeting = err;
-	});
-
-	lr.on('line', function (line) {
-		localIps.push(line.toString());
-	});
-
-	lr.on('end', function () {
-		console.log(localIps);  
-		
-		pingGhostWhite();
-	});
-}*/
 
 function getIp(){
 	request.get('http://gimmeproxy.com/api/get/3582af301a262cc0c917861d89121666/?timeout=0' , function(err , response , body){

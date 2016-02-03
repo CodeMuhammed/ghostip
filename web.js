@@ -10,7 +10,31 @@ var app = express();
 var Greeting = 'Hello ghost';
 var counter = 0;
 var herokuAppsUrls = [];
-//
+
+function te(item){
+	return function(){
+		var val = item;
+		var o = {};
+		o.add = function(){
+			val++;
+		};
+		o.printVal = function(){
+			console.log(val);
+		}
+		return o;
+	}
+}
+
+var item1 = te(1)();
+item1.add();
+item1.add();
+item1.add();
+item1.add();
+var item2 = te(0)();
+item2.add();
+
+item1.printVal();
+item2.printVal();
 
 function pingGhostWhite(cb){
     console.log('heroku ping here');
@@ -71,10 +95,10 @@ var runGhostProxy = function(){
 		process.exit(0);
 	}
 	else{
-		continueT(ip);
+		continueT(ip , url);
 	}
 	
-	function continueT(ip){
+	function continueT(ip , url){
 	
 		console.log('process starting '+ip);
 		var spooky = new Spooky(
@@ -99,8 +123,9 @@ var runGhostProxy = function(){
 				//start the main site visiting process
 				console.log('here init');
 				spooky.start('https://fg2.herokuapp.com');
-				spooky.then(function(){
-					 this.urls = [
+				spooky.then([{ip : ip , url : url} , function(){
+					console.log(ip+' '+url);
+					this.urls = [
 						['https://crd.ht/71wMWN3' , '[value=cr]'],
 						//['http://cur.lv/ur5hp' , 'a'],
 						//['http://www.linkbucks.com/fk8Y' , 'a']
@@ -125,7 +150,7 @@ var runGhostProxy = function(){
 						});
 					};
 					this.visitAll(this.urls[this.count]);
-				});
+				}]);
 					
 					
 				spooky.run();
@@ -164,7 +189,7 @@ var runGhostProxy = function(){
 	  return;
 };
 
-pingGhostWhite(runGhostProxy);
+//pingGhostWhite(runGhostProxy);
 
 //app.use(express.logger());
 app.get('/', function(request, response) {
@@ -175,14 +200,14 @@ app.get('/', function(request, response) {
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=0 && currentMin>120) || currentMin>120){ 
+	if((counter>=0 && currentMin>90) || currentMin>90){ 
 	    //stop searching for  new ips
 		tester.stopSearch(function(){
 			console.log('searching stopped');
 		});
 	}
 	else {
-		if(currentMin==30 || currentMin==60 || currentMin==90){
+		if(currentMin==30 || currentMin==60){
 			pingGhostWhite(function(){
 				console.log('ghost white pinged');
 			});

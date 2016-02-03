@@ -4,6 +4,7 @@ var Spooky = require('spooky');
 var request = require('request');
 var express = require('express');
 var tester = require('./tester');
+var LineByLineReader = require('line-by-line');
 var app = express();
 
 var Greeting = 'Hello ghost';

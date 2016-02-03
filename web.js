@@ -95,10 +95,10 @@ var runGhostProxy = function(){
 		process.exit(0);
 	}
 	else{
-		continueT(ip , url);
+		continueT(ip);
 	}
 	
-	function continueT(ip , url){
+	function continueT(ip){
 	
 		console.log('process starting '+ip);
 		var spooky = new Spooky(
@@ -123,7 +123,7 @@ var runGhostProxy = function(){
 				//start the main site visiting process
 				console.log('here init');
 				spooky.start('https://fg2.herokuapp.com');
-				spooky.then([{ip : ip , url : url} , function(){
+				spooky.then([{ip : ip} , function(){
 					console.log(ip+' '+url);
 					this.urls = [
 						['https://crd.ht/71wMWN3' , '[value=cr]'],

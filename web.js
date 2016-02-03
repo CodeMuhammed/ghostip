@@ -124,7 +124,7 @@ var runGhostProxy = function(){
 				console.log('here init');
 				spooky.start('https://fg2.herokuapp.com');
 				spooky.then([{ip : ip} , function(){
-					console.log(ip+' '+url);
+					console.log(ip);
 					this.urls = [
 						['https://crd.ht/71wMWN3' , '[value=cr]'],
 						//['http://cur.lv/ur5hp' , 'a'],

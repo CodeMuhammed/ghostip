@@ -2,7 +2,6 @@
 
 var Spooky = require('spooky');
 var request = require('request');
-var LineByLineReader = require('line-by-line');
 var express = require('express');
 var tester = require('./tester');
 var app = express();
@@ -11,7 +10,7 @@ var Greeting = 'Hello ghost';
 var counter = 0;
 var herokuAppsUrls = [];
 
-function te(item){
+/*function te(item){
 	return function(){
 		var val = item;
 		var o = {};
@@ -34,7 +33,7 @@ var item2 = te(0)();
 item2.add();
 
 item1.printVal();
-item2.printVal();
+item2.printVal();*/
 
 function pingGhostWhite(cb){
     console.log('heroku ping here');
@@ -189,7 +188,7 @@ var runGhostProxy = function(){
 	  return;
 };
 
-//pingGhostWhite(runGhostProxy);
+pingGhostWhite(runGhostProxy);
 
 //app.use(express.logger());
 app.get('/', function(request, response) {

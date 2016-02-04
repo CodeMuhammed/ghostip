@@ -28,7 +28,7 @@ function testIP(ip){
 	 console.log('testing proxy');
 	 
 	 //Accepts both http and https proxies
-	 if(!(ip.indexOf('http')>=0 && ip.indexOf('https')<=0)){
+	 if(/*!(ip.indexOf('http')>=0 && ip.indexOf('https')<=0)*/1==2){
 		  console.log('Not http proxy');
 		  getIp();
 	 }

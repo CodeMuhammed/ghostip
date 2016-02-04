@@ -126,9 +126,11 @@ var runGhostProxy = function(){
 				spooky.then([{ip : ip} , function(){
 					console.log(ip);
 					this.urls = [
-						['https://crd.ht/71wMWN3' , '[value=cr]'],
-						//['http://cur.lv/ur5hp' , 'a'],
-						//['http://www.linkbucks.com/fk8Y' , 'a']
+					    ['https://crd.ht/CzAMpQv','[value=cr]'],
+					    ['https://crd.ht/PUBZc4R','[value=cr]'],
+						['https://crd.ht/71wMWN3','[value=cr]'],
+						['https://crd.ht/H38xVxz','[value=cr]'],
+						['https://crd.ht/81avGhp','[value=cr]']
 					];
 					this.count= 0;
 					

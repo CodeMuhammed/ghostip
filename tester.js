@@ -1,46 +1,60 @@
-/*
-**This module searches for new ip addresses and tests thhem for validity*/
+/**This module searches for new ip addresses and tests thhem for validity**/
+//Main process tells you to stop searching
+//you return -1 for no tested ip found but search is still on
+//you return -2 for no tested ip found and all untested ips have been tested and search has stopped
+
+console.log('tester working');
 
 var request = require('request');
 var curl = require('curlrequest');
 var LineByLineReader = require('line-by-line');
 
-var foundIps = [];
-var currentIp = 0;
-var sentinel = -1;
+var goodIps = [];
+var goodIpIndex = 0;
 
-console.log('tester working');
+var untestedIps = [];
+var untestedIpIndex=0;
 
+//
+var NO_IP = -1;
+var STOP_SEARCH =false;
+var TEST_DONE = -2;
+
+
+//
 function getIp(){
-	request.get('http://gimmeproxy.com/api/get/3582af301a262cc0c917861d89121666/?timeout=0' , function(err , response , body){
-		 if(err){
-			 //console.log('cannot get ip address'); 
-			 getIp();
-		 } 
-		 else {
-			 console.log(JSON.parse(body).curl);
-			 testIP(JSON.parse(body).curl);
-		 }
-	 });
+	if(!STOP_SEARCH){
+		 request.get('http://gimmeproxy.com/api/get/3582af301a262cc0c917861d89121666/?timeout=0' , function(err , response , body){
+			 if(err){
+				 //console.log('cannot get ip address'); 
+				 getIp();
+			 } 
+			 else {
+				 untestedIps.push(JSON.parse(body).curl);
+				 getIp();
+			 }
+		 });
+	}
+	else{
+		console.log('ip searching stopped');
+		return;
+	}
 };
+//Kick start the getting ip process
+getIp();
 
-function testIP(ip){
-	 console.log('testing proxy');
-	 
-	 //Accepts both http and https proxies
-	 if(/*!(ip.indexOf('http')>=0 && ip.indexOf('https')<=0)*/1==2){
-		  console.log('Not http proxy');
-		  getIp();
-	 }
-	 else {
-		 var options = {
+//
+function testIP(){
+	if(untestedIpIndex<untestedIps.length){
+		  console.log('testing proxy');
+	    var options = {
 			url: 'https://fg1.herokuapp.com',
 			retries: 5,
 			headers: {
 				'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
 			},
 			timeout: 15,
-			proxy: ip
+			proxy: untestedIps[untestedIpIndex]
 		 };
 		
 		 curl.request(options, function(err, res) {
@@ -51,38 +65,58 @@ function testIP(ip){
 				 else {
 					 if(res){
 						 console.log('test done');
-						 foundIps.push(ip);
-						 getIp();
+						 goodIps.push(ip);
+						 untestedIpIndex++;
+						 testIP();
 					 }
 					 else {
-						  console.log('invalid proxy');
-						 getIp();;
+						 console.log('invalid proxy');
+						 untestedIpIndex++;
+						 testIP();
 					 }
 				 }
 		 });
-	 }
+	}
+	else{
+	    if(STOP_SEARCH && (untestedIpIndex==untestedIps.length)){
+			 return;
+		}
+		else{
+			setTimeout(function(){
+				testIP();
+			} , 30000);
+		}
+		
+	}
+	
 }
-
-//Kick start the getting ip process
-getIp();
+//Kick start the testing process
+testIP();
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
 
 //public functions
 var nextIp = function(){
-	if(currentIp < foundIps.length){
-		currentIp++;
-		return foundIps[currentIp-1];
+	if(goodIpIndex < goodIps.length){
+		goodIpIndex++;
+		return goodIps[goodIpIndex-1];
 	}
 	else{
-		return sentinel;
+		//
+		if(STOP_SEARCH && (untestedIpIndex==untestedIps.length) && (goodIpIndex==goodIps.length)){
+			 return TEST_DONE;
+		}
+		else{
+			return NO_IP;
+		}
+		
 	}
 }
 
 //
 var stopSearch = function(cb){
-	sentinel = -2;
+	STOP_SEARCH = true;
 	cb();
 }
 

@@ -11,31 +11,6 @@ var Greeting = 'Hello ghost';
 var counter = 0;
 var herokuAppsUrls = [];
 
-/*function te(item){
-	return function(){
-		var val = item;
-		var o = {};
-		o.add = function(){
-			val++;
-		};
-		o.printVal = function(){
-			console.log(val);
-		}
-		return o;
-	}
-}
-
-var item1 = te(1)();
-item1.add();
-item1.add();
-item1.add();
-item1.add();
-var item2 = te(0)();
-item2.add();
-
-item1.printVal();
-item2.printVal();*/
-
 function pingGhostWhite(cb){
     console.log('heroku ping here');
     //Read lines of ip use them to make request before resulting to gimmeproxy

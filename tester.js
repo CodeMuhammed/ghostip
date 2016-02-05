@@ -30,7 +30,13 @@ function getIp(){
 				 getIp();
 			 } 
 			 else {
-				 untestedIps.push(JSON.parse(body).curl);
+				 var ip = JSON.parse(body).curl;
+				 //console.log(ip);
+				 var index = untestedIps.indexOf(ip);
+				 if(index<0){
+					 untestedIps.push(ip);
+				 }
+				 
 				 getIp();
 			 }
 		 });
@@ -46,7 +52,7 @@ getIp();
 //
 function testIP(){
 	if(untestedIpIndex<untestedIps.length){
-		  console.log('testing proxy');
+		  console.log('testing proxy '+untestedIps[untestedIpIndex]);
 	    var options = {
 			url: 'https://fg1.herokuapp.com',
 			retries: 5,
@@ -60,12 +66,13 @@ function testIP(){
 		 curl.request(options, function(err, res) {
 			   if(err){
 					 console.log('Cannot test proxy');
-					  getIp();;
+					 untestedIpIndex++;
+					 testIP();
 				 } 
 				 else {
 					 if(res){
 						 console.log('test done');
-						 goodIps.push(ip);
+						 goodIps.push(untestedIps[untestedIpIndex]);
 						 untestedIpIndex++;
 						 testIP();
 					 }
@@ -82,6 +89,7 @@ function testIP(){
 			 return;
 		}
 		else{
+		    console.log('No untested ips will retry in 30secs');
 			setTimeout(function(){
 				testIP();
 			} , 30000);

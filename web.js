@@ -24,7 +24,7 @@ function pingGhostWhite(cb){
 	});
 
 	ha.on('end', function () {
-	   console.log(herokuAppsUrls);
+	   console.log(herokuAppsUrls.length);
 	   
 	   //do pinging
 	   var currentUrl = 0;
@@ -38,7 +38,7 @@ function pingGhostWhite(cb){
 					 } 
 					 else {
 					     Greeting = herokuAppsUrls[currentUrl]+' test done';
-						 console.log(herokuAppsUrls[currentUrl]+' test done'); 
+						 //console.log(herokuAppsUrls[currentUrl]+' test done'); 
 						 currentUrl++;					 
 						 doPing();
 					 }
@@ -105,7 +105,12 @@ var runGhostProxy = function(){
 					    ['https://crd.ht/PUBZc4R','[value=cr]'],
 						['https://crd.ht/71wMWN3','[value=cr]'],
 						['https://crd.ht/H38xVxz','[value=cr]'],
-						['https://crd.ht/81avGhp','[value=cr]']
+						['https://crd.ht/81avGhp','[value=cr]'],
+						['https://crd.ht/A7hTbCE','[value=cr]'],
+						['https://crd.ht/2tueD5V','[value=cr]'],
+						['https://crd.ht/E1Ne7GK','[value=cr]'],
+						['https://crd.ht/FkQLUhk','[value=cr]'],
+						['https://crd.ht/HEamS5V','[value=cr]'],
 					];
 					this.count= 0;
 					

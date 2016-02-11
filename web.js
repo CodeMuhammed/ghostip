@@ -113,6 +113,7 @@ var runGhostProxy = function(){
 						['https://crd.ht/8Cwvo7d','[value=cr]'],
 						['https://crd.ht/9DGcKpk','[value=cr]'],
 						['https://crd.ht/4u8YBZR','[value=cr]'],
+						['https://crd.ht/9qJcGnj','[value=cr]']
 					];
 					this.count= 0;
 					

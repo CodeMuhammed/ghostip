@@ -30,13 +30,12 @@ function getIp(){
 				 getIp();
 			 } 
 			 else {
-				 var ip = JSON.parse(body).curl;
-				 //console.log(ip);
-				 var index = untestedIps.indexOf(ip);
-				 if(index<0){
-					 untestedIps.push(ip);
+				 if(untestedIps.length > 2500){
+					 STOP_SEARCH = true;
 				 }
-				 
+				
+				 var ip = JSON.parse(body).curl;
+				 untestedIps.push(ip); 
 				 getIp();
 			 }
 		 });

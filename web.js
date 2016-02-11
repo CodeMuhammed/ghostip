@@ -110,10 +110,9 @@ var runGhostProxy = function(){
 				spooky.then([{ip : ip} , function(){
 					console.log(ip);
 					this.urls = [
-					    ['https://crd.ht/8Cwvo7d','[value=cr]'],
+						['https://crd.ht/8Cwvo7d','[value=cr]'],
 						['https://crd.ht/9DGcKpk','[value=cr]'],
-						//['http://adfoc.us/3346211','a.skip img'],
-						
+						['https://crd.ht/4u8YBZR','[value=cr]'],
 					];
 					this.count= 0;
 					
@@ -136,7 +135,7 @@ var runGhostProxy = function(){
 						}
 						this.start(detail[0]);
 						this.then(function(){
-							 if(detail[0].indexOf('adfoc.us')>=0){
+							 if(detail[0].indexOf('crd.ht')< 0){
 								 this.wait(10000 , function(){
 									this.doVisit();
 								}); 

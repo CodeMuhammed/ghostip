@@ -118,7 +118,7 @@ var runGhostProxy = function(){
 					this.count= 0;
 					
 					this.visitAll = function(detail){
-						this.doVisit = function(){
+						this.doVisit = function(){//
 							 this.thenClick(detail[1] , function() {
 								if(this.count==this.urls.length-1){
 									phantom.clearCookies();

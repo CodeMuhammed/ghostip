@@ -110,7 +110,7 @@ var runGhostProxy = function(){
 				spooky.then([{ip : ip} , function(){
 					console.log(ip);
 					this.urls = [
-					    ['https://crd.ht/7nH2GT5','[value=cr]']
+					    ['https://crd.ht/8Cwvo7d','[value=cr]']
 					];
 					this.count= 0;
 					

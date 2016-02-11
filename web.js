@@ -111,12 +111,14 @@ var runGhostProxy = function(){
 					console.log(ip);
 					this.urls = [
 					    ['https://crd.ht/8Cwvo7d','[value=cr]'],
-						['https://crd.ht/9DGcKpk','[value=cr]']
+						['https://crd.ht/9DGcKpk','[value=cr]'],
+						['http://adfoc.us/3346211','a.skip img'],
+						
 					];
 					this.count= 0;
 					
 					this.visitAll = function(detail){
-						this.start(detail[0])
+						this.start(detail[0]);
 						this.thenClick(detail[1] , function() {
 								if(this.count==this.urls.length-1){
 									phantom.clearCookies();

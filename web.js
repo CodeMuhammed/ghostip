@@ -112,14 +112,14 @@ var runGhostProxy = function(){
 					this.urls = [
 					    ['https://crd.ht/8Cwvo7d','[value=cr]'],
 						['https://crd.ht/9DGcKpk','[value=cr]'],
-						['http://adfoc.us/3346211','a.skip img'],
+						//['http://adfoc.us/3346211','a.skip img'],
 						
 					];
 					this.count= 0;
 					
 					this.visitAll = function(detail){
-						this.start(detail[0]);
-						this.thenClick(detail[1] , function() {
+						this.doVisit = function(){
+							 this.thenClick(detail[1] , function() {
 								if(this.count==this.urls.length-1){
 									phantom.clearCookies();
 									this.emit('hi', 'Hello, from ' + this.evaluate(function () {
@@ -132,7 +132,20 @@ var runGhostProxy = function(){
 									 this.visitAll(this.urls[this.count]);
 								} 
 							   
+							});
+						}
+						this.start(detail[0]);
+						this.then(function(){
+							 if(detail[0].indexOf('adfoc.us')>=0){
+								 this.wait(10000 , function(){
+									this.doVisit();
+								}); 
+							 }
+							 else {
+								this.doVisit();
+							 }
 						});
+						
 					};
 					this.visitAll(this.urls[this.count]);
 				}]);

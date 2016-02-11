@@ -10,6 +10,7 @@ var app = express();
 var Greeting = 'Hello ghost';
 var counter = 0;
 var herokuAppsUrls = [];
+var visitedIps = [];
 
 function pingGhostWhite(cb){
     console.log('heroku ping here');
@@ -70,7 +71,15 @@ var runGhostProxy = function(){
 		process.exit(0);
 	}
 	else{
-		continueT(ip);
+		if(visitedIps.indexOf(ip)<0){
+			visitedIps.push(ip);
+			continueT(ip);
+		}
+		else{
+			console.log('this ip has been visited already');
+			runGhostProxy();
+		}
+		
 	}
 	
 	function continueT(ip){

@@ -81,7 +81,7 @@ function testIP(){
 						 testIP();
 					 }
 				 }
-		 });
+		 }); 
 	}
 	else{
 	    if(STOP_SEARCH && (untestedIpIndex==untestedIps.length)){

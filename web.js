@@ -116,11 +116,13 @@ var runGhostProxy = function(ip , cb){
 			spooky.on('error', function (e, stack) {
 				console.log('here');
 				console.error(e);
+				Greeting = e;
 
 				if (stack) {
 					console.log(stack);
 				}
 				spooky.destroy();
+				cb();
 			});
 
 			

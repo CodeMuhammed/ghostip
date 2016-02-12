@@ -63,7 +63,7 @@ function pingGhostWhite(cb){
 	});
 };
 
-var runGhostProxy = function(ip , cb){ 
+var runGhostProxy = function(ip){ 
 	console.log('starting ghost');
 	
 	if(visitedIps.indexOf(ip)<0){
@@ -122,7 +122,6 @@ var runGhostProxy = function(ip , cb){
 					console.log(stack);
 				}
 				spooky.destroy();
-				cb();
 			});
 
 			
@@ -138,7 +137,6 @@ var runGhostProxy = function(ip , cb){
 				counter+=1;
 				Greeting = greeting;
 				spooky.destroy();
-				cb();
 			});
 
       }
@@ -146,7 +144,7 @@ var runGhostProxy = function(ip , cb){
 
 //init database get the urls specific to this session then run pingGhostWhite and testers
 database.initColls(function(){
-	
+	 
 	//api routes starts here
 	app.use('/api' , require('./api')(database));
 

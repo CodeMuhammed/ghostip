@@ -52,7 +52,6 @@ function getIp(){
 getIp();
 
 //
-var Test;
 var testIp = function(){
 	if(untestedIpIndex<untestedIps.length){
 		var raw = untestedIps[untestedIpIndex];
@@ -79,7 +78,8 @@ var testIp = function(){
 						 console.log('test done');
 						 goodIps.push(raw.curl);
 						 untestedIpIndex++;
-						 callback(raw.curl , Test);
+						 callback(raw.curl);
+						 testIp();
  
 					 }
 					 else {
@@ -105,7 +105,6 @@ var testIp = function(){
 	
 }
 //Kick start the testing process
-Test = testIp;
 testIp();
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//

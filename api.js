@@ -8,6 +8,7 @@ var ObjectId = require('mongodb').ObjectId;
 module.exports = function(database){
   //models
    var Urls = database.model('Urls');
+   var Explorer = database.model('Explorer');
  
    router.param('id' , function(req , res , next , id){
 	  req.id  = id;
@@ -101,6 +102,54 @@ module.exports = function(database){
 
         });
 
+     /*********************************************************************************
+     *********************************************************************************/
+      router.route('/reset')
+       .get(function(req , res){
+             //res.status(200).send('Reset done on the server');
+             Urls.update(
+                {},
+                {
+                    "$set":{
+                        status:'inactive'
+                    }
+                },
+                {multi:true},
+                function(err , result){
+                    if(err){
+                        throw new Error('Api reset error');
+                    }
+                    else {
+                        resetExplorer();
+                    }
+                }
+             );
+
+             //
+             function resetExplorer(){
+                 Explorer.update(
+                    {},
+                    {
+                       "$set": {
+                           accessingDomain:'',
+                           locked:false,
+                           urlsAvailable:true
+                       }
+                    },
+                    function(err , result){
+                        if(err){
+                             throw new Error('Api reset error 2');
+                        }
+                        else {
+                            res.status(200).send('Reset done on the server');
+                        }  
+                    }
+                 );
+             }
+
+
+        })
+ 
    
 	return router;
 };

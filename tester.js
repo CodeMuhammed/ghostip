@@ -30,7 +30,7 @@ function getIp(){
 				 getIp();
 			 } 
 			 else {
-				 if(untestedIps.length > 2500){
+				 if(untestedIps.length > 2000){
 					 STOP_SEARCH = true;
 				 }
 				
@@ -134,7 +134,7 @@ var stopSearch = function(cb){
 
 //
 var getFound = function(){
-	return goodIps;
+	return {good:goodIps, untested:untestedIps.length};
 }
 
 //Exports important functions to calling program

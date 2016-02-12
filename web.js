@@ -202,7 +202,7 @@ setInterval(function(){
 	}
 	else {
 		if(currentMin==30){
-			pingGhostWhite(function(){
+			pingGhostWhite(function(){//
 				console.log('ghost white pinged');
 			});
 		}

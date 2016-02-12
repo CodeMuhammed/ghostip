@@ -34,9 +34,12 @@ function getIp(){
 					 STOP_SEARCH = true;
 				 }
 				
-				 var ip = JSON.parse(body).curl;
-				 untestedIps.push(ip); 
-				 getIp();
+				 var rawIp = JSON.parse(body);
+				 untestedIps.push(rawIp); 
+				 setTimeout(function(){
+				 	getIp();
+				 } ,500)
+				 
 			 }
 		 });
 	}
@@ -51,7 +54,9 @@ getIp();
 //
 function testIP(){
 	if(untestedIpIndex<untestedIps.length){
-		  console.log('testing proxy '+untestedIps[untestedIpIndex]);
+		var raw = untestedIps[untestedIpIndex];
+		console.log(raw);
+		
 	    var options = {
 			url: 'https://fg1.herokuapp.com',
 			retries: 5,
@@ -59,26 +64,26 @@ function testIP(){
 				'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
 			},
 			timeout: 15,
-			proxy: untestedIps[untestedIpIndex]
+			proxy: raw.curl
 		 };
 		
 		 curl.request(options, function(err, res) {
 			   if(err){
 					 console.log('Cannot test proxy');
 					 untestedIpIndex++;
-					 testIP();
+					 return testIP();
 				 } 
 				 else {
 					 if(res){
 						 console.log('test done');
-						 goodIps.push(untestedIps[untestedIpIndex]);
+						 goodIps.push(raw.curl);
 						 untestedIpIndex++;
-						 testIP();
+						 return testIP();
 					 }
 					 else {
 						 console.log('invalid proxy');
 						 untestedIpIndex++;
-						 testIP();
+						 return testIP();
 					 }
 				 }
 		 }); 
@@ -89,8 +94,8 @@ function testIP(){
 		}
 		else{
 		    console.log('No untested ips will retry in 30secs');
-			setTimeout(function(){
-				testIP();
+			return setTimeout(function(){
+				return testIP();
 			} , 30000);
 		}
 		

@@ -3,16 +3,23 @@
 var Spooky = require('spooky');
 var request = require('request');
 var express = require('express');
-var tester = require('./tester');
+var path = require('path');
 var LineByLineReader = require('line-by-line');
 var app = express();
+var database = require('./database')('restapi' , app);
+
+var port = process.env.PORT || 5003;
 
 var Greeting = 'Hello ghost';
 var counter = 0;
 var herokuAppsUrls = [];
 var visitedIps = [];
+var UrlObj;
+var urlExplorer;
+var tester;
 
 function pingGhostWhite(cb){
+	
     console.log('heroku ping here');
     //Read lines of ip use them to make request before resulting to gimmeproxy
 	ha = new LineByLineReader('herokuapps.txt');
@@ -47,7 +54,7 @@ function pingGhostWhite(cb){
 		   }
 		   else{
 		      console.log('Pinging done');
-			  cb();
+			  cb(UrlObj.url);
 		      return;
 		   }  
 	   };
@@ -56,35 +63,35 @@ function pingGhostWhite(cb){
 	});
 };
 
-var runGhostProxy = function(){ 
+var runGhostProxy = function(url){ 
 	console.log('starting ghost');
 	
 	var ip = tester.nextIp();
 	if(ip == -1){
 		console.log('No new proxy available will try again in 59secs');
 		setTimeout(function(){
-			runGhostProxy();
+			return runGhostProxy(url);
 		} , 60000);
 	}
 	else if(ip == -2){
 		console.log('Process stopped and all available ips visited exiting...');
-		process.exit(0);
+		urlExplorer.exitProcess(Url);
 	}
 	else{
 		if(visitedIps.indexOf(ip)<0){
 			visitedIps.push(ip);
-			continueT(ip);
+			continueT(ip , url);
 		}
 		else{
 			console.log('this ip has been visited already');
-			runGhostProxy();
+			return runGhostProxy(url);
 		}
 		
 	}
 	
-	function continueT(ip){
+	function continueT(ip , url){
 	
-		console.log('process starting '+ip);
+		console.log('process starting '+ip+' '+url);
 		var spooky = new Spooky(
 			 {
 				child: {
@@ -97,7 +104,6 @@ var runGhostProxy = function(){
 				}
 			 },
 			 function(err){
-				 
 				 if (err) {
 					e = new Error('Failed to initialize SpookyJS');
 					e.details = err;
@@ -105,20 +111,21 @@ var runGhostProxy = function(){
 				 }
 				
 				//start the main site visiting process
-				console.log('here init');
+				
 				spooky.start('https://fg2.herokuapp.com');
-				spooky.then([{ip : ip} , function(){
-					console.log(ip);
+				spooky.then([{ip : ip , url:url} , function(){
+					console.log(url);
+					console.log('here init');
 					this.urls = [
-						['https://crd.ht/8Cwvo7d','[value=cr]'],
-						['https://crd.ht/9DGcKpk','[value=cr]'],
-						['https://crd.ht/4u8YBZR','[value=cr]'],
-						['https://crd.ht/9qJcGnj','[value=cr]']
+						['https://crd.ht/8Cwvo7d','[value=cr]'],//muhammedlook
+						['https://crd.ht/9DGcKpk','[value=cr]'],//gip
+						['https://crd.ht/4u8YBZR','[value=cr]'],//gip1
+						['https://crd.ht/9qJcGnj','[value=cr]'],//gip2
 					];
 					this.count= 0;
 					
 					this.visitAll = function(detail){
-						this.doVisit = function(){//
+						this.doVisit = function(){
 							 this.thenClick(detail[1] , function() {
 								if(this.count==this.urls.length-1){
 									phantom.clearCookies();
@@ -164,7 +171,7 @@ var runGhostProxy = function(){
 					console.log(stack);
 				}
 				spooky.destroy();
-				runGhostProxy();
+				return runGhostProxy();
 			});
 
 			
@@ -180,17 +187,59 @@ var runGhostProxy = function(){
 				counter+=1;
 				Greeting = greeting;
 				spooky.destroy();
-				runGhostProxy();
+				return runGhostProxy();
 			});
 
       }
-	  return;
 };
 
-pingGhostWhite(runGhostProxy);
+//init database get the urls specific to this session then run pingGhostWhite and testers
+database.initColls(function(){
+	
+	//api routes starts here
+	app.use('/api' , require('./api')(database));
 
-//app.use(express.logger());
-app.get('/', function(request, response) {
+	//initialize  url explorer
+	urlExplorer  = require('./urlExplorer')(database);
+
+	function getUrlFn(){
+		urlExplorer.getUrl(function(url){
+			if(url == -1){
+				Greeting = 'All urls are occupied by processes trying again in five minutes';
+                console.log('All urls are occupied by processes trying again in five minutes');
+                setTimeout(function(){
+                     getUrlFn();
+                } , 5000 );
+			}
+			else{
+				UrlObj = url;
+
+				//start main process
+	            tester = require('./tester');
+	            pingGhostWhite(runGhostProxy);
+			}
+	        
+		});
+	}
+	getUrlFn();
+	
+});
+
+
+
+
+
+
+
+
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//=============================================================================
+//configure express static
+app.use(express.static(path.join(__dirname , 'public')));
+
+app.get('/progress', function(request, response) {
     response.send(Greeting+" visited "+counter+" times ");
 });
 
@@ -213,7 +262,7 @@ setInterval(function(){
 	}
 } , 60000);
 
-var port = process.env.PORT || 5003;
+//
 app.listen(port, function() {
     console.log("Listening on " + port);
 });

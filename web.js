@@ -135,7 +135,7 @@ var runGhostProxy = function(url){
 					console.log(stack);
 				}
 				spooky.destroy();
-				return runGhostProxy(UrlObj.url);
+				runGhostProxy(UrlObj.url);
 			});
 
 			
@@ -151,7 +151,7 @@ var runGhostProxy = function(url){
 				counter+=1;
 				Greeting = greeting;
 				//spooky.destroy();
-				return runGhostProxy(UrlObj.url);
+				runGhostProxy(UrlObj.url);
 			});
 
       }

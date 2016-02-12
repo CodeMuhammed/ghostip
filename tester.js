@@ -38,7 +38,7 @@ function getIp(){
 				 untestedIps.push(rawIp); 
 				 setTimeout(function(){
 				 	getIp();
-				 } ,2000)
+				 } ,500)
 				 
 			 }
 		 });

@@ -20,7 +20,7 @@ var NO_IP = -1;
 var STOP_SEARCH =false;
 var TEST_DONE = -2;
 
-
+var callback;
 //
 function getIp(){
 	if(!STOP_SEARCH){
@@ -78,6 +78,7 @@ function testIP(){
 						 console.log('test done');
 						 goodIps.push(raw.curl);
 						 untestedIpIndex++;
+						 callback(raw.curl);
 						 return testIP();
 					 }
 					 else {
@@ -134,12 +135,17 @@ var stopSearch = function(cb){
 
 //
 var getFound = function(){
-	return {good:goodIps, untested:untestedIps.length};
+	return {good:goodIps, untested:untestedIpIndex};
 }
 
 //Exports important functions to calling program
-module.exports = {
-	nextIp : nextIp,
-	getFound:getFound,
-	stopSearch : stopSearch
+module.exports = function(cb) {
+	callback = cb;
+	console.log(callback);
+	return {
+		nextIp : nextIp,
+	    getFound:getFound,
+	    stopSearch : stopSearch
+	}
+	
 };

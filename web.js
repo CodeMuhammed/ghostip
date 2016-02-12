@@ -54,7 +54,7 @@ function pingGhostWhite(cb){
 		   }
 		   else{
 		      console.log('Pinging done');
-			  cb(UrlObj.url);
+			  cb();
 		      return;
 		   }  
 	   };
@@ -63,35 +63,21 @@ function pingGhostWhite(cb){
 	});
 };
 
-var runGhostProxy = function(url){ 
+var runGhostProxy = function(ip){ 
 	console.log('starting ghost');
 	
-	var ip = tester.nextIp();
-	if(ip == -1){
-		console.log('No new proxy available will try again in 59secs');
-		setTimeout(function(){
-			return runGhostProxy(url);
-		} , 60000);
-	}
-	else if(ip == -2){
-		console.log('Process stopped and all available ips visited exiting...');
-		urlExplorer.exitProcess(Url);
+	if(visitedIps.indexOf(ip)<0){
+		visitedIps.push(ip);
+		continueT(ip);
 	}
 	else{
-		if(visitedIps.indexOf(ip)<0){
-			visitedIps.push(ip);
-			continueT(ip , url);
-		}
-		else{
-			console.log('this ip has been visited already');
-			return runGhostProxy(url);
-		}
-		
+		console.log('this ip has been visited already');
+		return ;//runGhostProxy(url);
 	}
 	
-	function continueT(ip , url){
+	function continueT(ip){
 	
-		console.log('process starting '+ip+' '+url);
+		console.log('process starting '+ip+' '+UrlObj.url);
 		var spooky = new Spooky(
 			 {
 				child: {
@@ -111,8 +97,8 @@ var runGhostProxy = function(url){
 				 }
 				
 				//start the main site visiting process
-				console.log('here init 00000000000000000000000000000000000 '+url);
-				spooky.start(url);
+				console.log('here init 00000000000000000000000000000000000 '+UrlObj.url);
+				spooky.start(UrlObj.url);
 				spooky.thenClick('[value=cr]' , function() {
 					phantom.clearCookies();
 					this.emit('hi', 'Hello, from ' + this.evaluate(function () {
@@ -135,7 +121,7 @@ var runGhostProxy = function(url){
 					console.log(stack);
 				}
 				spooky.destroy();
-				runGhostProxy(UrlObj.url);
+				//runGhostProxy(UrlObj.url);
 			});
 
 			
@@ -151,7 +137,7 @@ var runGhostProxy = function(url){
 				counter+=1;
 				Greeting = greeting;
 				//spooky.destroy();
-				runGhostProxy(UrlObj.url);
+				//runGhostProxy(UrlObj.url);
 			});
 
       }
@@ -164,7 +150,7 @@ database.initColls(function(){
 	app.use('/api' , require('./api')(database));
 
 	//initialize  url explorer
-	urlExplorer  = require('./urlExplorer')(database);
+	urlExplorer  = require('./urlExplorer')(database , runGhostProxy);
 
 	function getUrlFn(){
 		urlExplorer.getUrl(function(url){
@@ -179,8 +165,8 @@ database.initColls(function(){
 				UrlObj = url;
 
 				//start main process
-	            tester = require('./tester');
-	            pingGhostWhite(runGhostProxy);
+	            tester = require('./tester')(runGhostProxy);
+	           
 			}
 	        
 		});
@@ -188,12 +174,6 @@ database.initColls(function(){
 	getUrlFn();
 	
 });
-
-
-
-
-
-
 
 
 

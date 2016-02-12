@@ -207,18 +207,22 @@ app.get('/progress', function(request, response) {
     response.send(Greeting+" visited "+counter+" times ");
 });
 
+app.get('/stats', function(request, response) {
+    response.send(tester.getFound());
+});
+
 //restarts the app after every 500 visits and 120 minutes of app's uptime
 var currentMin = 0;
 setInterval(function(){
 	currentMin++;
-	if((counter>=0 && currentMin>90) || currentMin>90){ 
+	if((counter>=0 && currentMin>60) || currentMin>60){ 
 	    //stop searching for  new ips
 		tester.stopSearch(function(){
 			console.log('searching stopped');
 		});
 	}
 	else {
-		if(currentMin==30 || currentMin==60){
+		if(currentMin==30){
 			pingGhostWhite(function(){
 				console.log('ghost white pinged');
 			});

@@ -132,8 +132,14 @@ var stopSearch = function(cb){
 	cb();
 }
 
+//
+var getFound = function(){
+	return goodIps;
+}
+
 //Exports important functions to calling program
 module.exports = {
 	nextIp : nextIp,
+	getFound:getFound,
 	stopSearch : stopSearch
 };

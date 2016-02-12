@@ -111,51 +111,15 @@ var runGhostProxy = function(url){
 				 }
 				
 				//start the main site visiting process
-				
-				spooky.start('https://fg2.herokuapp.com');
-				spooky.then([{ip : ip , url:url} , function(){
-					console.log(url);
-					console.log('here init');
-					this.urls = [
-						['https://crd.ht/8Cwvo7d','[value=cr]'],//muhammedlook
-						['https://crd.ht/9DGcKpk','[value=cr]'],//gip
-						['https://crd.ht/4u8YBZR','[value=cr]'],//gip1
-						['https://crd.ht/9qJcGnj','[value=cr]'],//gip2
-					];
-					this.count= 0;
-					
-					this.visitAll = function(detail){
-						this.doVisit = function(){
-							 this.thenClick(detail[1] , function() {
-								if(this.count==this.urls.length-1){
-									phantom.clearCookies();
-									this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-										return document.title;
-									})); 
-								}
-								else{
-									 phantom.clearCookies();
-									 this.count++;
-									 this.visitAll(this.urls[this.count]);
-								} 
-							   
-							});
-						}
-						this.start(detail[0]);
-						this.then(function(){
-							 if(detail[0].indexOf('crd.ht')< 0){
-								 this.wait(10000 , function(){
-									this.doVisit();
-								}); 
-							 }
-							 else {
-								this.doVisit();
-							 }
-						});
-						
-					};
-					this.visitAll(this.urls[this.count]);
-				}]);
+				console.log('here init 00000000000000000000000000000000000 '+url);
+				spooky.start(url);
+				spooky.thenClick('[value=cr]' , function() {
+					phantom.clearCookies();
+					this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+						return document.title;
+					})); 
+				   
+				});
 					
 					
 				spooky.run();
@@ -171,7 +135,7 @@ var runGhostProxy = function(url){
 					console.log(stack);
 				}
 				spooky.destroy();
-				return runGhostProxy();
+				return runGhostProxy(UrlObj.url);
 			});
 
 			
@@ -186,8 +150,8 @@ var runGhostProxy = function(url){
 				console.log(greeting);
 				counter+=1;
 				Greeting = greeting;
-				spooky.destroy();
-				return runGhostProxy();
+				//spooky.destroy();
+				return runGhostProxy(UrlObj.url);
 			});
 
       }

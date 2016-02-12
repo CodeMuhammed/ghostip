@@ -30,7 +30,7 @@ function getIp(){
 				 getIp();
 			 } 
 			 else {
-				 if(untestedIps.length > 2000){
+				 if(untestedIps.length > 2500){
 					 STOP_SEARCH = true;
 				 }
 				
@@ -79,7 +79,10 @@ function testIP(){
 						 goodIps.push(raw.curl);
 						 untestedIpIndex++;
 						 callback(raw.curl);
-						 return testIP();
+						 setTimeout(function(){
+						 	return testIP();
+						 } , 500);
+						 
 					 }
 					 else {
 						 console.log('invalid proxy');
@@ -135,7 +138,7 @@ var stopSearch = function(cb){
 
 //
 var getFound = function(){
-	return {good:goodIps, untested:untestedIpIndex};
+	return {good:goodIps, tested:untestedIpIndex};
 }
 
 //Exports important functions to calling program

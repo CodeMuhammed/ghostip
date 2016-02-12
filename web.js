@@ -63,7 +63,7 @@ function pingGhostWhite(cb){
 	});
 };
 
-var runGhostProxy = function(ip){ 
+var runGhostProxy = function(ip , cb){ 
 	console.log('starting ghost');
 	
 	if(visitedIps.indexOf(ip)<0){
@@ -136,6 +136,7 @@ var runGhostProxy = function(ip){
 				counter+=1;
 				Greeting = greeting;
 				spooky.destroy();
+				cb();
 			});
 
       }

@@ -52,7 +52,8 @@ function getIp(){
 getIp();
 
 //
-function testIP(){
+var Test;
+var testIp = function(){
 	if(untestedIpIndex<untestedIps.length){
 		var raw = untestedIps[untestedIpIndex];
 		console.log(raw);
@@ -71,23 +72,20 @@ function testIP(){
 			   if(err){
 					 console.log('Cannot test proxy');
 					 untestedIpIndex++;
-					 return testIP();
+					 return testIp();
 				 } 
 				 else {
 					 if(res){
 						 console.log('test done');
 						 goodIps.push(raw.curl);
 						 untestedIpIndex++;
-						 callback(raw.curl);
-						 setTimeout(function(){
-						 	return testIP();
-						 } , 500);
-						 
+						 callback(raw.curl , Test);
+ 
 					 }
 					 else {
 						 console.log('invalid proxy');
 						 untestedIpIndex++;
-						 return testIP();
+						 return testIp();
 					 }
 				 }
 		 }); 
@@ -99,7 +97,7 @@ function testIP(){
 		else{
 		    console.log('No untested ips will retry in 30secs');
 			return setTimeout(function(){
-				return testIP();
+				return testIp();
 			} , 30000);
 		}
 		
@@ -107,7 +105,8 @@ function testIP(){
 	
 }
 //Kick start the testing process
-testIP();
+Test = testIp;
+testIp();
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 

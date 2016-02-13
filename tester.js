@@ -23,7 +23,7 @@ module.exports = function(cb , urlObj , done) {
 	//
 	function getIp(){
 		if(!STOP_SEARCH){
-			 request.get('http://gimmeproxy.com/api/get/3582af301a262cc0c917861d89121666/?timeout=0' , function(err , response , body){
+			 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
 				 if(err){
 					 //console.log('cannot get ip address'); 
 					 getIp();

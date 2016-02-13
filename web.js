@@ -14,7 +14,6 @@ var Greeting = 'Hello ghost';
 var counter = 0;
 var herokuAppsUrls = [];
 var visitedIps = [];
-var UrlObj;
 var urlExplorer;
 var tester;
 
@@ -53,7 +52,6 @@ function pingGhostWhite(cb){
 				 });
 		   }
 		   else{
-		      console.log('Pinging done');
 			  cb();
 		      return;
 		   }  
@@ -63,7 +61,7 @@ function pingGhostWhite(cb){
 	});
 };
 
-var runGhostProxy = function(ip){ 
+var runGhostProxy = function(ip , url){ 
 	console.log('starting ghost');
 	
 	if(visitedIps.indexOf(ip)<0){
@@ -77,7 +75,7 @@ var runGhostProxy = function(ip){
 	
 	function continueT(ip){
 	
-		console.log('process starting '+ip+' '+UrlObj.url);
+		console.log('process starting '+ip+' '+url);
 		var spooky = new Spooky(
 			 {
 				child: {
@@ -97,8 +95,8 @@ var runGhostProxy = function(ip){
 				 }
 				
 				//start the main site visiting process
-				console.log('here init 00000000000000000000000000000000000 '+UrlObj.url);
-				spooky.start(UrlObj.url);
+				console.log('here init 00000000000000000000000000000000000 '+url);
+				spooky.start(url);
 				spooky.thenClick('[value=cr]' , function() {
 					phantom.clearCookies();
 					this.emit('hi', 'Hello, from ' + this.evaluate(function () {
@@ -152,8 +150,8 @@ database.initColls(function(){
 	urlExplorer  = require('./urlExplorer')(database , runGhostProxy);
 
 	function getUrlFn(){
-		urlExplorer.getUrl(function(url){
-			if(url == -1){
+		urlExplorer.getUrl(function(urlObj){
+			if(urlObj == -1){
 				Greeting = 'All urls are occupied by processes trying again in five minutes';
                 console.log('All urls are occupied by processes trying again in five minutes');
                 setTimeout(function(){
@@ -161,11 +159,11 @@ database.initColls(function(){
                 } , 5000 );
 			}
 			else{
-				UrlObj = url;
-
-				//start main process
-	            tester = require('./tester')(runGhostProxy);
-	           
+				//start main process of testing then visiting
+	            tester = require('./tester')(runGhostProxy , urlObj , function(){
+	            	console.log('Done here next is to exit the process successfully');
+	            	urlExplorer.exitProcess(urlObj);
+	            });
 			}
 	        
 		});
@@ -190,24 +188,20 @@ app.get('/stats', function(request, response) {
     response.send(tester.getFound());
 });
 
-//restarts the app after every 500 visits and 120 minutes of app's uptime
-var currentMin = 0;
-setInterval(function(){
-	currentMin++;
-	if((counter>=0 && currentMin>60) || currentMin>60){ 
-	    //stop searching for  new ips
-		tester.stopSearch(function(){
-			console.log('searching stopped');
-		});
-	}
-	else {
-		if(currentMin==30){
-			pingGhostWhite(function(){//
-				console.log('ghost white pinged');
+//stop searching for new ips after the first 10 minutes of app's uptime
+setTimeout(function(){
+	if(true){ 
+		pingGhostWhite(function(){
+		    console.log('ghost white pinged');
+		    //stop searching for  new ips
+			tester.stopSearch(function(){
+				console.log('searching stopped');
 			});
-		}
+		});
+	   
 	}
-} , 60000);
+	
+} , 60000*10);
 
 //
 app.listen(port, function() {

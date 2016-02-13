@@ -1,6 +1,6 @@
 var ObjectId = require('mongodb').ObjectId;
 
-//generate a random 30 bits token that clearly identifies this system
+//generate a random 30 bits token that clearly identifies this process
 var token = '';
 
 function generateRandomBitToken(){
@@ -339,15 +339,12 @@ module.exports = function(database){
                 }
              );
          }
-
-
-         //broadcast the availability of the url across the network
     } 
 
 	return{
 		getUrl : getUrl,
 		exitProcess : exitProcess
-    }
+  }
 
 };
 

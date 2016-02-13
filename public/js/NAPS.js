@@ -112,7 +112,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 })
 
 .controller ('homeController' , function($rootScope , $scope , $timeout , Urlservice){
-   //
+  //
   Urlservice.getAll().then(function(data){
        $scope.Urls = data;
   } , function(err){
@@ -162,6 +162,13 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        $scope.processingDel = true;
        Urlservice.removeUrl(urlObj).then(function(status){
            $scope.processingDel = false;
+            //
+            Urlservice.getAll().then(function(data){
+                 $scope.Urls = data;
+            } , function(err){
+                 alert(err);
+            });
+
        } , function(err){
           $scope.processingDel = false;
           alert(err);

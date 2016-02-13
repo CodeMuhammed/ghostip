@@ -34,7 +34,7 @@ module.exports = function(cb , urlObj , done) {
 					 }
 					
 					 var rawIp = JSON.parse(body);
-					 untestedIps.push(rawIp); 
+					 untestedIps.push(rawIp);   
 					 setTimeout(function(){
 					 	getIp();
 					 } ,500)

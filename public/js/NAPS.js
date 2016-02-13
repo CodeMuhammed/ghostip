@@ -111,12 +111,24 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        };
 })
 
-.controller ('homeController' , function($rootScope , $scope , $timeout , Urlservice){
+.controller ('homeController' , function($rootScope , $scope , $timeout  , $http, Urlservice){
   //
   Urlservice.getAll().then(function(data){
        $scope.Urls = data;
   } , function(err){
        alert(err);
+  });
+
+  //
+  $http({
+       method:'GET',
+       url:'/stats'
+  })
+  .success(function(data){
+       $scope.statsObj = data;
+  })
+  .error(function(err){
+        $scope.statsObj = err;
   });
 
    //Functions to add a new url

@@ -180,14 +180,21 @@ database.initColls(function(){
 //configure express static
 app.use(express.static(path.join(__dirname , 'public')));
 
-app.get('/progress', function(request, response) {
-    response.send(Greeting+" visited "+counter+" times ");
-});
-
 app.get('/stats', function(request, response) {
-    response.send(tester.getFound());
+	if(tester){
+        var statsObj = tester.getFound();
+	    statsObj.progress ="visited "+counter+" times ";
+	    statsObj.status=Greeting;
+        response.send(statsObj);
+	}
+	else{
+		var statsObj = {};
+		statsObj.progress ="visited "+counter+" times ";
+	    statsObj.status=Greeting;
+	     response.send(statsObj);
+	}
+	
 });
-
 //stop searching for new ips after the first 10 minutes of app's uptime
 setTimeout(function(){
 	if(true){ 

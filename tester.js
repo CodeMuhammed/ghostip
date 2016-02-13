@@ -117,7 +117,7 @@ module.exports = function(cb , urlObj , done) {
 
 	//
 	var getFound = function(){
-		return {good:goodIps, tested:untestedIpIndex};
+		return {good:goodIps.length, tested:untestedIpIndex};
 	}
 
 

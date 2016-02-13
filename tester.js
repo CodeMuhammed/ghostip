@@ -37,7 +37,7 @@ module.exports = function(cb , urlObj , done) {
 					 untestedIps.push(rawIp); 
 					 setTimeout(function(){
 					 	getIp();
-					 } ,500)
+					 } ,1000)
 					 
 				 }
 			 });

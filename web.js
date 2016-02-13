@@ -195,6 +195,8 @@ app.get('/stats', function(request, response) {
 	}
 	
 });
+
+
 //stop searching for new ips after the first 10 minutes of app's uptime
 setTimeout(function(){
 	if(true){ 
@@ -208,7 +210,7 @@ setTimeout(function(){
 	   
 	}
 	
-} , 60000*10);
+} , 60000*20);
 
 //
 app.listen(port, function() {

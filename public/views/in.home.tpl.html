@@ -124,7 +124,9 @@
 	 	 	      <tr>
 	 	 	      	   <th>Url</th>
 	 	 	      	   <th>Domain</th>
-	 	 	      	   <th>Service</th>
+	 	 	      	   <th>Selector</th>
+	 	 	      	   <th>Created</th>
+	 	 	      	   <th>Last active</th>
 	 	 	      	   <th>Account</th>
 	 	 	      	   <th>Username</th>
 	 	 	      	   <th>Status</th>
@@ -133,7 +135,7 @@
 	 	 	 </t-head>
 	 	 	 <t-body>
 	 	 	  
-	 	 	    <tr ng-repeat="url in Urls | filter:{service:activeCategory} | orderBy:'-date'" >
+	 	 	    <tr ng-repeat="url in Urls | filter:{selector:activeCategory} | orderBy:'-date'" >
 	 	 	    	   <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.url}}</td>
 	 	 	    	   <td ng-show="editorSettings.status && $index==editorSettings.index">
 	 	 	    	  	  <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.url">
@@ -142,10 +144,22 @@
 	 	 	      	    <td ng-show="editorSettings.status && $index==editorSettings.index">
 	 	 	    	  	  <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.domain">
 	 	 	    	   </td>
-	 	 	      	   <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.service}}</td>
+	 	 	      	   <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.selector}}</td>
 	 	 	      	   <td ng-show="editorSettings.status && $index==editorSettings.index">
-	 	 	    	  	 <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.service">
+	 	 	    	  	 <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.selector">
 	 	 	    	   </td>
+
+                       <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.dateCreated | date:"shortDate"}}</td>
+	 	 	      	   <td ng-show="editorSettings.status && $index==editorSettings.index">
+	 	 	    	  	 <input type="text" ng-disabled="true" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.dateCreated">
+	 	 	    	   </td>
+
+	 	 	    	   <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.lastVisited | date:"shortTime"}}</td>
+	 	 	      	   <td ng-show="editorSettings.status && $index==editorSettings.index">
+	 	 	    	  	 <input type="text" ng-disabled="true" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.lastVisited">
+	 	 	    	   </td>
+
+
 	 	 	      	   <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.account}}</td>
 	 	 	      	    <td ng-show="editorSettings.status && $index==editorSettings.index">
 	 	 	    	  	  <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.account">
@@ -156,8 +170,8 @@
 	 	 	    	   </td>
 	 	 	      	   <td>
 		 	 	      	   	<div style="margin-left:1em">
-		 	 	      	   		<i ng-show="url.status=='active'" style="color:green" class="icon fa fa-circle"></i>
-		 	 	      	   	    <i ng-show="url.status=='inactive'" style="color:red" class="icon fa fa-circle"></i>
+		 	 	      	   		<i ng-show="isRecent(url.lastVisited)" style="color:green" class="icon fa fa-circle"></i>
+		 	 	      	   	    <i ng-hide="isRecent(url.lastVisited)" style="color:red" class="icon fa fa-circle"></i>
 		 	 	      	   	</div>
 	 	 	      	   </td>
 	 	 	      	    

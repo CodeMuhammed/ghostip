@@ -10,7 +10,7 @@ module.exports = function(cb , urlObj , done) {
 	var request = require('request'); 
 	var curl = require('curlrequest');
 	var LineByLineReader = require('line-by-line');
-
+    
 	var goodIps = [];
 	var goodIpIndex = 0;
 
@@ -77,8 +77,8 @@ module.exports = function(cb , urlObj , done) {
 							 console.log('test done');
 							 goodIps.push(raw.curl);
 							 untestedIpIndex++;
-							 cb(raw.curl , urlObj.url);
-							 testIp();
+							 cb(raw.curl , urlObj.url , urlObj.selector);
+							 return testIp();
 						 }
 						 else {
 							 console.log('invalid proxy');

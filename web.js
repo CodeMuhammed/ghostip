@@ -61,7 +61,7 @@ function pingGhostWhite(cb){
 	});
 };
 
-var runGhostProxy = function(ip , url){ 
+var runGhostProxy = function(ip , url , selector){ 
 	console.log('starting ghost');
 	
 	if(visitedIps.indexOf(ip)<0){
@@ -75,7 +75,7 @@ var runGhostProxy = function(ip , url){
 	
 	function continueT(ip){
 	
-		console.log('process starting '+ip+' '+url);
+		console.log('process starting '+ip+' '+url+' '+selector);
 		var spooky = new Spooky(
 			 {
 				child: {
@@ -95,15 +95,24 @@ var runGhostProxy = function(ip , url){
 				 }
 				
 				//start the main site visiting process
-				console.log('here init 00000000000000000000000000000000000 '+url);
+				console.log('here init 00000000000000000000000000000000000 '+url+' '+selector);
 				spooky.start(url);
-				spooky.thenClick('[value=cr]' , function() {
-					phantom.clearCookies();
-					this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-						return document.title;
-					})); 
-				   
-				});
+				
+				if(selector=='none'){
+                     spooky.emit('hi', 'Hello, from ' + spooky.evaluate(function () {
+							return document.title;
+					 }));
+				}
+				else{
+					spooky.thenClick(selector , function() {
+						phantom.clearCookies();
+						this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+							return document.title;
+						})); 
+					   
+					});
+				}
+				
 					
 					
 				spooky.run();
@@ -119,7 +128,7 @@ var runGhostProxy = function(ip , url){
 				if (stack) {
 					console.log(stack);
 				}
-				spooky.destroy();
+				//spooky.destroy();
 			});
 
 			
@@ -134,7 +143,7 @@ var runGhostProxy = function(ip , url){
 				console.log(greeting);
 				counter+=1;
 				Greeting = greeting;
-				spooky.destroy();
+				//spooky.destroy();
 			});
 
       }
@@ -152,11 +161,11 @@ database.initColls(function(){
 	function getUrlFn(){
 		urlExplorer.getUrl(function(urlObj){
 			if(urlObj == -1){
-				Greeting = 'All urls are occupied by processes trying again in five minutes';
-                console.log('All urls are occupied by processes trying again in five minutes');
+				Greeting = 'All urls are occupied by processes trying again in ten secs';
+                console.log('All urls are occupied by processes trying again in ten secs');
                 setTimeout(function(){
                      getUrlFn();
-                } , 5000 );
+                } , 10000 );
 			}
 			else{
 				//start main process of testing then visiting

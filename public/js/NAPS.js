@@ -136,24 +136,26 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        token:'',
        url:'http://www.yoururl.com',
        domain:'Server',   
-       service:'All services',
-       account:'account email',
+       selector:'none',
+       account:'account email', 
        username:'account name',
-       status:'inactive'
+       dateCreated:'',
+       lastVisited:'' 
    }
-
-   //
+ 
+   // 
     $scope.addUrl = function(){
        $scope.processingNew = true;
-       $scope.newUrl.date = Date.now();
+       $scope.newUrl.dateCreated = Date.now()+'';
+       $scope.newUrl.lastVisited = (Date.now()-60000*4)+'';
        Urlservice.addUrl($scope.newUrl).then(function(data){
            $scope.Urls.push(data);
            $scope.processingNew = false;
        } , function(err){
-          $scope.processingNew = false;
-          alert(err);
-       }); 
-   };
+          $scope.processingNew = false; 
+          alert(err); 
+       });    
+   };     
 
    //
    $scope.saveUrl = function(urlObj , index){
@@ -161,7 +163,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        Urlservice.updateUrl(urlObj).then(function(status){
             $scope.processing = false;
             $scope.resetEditorSettings(false , index);
-            alert(status);
+            console.log(status);
        },
        function(err){
             $scope.processing = false;
@@ -186,18 +188,23 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
           alert(err);
        }); 
    }
+   
+   //
+   $scope.isRecent = function(time){
+       return (Date.now() - time) <= 60000*2;
+   }
 
    //
-   $scope.editorSettings = {
+   $scope.editorSettings = { 
        status:false,
        index:0
-   };
-
+   };    
+     
    $scope.resetEditorSettings = function(status , index){
         $scope.editorSettings = {
              status:false,
              index:0
-         };
+         }; 
        console.log(status+' '+index);
        $scope.editorSettings.status = status;
        $scope.editorSettings.index = index; 
@@ -205,10 +212,10 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
 
    //
-   $scope.categories = ['All Services' ,'credhot', 'adfoc.us' , 'adf.ly'];
+   $scope.categories = ['All selectors' ,'[value=cr]', 'a#skip' , '[value=skip]'];
    $scope.activeCategory = '';
    $scope.setCategory = function(category){
-       category=category=='All Services'?'':category;
+       category=category=='All selectors'?'':category;
        $scope.activeCategory = category;
    };
     

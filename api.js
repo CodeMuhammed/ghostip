@@ -12,7 +12,7 @@ module.exports = function(database){
  
    router.param('id' , function(req , res , next , id){
 	  req.id  = id;
-	  return next();
+	  return next(); 
    });
 	
 
@@ -25,7 +25,7 @@ module.exports = function(database){
                  obj = {};
              }
              else{
-                 obj = {"_id":ObjectId(req.id)};
+                 obj = {"_id":ObjectId(req.id)};  
              }
 
              Urls.find(obj).toArray(function(err , results){
@@ -33,9 +33,10 @@ module.exports = function(database){
                      return res.status(500).send('urls Not ok');
                   }
                   else if(results[0] == undefined){
-                     return res.status(500).send('urls Not ok 1');
+                     return res.status(500).send('No urls available');
                   }
                   else {
+                    console.log('getall called here');
                     if(req.id == 'all'){
                          res.status(200).send(results); 
                      }
@@ -50,17 +51,40 @@ module.exports = function(database){
         .post(function(req , res){
              var my_token = '12345';
              if(req.query.token==my_token){
-                 console.log(req.query);
-
+                                  
                  Urls.insertOne(req.query , function(err , result){
                      if(err){
                          return res.status(500).send('Not ok');
                      } 
                      else {
                       req.query._id = result.ops[0]._id.toString();
-                      res.status(200).send(req.query);
+                      updateAvailable(req.query);
                      }
                  });
+
+                 //
+                 function updateAvailable(data){
+                     //
+                     console.log('====================updating availabilty in add url path');
+                      Explorer.update(
+                        {},
+                        {
+                           "$set": {  
+                                urlsAvailable:true
+                           }
+                        },
+                        function(err , result){
+                            if(err){
+                                throw new Error('DB connection error api 1');
+                            }
+                            else {
+                                console.log('process successfully released lock on database');
+                                res.status(200).send(data);
+                            }
+                        }
+                     );
+                    
+                 };
              }
              else{
                 return res.status(500).send('invalid bitcoin address');
@@ -106,26 +130,8 @@ module.exports = function(database){
      *********************************************************************************/
       router.route('/reset')
        .get(function(req , res){
-             //res.status(200).send('Reset done on the server');
-             Urls.update(
-                {},
-                {
-                    "$set":{
-                        status:'inactive'
-                    }
-                },
-                {multi:true},
-                function(err , result){
-                    if(err){
-                        throw new Error('Api reset error');
-                    }
-                    else {
-                        resetExplorer();
-                    }
-                }
-             );
-
              //
+
              function resetExplorer(){
                  Explorer.update(
                     {},
@@ -146,8 +152,8 @@ module.exports = function(database){
                     }
                  );
              }
-
-
+             resetExplorer();
+ 
         })
  
    

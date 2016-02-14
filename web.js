@@ -161,7 +161,7 @@ database.initColls(function(){
 	function getUrlFn(){
 		urlExplorer.getUrl(function(urlObj){
 			if(urlObj == -1){
-				Greeting = 'All urls are occupied by processes trying again in ten secs';
+				Greeting = 'All urls are occupied by processes trying again in 10 secs';
                 console.log('All urls are occupied by processes trying again in ten secs');
                 setTimeout(function(){
                      getUrlFn();

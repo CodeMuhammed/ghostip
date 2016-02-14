@@ -141,7 +141,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        username:'account name',
        dateCreated:'',
        lastVisited:'' 
-   }
+   } //
  
    // 
     $scope.addUrl = function(){

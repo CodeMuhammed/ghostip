@@ -1,6 +1,6 @@
 var ObjectId = require('mongodb').ObjectId;
 var global;
-console.log('lastVisited:');
+var stats= 'nothing yet from explorer';
 //generate a random 30 bits token that clearly identifies this process
 var token = '';
 
@@ -29,10 +29,12 @@ module.exports = function(database){
          function checkLock(){
                Explorer.find({locked: false}).toArray(function(err , results){
 		              if(err){
+                    stats = err;
 		                 throw new Error('DB connection error explorer check locked');
 		              }
 		              else if(results[0] == undefined){
 		                  //
+                      stats = 'Another process is currently accessing database tying again in 5secs';
 		                  console.log('Another process is currently accessing database tying again in 5secs');
 
 		                  setTimeout(function(){
@@ -61,6 +63,7 @@ module.exports = function(database){
                 },
                 function(err , result){
                     if(err){
+                        stats=err;
                         throw new Error('DB connection error explorer locking error');
                     }
                     else {
@@ -76,6 +79,7 @@ module.exports = function(database){
          	 console.log('Authenticating access');
          	 Explorer.find({locked: true , accessingDomain:token}).toArray(function(err , results){
 	              if(err){
+                  stats= err;
 	                 throw new Error('DB connection error explorer authenticating');
 	              }
 	              else if(results[0] == undefined){
@@ -100,10 +104,12 @@ module.exports = function(database){
 	              }
 	              else if(results[0] == undefined){
 	                  //
+                    stats = 'No urls';
 	                  console.log('No urls available');
 	                  releaseLock();
 	              }
 	              else {
+                   stats="Urls available";
 	              	 console.log('Urls are available');
 	              	 getAnyUrl();           
 	              }
@@ -112,8 +118,8 @@ module.exports = function(database){
               
          //      
          function releaseLock(){
-              console.log('Releasing lock on database');
-              //release lock and return url back to main process
+               console.log('Releasing lock on database');
+               //release lock and return url back to main process
                Explorer.update(
                 {},
                 {
@@ -146,7 +152,7 @@ module.exports = function(database){
                      throw new Error('DB connection error explorer getting any urls');
                   }
                   else if(results[0] == undefined){  
-                     
+                     stats = 'Url available but last visited less than four mins ago ';
                       console.log('Url available but last visited less than four mins ago retrying in 59secs');
                       setTimeout(function(){
                            getAnyUrl(); 
@@ -222,7 +228,7 @@ module.exports = function(database){
                         global=urlObj;
                         cb(urlObj);
                     }    
-                }
+                } 
              );
          }
     	
@@ -410,8 +416,14 @@ module.exports = function(database){
          
     } , 60000*2);
 
+  //
+  function getStat(){
+       return stats;
+  }
+
 	return{
 		getUrl : getUrl,
+    getStat: getStat
 		exitProcess : exitProcess
   }
 

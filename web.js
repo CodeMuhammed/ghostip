@@ -200,7 +200,8 @@ app.get('/stats', function(request, response) {
 		var statsObj = {};
 		statsObj.progress ="visited "+counter+" times ";
 	    statsObj.status=Greeting;
-	     response.send(statsObj);
+	    statsObj.explorer = urlExplorer.getStat();
+	    response.send(statsObj);
 	}
 	
 });

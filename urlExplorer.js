@@ -423,7 +423,7 @@ module.exports = function(database){
 
 	return{
 		getUrl : getUrl,
-    getStat: getStat
+    getStat: getStat,
 		exitProcess : exitProcess
   }
 

@@ -194,6 +194,7 @@ app.get('/stats', function(request, response) {
         var statsObj = tester.getFound();
 	    statsObj.progress ="visited "+counter+" times ";
 	    statsObj.status=Greeting;
+	    statsObj.explorer = urlExplorer.getStat();
         response.send(statsObj);
 	}
 	else{

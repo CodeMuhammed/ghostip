@@ -195,12 +195,16 @@ app.get('/stats', function(request, response) {
 	    statsObj.progress ="visited "+counter+" times ";
 	    statsObj.status=Greeting;
 	    statsObj.explorer = urlExplorer.getStat();
+	    statsObj.serverTime = Date.now();
+	    statsObj.browserTime = '';
         response.send(statsObj);
 	}
 	else{
 		var statsObj = {};
 		statsObj.progress ="visited "+counter+" times ";
 	    statsObj.status=Greeting;
+	    statsObj.serverTime = Date.now();
+	    statsObj.browserTime = '';
 	    statsObj.explorer = urlExplorer.getStat();
 	    response.send(statsObj);
 	}

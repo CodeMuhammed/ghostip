@@ -391,17 +391,17 @@ module.exports = function(database){
                         else {  
                              Explorer.update(
                               {},
-                              {
+                              { 
                                  "$set": {
                                      accessingDomain:'',
                                      locked:false,
                                      urlsAvailable:true 
                                  }
-                              },
+                              }, 
                               function(err , result){
                                   if(err){
                                        throw new Error('Cron 2 error');
-                                  }
+                                  } 
                                   else {
                                       console.log('process successfully changed url status at cron job 2 update again in 1min 59sec');
                                   }  

@@ -126,6 +126,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
   })
   .success(function(data){
        $scope.statsObj = data;
+       $scope.statsObj.browserTime =Date.now();
   })
   .error(function(err){
         $scope.statsObj = err;

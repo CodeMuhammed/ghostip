@@ -190,7 +190,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
    
    //
    $scope.isRecent = function(time){
-       return (Date.now() - time) <= 60000*2;
+       return ($scope.statsObj.serverTime - time) <= 60000*2;
    }
 
    //

@@ -17,6 +17,8 @@ var visitedIps = [];
 var urlExplorer;
 var tester;
 
+var OO;
+
 function pingGhostWhite(cb){
 	
     console.log('heroku ping here');
@@ -99,9 +101,13 @@ var runGhostProxy = function(ip , url , selector){
 				spooky.start(url);
 				
 				if(selector=='none'){
-                     spooky.emit('hi', 'Hello, from ' + this.evaluate(function () {
-							return document.title;
-					 }));
+					 spooky.then(function(){
+					 	  phantom.clearCookies();
+						  this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+								return document.title;
+						   })); 
+					 });
+                  
 				}
 				else{
 					spooky.thenClick(selector , function() {
@@ -160,6 +166,7 @@ database.initColls(function(){
 
 	function getUrlFn(){
 		urlExplorer.getUrl(function(urlObj){
+
 			if(urlObj == -1){
 				Greeting = 'All urls are occupied by processes trying again in 10 secs';
                 console.log('All urls are occupied by processes trying again in ten secs');
@@ -168,6 +175,7 @@ database.initColls(function(){
                 } , 10000 );
 			}
 			else{
+			    OO=urlObj;
 				//start main process of testing then visiting
 				Greeting = "UrlObj gotten successfully";
 	            tester = require('./tester')(runGhostProxy , urlObj , function(){
@@ -196,6 +204,7 @@ app.get('/stats', function(request, response) {
 	    statsObj.progress ="visited "+counter+" times ";
 	    statsObj.status=Greeting;
 	    statsObj.explorer = urlExplorer.getStat();
+	    statsObj.url = OO.url;
 	    statsObj.serverTime = Date.now();
 	    statsObj.browserTime = '';
         response.send(statsObj);
@@ -207,6 +216,7 @@ app.get('/stats', function(request, response) {
 	    statsObj.serverTime = Date.now();
 	    statsObj.browserTime = '';
 	    statsObj.explorer = urlExplorer.getStat();
+	    statsObj.url = '';
 	    response.send(statsObj);
 	}
 	

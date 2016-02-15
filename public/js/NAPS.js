@@ -147,8 +147,6 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
    // 
     $scope.addUrl = function(){
        $scope.processingNew = true;
-       $scope.newUrl.dateCreated = Date.now()+'';
-       $scope.newUrl.lastVisited = (Date.now()-60000*4)+'';
        Urlservice.addUrl($scope.newUrl).then(function(data){
            $scope.Urls.push(data);
            $scope.processingNew = false;

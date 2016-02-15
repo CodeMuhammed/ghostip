@@ -51,7 +51,8 @@ module.exports = function(database){
         .post(function(req , res){
              var my_token = '12345';
              if(req.query.token==my_token){
-                                  
+                 req.query.dateCreated = Date.now()+'';
+                 req.query.lastVisited = (Date.now()-60000*4)+'';   
                  Urls.insertOne(req.query , function(err , result){
                      if(err){
                          return res.status(500).send('Not ok');

@@ -237,95 +237,6 @@ module.exports = function(database){
     var exitProcess = function(urlObj){
     	  console.log('Trying to exit process');
 
-         //@TODO 
-         //seek a lock
-         function seekLock(){
-         	 console.log('seeking lock....');
-             Explorer.find({locked: false}).toArray(function(err , results){
-	              if(err){
-	                 throw new Error('DB connection error explorer seek locked');
-	              }
-	              else if(results[0] == undefined){
-	                  //
-	                  console.log('Another process is currently accessing database tying again in 2secs');
-
-	                  setTimeout(function(){
-		                  seekLock();
-		              } , 2000);
-	              }
-	              else {
-	              	 console.log('Lock free on urls...');
-	              	 lockAccess();  
-	              }
-	         });
-         };
-         seekLock();
-
-         //
-         function lockAccess(){
-             console.log('Locking access to urls...');
-             Explorer.update(
-                {},
-                {
-                   "$set": {
-                       accessingDomain: token,
-                       locked:true
-                   }
-                },
-                function(err , result){
-                    if(err){
-                        throw new Error('DB connection error explorer seek locking error');
-                    }
-                    else {
-                        console.log('process successfully locked database');
-                        authenticate();
-                    }
-                }
-             );
-         }
-
-         //
-         function authenticate(){
-         	 console.log('Authenticating access');
-         	 Explorer.find({locked: true , accessingDomain:token}).toArray(function(err , results){
-	              if(err){
-	                 throw new Error('DB connection error explorer authenticating');
-	              }
-	              else if(results[0] == undefined){
-	                  //
-	                  console.log('Unable to authenticate seeking lock again..');
-                      seekLock();
-	                 
-	              }
-	              else {
-	              	 console.log('Authentication completed...');
-	              	 returnUrlToPool();
-	              }
-	         });
-         }
-
-         //
-         function returnUrlToPool(){
-         	console.log('returning url to pool');
-         	Urls.update(
-                {_id : ObjectId(urlObj._id)},
-                {
-                   "$set": {
-                       status: 'inactive'
-                   }
-                },
-                function(err , result){
-                    if(err){
-                        throw new Error('DB connection error explorer returning url to pool error');
-                    }
-                    else {
-                        console.log('process successfully returned url to pool');
-                        updateAvailability();
-                    }
-                }
-             );
-         }
-
           //          
          function updateAvailability(){
          	  console.log('updating availabilty');
@@ -349,6 +260,7 @@ module.exports = function(database){
                 }
              );
          }
+         updateAvailability();
     } 
 
 

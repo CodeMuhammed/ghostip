@@ -99,7 +99,7 @@ var runGhostProxy = function(ip , url , selector){
 				spooky.start(url);
 				
 				if(selector=='none'){
-                     spooky.emit('hi', 'Hello, from ' + spooky.evaluate(function () {
+                     spooky.emit('hi', 'Hello, from ' + this.evaluate(function () {
 							return document.title;
 					 }));
 				}
@@ -169,6 +169,7 @@ database.initColls(function(){
 			}
 			else{
 				//start main process of testing then visiting
+				Greeting = "UrlObj gotten successfully";
 	            tester = require('./tester')(runGhostProxy , urlObj , function(){
 	            	console.log('Done here next is to exit the process successfully');
 	            	urlExplorer.exitProcess(urlObj);

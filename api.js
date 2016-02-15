@@ -61,7 +61,7 @@ module.exports = function(database){
                       req.query._id = result.ops[0]._id.toString();
                       updateAvailable(req.query);
                      }
-                 }); //
+                 }); 
 
                  //
                  function updateAvailable(data){

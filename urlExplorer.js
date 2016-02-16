@@ -120,22 +120,7 @@ module.exports = function(database){
 
          //      
          function releaseLock(urlObj){
-               urlObj.lastVisited = Date.now()+'';
-               Urls.update(
-                      {_id : ObjectId(urlObj._id)},  
-                      urlObj,
-                      function(err , result){  
-                          if(err){
-                              throw new Error('DB connection error release lock');
-                          }
-                          else { 
-                               
-                          }
-                      }
-                ); //
-
-
-
+              
                console.log('Releasing lock on database');
                  //release lock and return url back to main process
                  Explorer.update(
@@ -165,6 +150,7 @@ module.exports = function(database){
                                               throw new Error('DB connection error release lock');
                                           }
                                           else { 
+                                             stats="url gotten successfullly";
                                              cb(urlObj);
                                           }
                                       }

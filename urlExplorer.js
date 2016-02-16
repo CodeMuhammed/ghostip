@@ -120,35 +120,48 @@ module.exports = function(database){
 
          //      
          function releaseLock(urlObj){
-               console.log('Releasing lock on database');
-               //release lock and return url back to main process
-               Explorer.update(
-                {},
-                {
-                   "$set": {
-                       accessingDomain: '',
-                       locked:false,
-                       urlsAvailable:null
-                   }
-                },
-                function(err , result){
-                    if(err){
-                        throw new Error('DB connection error explorer lock releasing error 1');
-                    }
-                    else {
-                        stats = "Url object gotten";
-                        console.log('process successfully released lock on database');
-                        if(urlObj){
-                            global=urlObj;
-                            cb(urlObj);
-                        }
-                        else{
-                            stats = "No url ";
-                            cb(-1);
-                        }
-                        
-                    }
-                });
+               urlObj.lastVisited = Date.now()+'';
+               Urls.update(
+                      {_id : ObjectId(urlObj._id)},  
+                      urlObj,
+                      function(err , result){  
+                          if(err){
+                              throw new Error('DB connection error release lock');
+                          }
+                          else { 
+                                console.log('Releasing lock on database');
+                               //release lock and return url back to main process
+                               Explorer.update(
+                                {},
+                                {
+                                   "$set": {
+                                       accessingDomain: '',
+                                       locked:false,
+                                       urlsAvailable:null
+                                   }
+                                },
+                                function(err , result){
+                                    if(err){
+                                        throw new Error('DB connection error explorer lock releasing error 1');
+                                    }
+                                    else {
+                                        stats = "Url object gotten";
+                                        console.log('process successfully released lock on database');
+                                        if(urlObj){
+                                            global=urlObj;
+                                            cb(urlObj);
+                                        }
+                                        else{
+                                            stats = "No url ";
+                                            cb(-1);
+                                        }
+                                        
+                                    }
+                                });
+                          }
+                      }
+                ); 
+             
               
          }
     	

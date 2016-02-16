@@ -146,7 +146,7 @@ module.exports = function(database){
                         if(err){
                              throw new Error('Api reset error 2');
                         }
-                        else {
+                        else { //
                             res.status(200).send('Server successfully reset');
                         }  
                     });

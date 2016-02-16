@@ -102,12 +102,39 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
             return promise.promise;
             
        }
+       
+       //
+       function resetServer(token){
+            var promise = $q.defer();
+            if(token.length > 4){ 
+                $http({
+                    method:'POST',
+                    url:'/api/reset',
+                    params : {token:token}
+                })
+                .success(function(status){
+                   promise.resolve(status);
+                })
+                .error(function(err){
+                   promise.reject(err);
+                });
+            }
+            else{
+                promise.reject('Invalid token');
+            }
+            
+
+            return promise.promise;
+            
+       }
+
 
        return {
            addUrl:addUrl,
            updateUrl:updateUrl,
            removeUrl:removeUrl,
-           getAll:getAll
+           getAll:getAll,
+           resetServer:resetServer
        };
 })
 
@@ -186,6 +213,18 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
           $scope.processingDel = false;
           alert(err);
        }); 
+   }
+
+   //
+   $scope.resetServer = function(){
+       Urlservice.resetServer($scope.newUrl.token).then(
+           function(status){
+               alert(status);
+           },
+           function(err){
+               alert(err);
+           }
+       );
    }
    
    //

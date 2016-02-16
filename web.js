@@ -187,7 +187,7 @@ database.initColls(function(){
 		});
 	}
 	getUrlFn();
-	
+	 
 });
 
 
@@ -198,7 +198,7 @@ database.initColls(function(){
 //configure express static
 app.use(express.static(path.join(__dirname , 'public')));
 
-app.get('/stats', function(request, response) {
+app.get('/stats', function(req, res) {
 	if(tester){
         var statsObj = tester.getFound();
 	    statsObj.progress ="visited "+counter+" times ";
@@ -207,7 +207,7 @@ app.get('/stats', function(request, response) {
 	    statsObj.url = OO.url;
 	    statsObj.serverTime = Date.now();
 	    statsObj.browserTime = '';
-        response.send(statsObj);
+        res.send(statsObj);
 	}
 	else{
 		var statsObj = {};
@@ -217,7 +217,7 @@ app.get('/stats', function(request, response) {
 	    statsObj.browserTime = '';
 	    statsObj.explorer = urlExplorer.getStat();
 	    statsObj.url = '';
-	    response.send(statsObj);
+	    res.send(statsObj);
 	}
 	
 });
@@ -235,7 +235,7 @@ setTimeout(function(){
 		});
 	   
 	}
-	
+	  
 } , 60000*20);
 
 //

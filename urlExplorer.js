@@ -1,6 +1,7 @@
 var ObjectId = require('mongodb').ObjectId;
 var global;
 var stats= 'nothing yet from explorer';
+
 //generate a random 30 bits token that clearly identifies this process
 var token = '';
 
@@ -13,9 +14,7 @@ function generateRandomBitToken(){
 	 	return;
 	 }   
 }
-
 generateRandomBitToken();
-
 console.log(token);
   
 //
@@ -84,63 +83,19 @@ module.exports = function(database){
 	              }
 	              else if(results[0] == undefined){
 	                  //
-	                  console.log('Unable to authenticate checking lock again in 5');
-                      checkLock();
-	                 
+	                  console.log('Unable to authenticate checking lock again in 5secs');
+                    setTimeout(function(){
+                       checkLock();
+                    } , 5000); 
 	              }
 	              else {
 	              	 console.log('Authentication completed...');
-	              	 checkAvailableUrl()
+	              	 getAnyUrl(); 
 	              }
 	         });
          } 
 
-         // 
-         function checkAvailableUrl(){
-         	  console.log('checking availability of url');
-         	  Explorer.find({urlsAvailable: true }).toArray(function(err , results){
-	              if(err){
-	                 throw new Error('DB connection error explorer checking available urls');
-	              }
-	              else if(results[0] == undefined){
-	                  //
-                    stats = 'No urls';
-	                  console.log('No urls available');
-	                  releaseLock();
-	              }
-	              else {
-                   stats="Urls available";
-	              	 console.log('Urls are available');
-	              	 getAnyUrl();           
-	              }
-	         });
-         }
-              
-         //      
-         function releaseLock(){
-               console.log('Releasing lock on database');
-               //release lock and return url back to main process
-               Explorer.update(
-                {},
-                {
-                   "$set": {
-                       accessingDomain: '',
-                       locked:false
-                   }
-                },
-                function(err , result){
-                    if(err){
-                        throw new Error('DB connection error explorer lock releasing error 1');
-                    }
-                    else {
-                        console.log('process successfully released lock on database');
-                        cb(-1);
-                    }
-                }
-             );
-              
-         }
-
+        
          //
          function getAnyUrl(){ 
          	  console.log('getting url');
@@ -152,84 +107,49 @@ module.exports = function(database){
                      throw new Error('DB connection error explorer getting any urls');
                   }
                   else if(results[0] == undefined){  
-                     stats = 'Url available but last visited less than four mins ago ';
-                      console.log('Url available but last visited less than four mins ago retrying in 59secs');
-                      setTimeout(function(){
-                           getAnyUrl(); 
-                      } , 60000);
+                      stats = 'Url available but last visited less than four mins ago ';
+                      console.log('Url available but last visited less than four mins ago retrying in 10secs');
+                      releaseLock(results[0]);
                   }
-                  else {    
+                  else {     
                       console.log(results);
-                      updateAvailabilityStatus(results[0]);
-                  }
+                      releaseLock(results[0]); 
+                  } 
              });
          }
 
-         //
-         function updateAvailabilityStatus(urlObj){
-            //update this urls date, then check to see if another one has expired
-             console.log('updating availabilty');
-             Urls.update(
-                {_id : ObjectId(urlObj._id)},
-                {
-                    "$set":{
-                        lastVisited:Date.now()+''
-                    }
-                },
-                function(err , result){
-                    if(err){
-                        console.log(err);
-                        throw new Error('Not ok Update Availability status');
-                    }
-                    else {
-                         Urls.find({"lastVisited":{"$lte": (Date.now() - 60000*4)+''}}).toArray(function(err , results){
-                              if(err){
-                                 throw new Error('DB connection error explorer updating availability');
-                              }
-                              else if(results[0] == undefined){
-                                  setUrlAvailable(false , urlObj);
-                              }
-                              else {
-                                  setUrlAvailable(true , urlObj);  
-                              } 
-                         });   
-                    }
-                }
-             );
-
-
-         	  
-         	 
-         } 
-
-         // 
-         function setUrlAvailable(status , urlObj){  
-              if(status){
-                   console.log('===================================Urls are still available');   
-              }else{
-                   console.log('===================================urls are all occupied by processes');
-              }
-              //release lock and return url back to main process
+         //      
+         function releaseLock(urlObj){
+               console.log('Releasing lock on database');
+               //release lock and return url back to main process
                Explorer.update(
                 {},
                 {
                    "$set": {
                        accessingDomain: '',
                        locked:false,
-                       urlsAvailable:status
+                       urlsAvailable:null
                    }
                 },
                 function(err , result){
                     if(err){
-                        throw new Error('DB connection error explorer lock releasing error 2');
+                        throw new Error('DB connection error explorer lock releasing error 1');
                     }
                     else {
+                        stats = "Url object gotten";
                         console.log('process successfully released lock on database');
-                        global=urlObj;
-                        cb(urlObj);
-                    }    
-                } 
-             );
+                        if(urlObj){
+                            global=urlObj;
+                            cb(urlObj);
+                        }
+                        else{
+                            stats = "No url ";
+                            cb(-1);
+                        }
+                        
+                    }
+                });
+              
          }
     	
     };
@@ -246,7 +166,6 @@ module.exports = function(database){
                    "$set": {
                        accessingDomain: '',
                        locked:false,
-                       urlsAvailable:true
                    }
                 },
                 function(err , result){
@@ -282,47 +201,10 @@ module.exports = function(database){
                           throw new Error('DB connection error explorer changing url status at cron job');
                       }
                       else { 
-                          //@TODO check for and free urls that are dormant
-                          freeDormantUrls();
+                           console.log('process successfully changed url status at cron job 2 update again in 1min 59sec');
                       }
                   }
-            );
-
-            //
-            function freeDormantUrls(){
-                 
-                  Urls.find(  
-                       {"lastVisited":{"$lte":(Date.now() - 60000*4)+''}}  
-                  ).toArray(function(err , results){//get url that have not been updated in the past 4mins
-                        if(err){ 
-                           throw new Error('DB connection error explorer Free Domant Urls');
-                        }
-                        else if(results[0] == undefined){  
-                            console.log('process did not find any expired urls retrying cron in 1min 59sec');
-                        }
-                        else {  
-                             Explorer.update(
-                              {},
-                              { 
-                                 "$set": {
-                                     accessingDomain:'',
-                                     locked:false,
-                                     urlsAvailable:true 
-                                 }
-                              }, 
-                              function(err , result){
-                                  if(err){
-                                       throw new Error('Cron 2 error');
-                                  } 
-                                  else {
-                                      console.log('process successfully changed url status at cron job 2 update again in 1min 59sec');
-                                  }  
-                              }
-                           );
-                        }
-                   });
-
-            }
+            ); 
         }
            
          

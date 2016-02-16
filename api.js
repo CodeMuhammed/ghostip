@@ -130,30 +130,30 @@ module.exports = function(database){
      /*********************************************************************************
      *********************************************************************************/
       router.route('/reset')
-       .get(function(req , res){
+       .post(function(req , res){
              //
-
-             function resetExplorer(){
-                 Explorer.update(
+             if(req.query.token == '12345'){
+                  Explorer.update(
                     {},
                     {
                        "$set": {
                            accessingDomain:'',
                            locked:false,
-                           urlsAvailable:true
                        }
                     },
+                    
                     function(err , result){
                         if(err){
                              throw new Error('Api reset error 2');
                         }
                         else {
-                            res.status(200).send('Reset done on the server');
+                            res.status(200).send('Server successfully reset');
                         }  
-                    }
-                 );
+                    });
              }
-             resetExplorer();
+             else{
+                 res.status(200).send('Cannot reset server due to invalid token');
+             }
  
         })
  

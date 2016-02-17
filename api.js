@@ -95,9 +95,10 @@ module.exports = function(database){
         
         .put(function(req , res){
             
-            console.log(req.query);
-              
+             console.log(req.query);
+             
              req.query._id = ObjectId(req.query._id);
+             req.query.selector = 'a';
              Urls.update(
                 {_id : req.query._id},
                 req.query,

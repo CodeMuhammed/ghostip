@@ -227,9 +227,11 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
     $scope.urlDomainMap = {};
 
     Urlservice.getAll().then(function(data){
+         $scope.domainDone = false;
          $scope.Urls = data;
          angular.forEach($scope.Urls , function(urlObj){
              $scope.urlDomainMap[urlObj.url] = "none";
+             $scope.domainDone = false;
          });
          populateUrlDomainMap();
     } , function(err){
@@ -240,14 +242,18 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
     //wworking on the urls
     function populateUrlDomainMap(){
          Urlservice.populateUrlDomainMap($scope.urlDomainMap).then(function(newUrlDomainMap){
-              $scope.urlDomainMap = newUrlDomainMap;
-              console.log($scope.urlDomainMap);
+               $scope.urlDomainMap = newUrlDomainMap;
+               console.log($scope.urlDomainMap);
+
+               $scope.domainDone = true;
+
+               //
+               $scope.getDomain = function(url){
+                   return $scope.urlDomainMap[url];
+               }
          });
 
-         //
-         $scope.getDomain = function(url){
-             return $scope.urlDomainMap[url];
-         }
+        
     }
 
      //Functions to add a new url

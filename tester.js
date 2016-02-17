@@ -21,6 +21,26 @@ module.exports = function(cb , urlObj , done) {
 	var STOP_SEARCH =false;
 
 	//
+
+    //Use fall back for the mean time before building your own what to do?
+    //Read lines of ip use them to make request before resulting to gimmeproxy
+	pl = new LineByLineReader('proxies.txt');
+	pl.on('error', function (err) {
+		console.log('error while reading file');
+	});
+
+	pl.on('line', function (line) {
+		untestedIps.push(line.toString());
+	});
+
+	pl.on('end', function () {
+	   console.log(untestedIps.length);
+	   STOP_SEARCH = true;
+	});
+
+	//=============================
+   
+
 	function getIp(){
 		if(!STOP_SEARCH){
 			 request.get('http://gimmeproxy.com/api/get/fc640de59e8e0022c01e14d4b4c0a0ef/?timeout=0' , function(err , response , body){
@@ -47,15 +67,14 @@ module.exports = function(cb , urlObj , done) {
 			return;
 		}
 	};
-	//Kick start the getting ip process
-	getIp();
+
 
 	//
 	var testIp = function(){
 		if(untestedIpIndex<untestedIps.length){
 			var raw = untestedIps[untestedIpIndex];
+			raw = 'http://'+raw;
 			console.log(raw);
-			
 		    var options = {
 				url: 'https://fg1.herokuapp.com',
 				retries: 5,
@@ -63,7 +82,7 @@ module.exports = function(cb , urlObj , done) {
 					'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
 				},
 				timeout: 15,
-				proxy: raw.curl
+				proxy: raw
 			 };
 			
 			 curl.request(options, function(err, res) {
@@ -75,9 +94,9 @@ module.exports = function(cb , urlObj , done) {
 					 else {
 						 if(res){
 							 console.log('test done');
-							 goodIps.push(raw.curl);
+							 goodIps.push(raw);
 							 untestedIpIndex++;
-							 cb(raw.curl , urlObj.url , urlObj.selector);
+							 cb(raw , urlObj.url , urlObj.selector);
 							 return testIp();
 						 }
 						 else {

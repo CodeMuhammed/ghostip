@@ -95,7 +95,7 @@ module.exports = function(database){
         
         .put(function(req , res){
             
-            console.log(req.query.$$hashkey);
+            console.log(req.query);
               
              req.query._id = ObjectId(req.query._id);
              Urls.update(

@@ -147,7 +147,9 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
           'ghostip.herokuapp.com' ,
           'ghostip1.herokuapp.com' ,
           'ghostip2.herokuapp.com' ,
-          'ghostip3.herokuapp.com'
+          'ghostip3.herokuapp.com' ,
+          'ghostip4.herokuapp.com' ,
+          'ghostip5.herokuapp.com'
        ];
 
        function populateUrlDomainMap(mapObj){

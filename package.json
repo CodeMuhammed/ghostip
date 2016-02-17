@@ -9,7 +9,8 @@
     "line-by-line": "^0.1.4",
     "request": "^2.69.0",
     "mongodb": "^2.0.27",
-    "spooky": "^0.2.5"
+    "spooky": "^0.2.5",
+    "cors": "^2.7.1"
   },
   "engines": {
     "node": "0.10.x",

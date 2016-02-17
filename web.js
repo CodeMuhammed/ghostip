@@ -6,6 +6,11 @@ var express = require('express');
 var path = require('path');
 var LineByLineReader = require('line-by-line');
 var app = express();
+
+//cors 
+var cors  = require('cors');
+app.use(cors({credentials: true, origin: true}));
+
 var database = require('./database')('restapi' , app);
 
 var port = process.env.PORT || 5003;

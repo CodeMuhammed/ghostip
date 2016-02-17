@@ -232,9 +232,27 @@ module.exports = function(database){
        return stats;
   }
 
+  //
+  function updateGlobal(newGlobalObj){
+       console.log(newGlobalObj);
+       if(global){
+            if(newGlobalObj._id.toString() == ObjectId(global._id).toString()){
+                console.log('This one was tweaked');
+                global = newGlobalObj;
+            }
+            else{
+              console.log('not this one');
+            }
+       }
+       else{
+           console.log('just passing');
+       }
+  }
+
 	return{
 		getUrl : getUrl,
     getStat: getStat,
+    updateGlobal:updateGlobal,
 		exitProcess : exitProcess
   }
 

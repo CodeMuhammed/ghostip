@@ -5,7 +5,7 @@ var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 
 //api routes
-module.exports = function(database){
+module.exports = function(database , urlExplorer){
   //models
    var Urls = database.model('Urls');
    var Explorer = database.model('Explorer');
@@ -91,14 +91,13 @@ module.exports = function(database){
                 return res.status(500).send('invalid bitcoin address');
              }
              
-        })
+        }) 
         
         .put(function(req , res){
-            
-             console.log(req.query);
-             
+                 
              req.query._id = ObjectId(req.query._id);
-             req.query.selector = 'a';
+             console.log(req.query._id);
+             //req.query.selector = 'any';
              Urls.update(
                 {_id : req.query._id},
                 req.query,
@@ -108,10 +107,11 @@ module.exports = function(database){
                         res.status(500).send('Not ok Url was not updated');
                     }
                     else {
+                       urlExplorer.updateGlobal(req.query);
                        res.status(200).send('update Url recieved on the server');
-                    }
+                    }  
                 }
-             );
+             );   
         })
 
         .delete(function(req , res){

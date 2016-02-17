@@ -141,6 +141,9 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        //
        var domains = [
           'localhost:5003' , 
+          'localhost:5004' ,
+          'localhost:5005' ,
+          'localhost:5006' ,
           'ghostip.herokuapp.com' ,
           'ghostip1.herokuapp.com' ,
           'ghostip2.herokuapp.com' ,
@@ -225,7 +228,6 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
     Urlservice.getAll().then(function(data){
          $scope.Urls = data;
-         console.log($scope.Urls);
          angular.forEach($scope.Urls , function(urlObj){
              $scope.urlDomainMap[urlObj.url] = "none";
          });

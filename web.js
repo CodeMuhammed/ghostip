@@ -5,9 +5,9 @@ var request = require('request');
 var express = require('express');
 var path = require('path');
 var LineByLineReader = require('line-by-line');
-var app = express();
-
-//cors 
+var app = express();     
+    
+//cors  
 var cors  = require('cors');
 app.use(cors({credentials: true, origin: true}));
 
@@ -163,11 +163,11 @@ var runGhostProxy = function(ip , url , selector){
 //init database get the urls specific to this session then run pingGhostWhite and testers
 database.initColls(function(){
 	 
-	//api routes starts here
-	app.use('/api' , require('./api')(database));
-
 	//initialize  url explorer
 	urlExplorer  = require('./urlExplorer')(database , runGhostProxy);
+
+	//api routes starts here
+	app.use('/api' , require('./api')(database , urlExplorer));
 
 	function getUrlFn(){
 		urlExplorer.getUrl(function(urlObj){

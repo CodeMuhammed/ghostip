@@ -225,6 +225,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
     Urlservice.getAll().then(function(data){
          $scope.Urls = data;
+         console.log(Urls);
          angular.forEach($scope.Urls , function(urlObj){
              $scope.urlDomainMap[urlObj.url] = "none";
          });

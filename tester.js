@@ -73,7 +73,6 @@ module.exports = function(cb , urlObj , done) {
 	var testIp = function(){
 		if(untestedIpIndex<untestedIps.length){
 			var raw = untestedIps[untestedIpIndex];
-			raw = 'http://'+raw;
 			console.log(raw);
 		    var options = {
 				url: 'https://fg1.herokuapp.com',

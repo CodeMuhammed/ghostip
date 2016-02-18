@@ -24,6 +24,7 @@ var tester;
 
 var OO;
 
+//
 function pingGhostWhite(cb){
 	
     console.log('heroku ping here');
@@ -105,36 +106,31 @@ var runGhostProxy = function(ip , url , selector){
 				console.log('here init 00000000000000000000000000000000000 '+url+' '+selector);
 
 				//
-				    
-					//
-					spooky.start(url);
-					  
-					//
-					if(selector=='none'){
-						 spooky.then(function(){
-						 	  phantom.clearCookies();
-							  this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-									return document.title;
-							   })); 
-						 });
-	                  
-					}
-					else{
-					   spooky.waitForSelector(selector, function() {
-							    this.thenClick(selector , function() {
-								phantom.clearCookies();
-								this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-									return document.title;
-								}));
-							});
-					   } , function(){
-					   	   this.emit('hi' , 'timeout');
-					   } , 15000);
-					}
-					
-					
-				spooky.run();
-					
+				spooky.start(url);
+				  
+				//
+				if(selector=='none'){
+					 spooky.then(function(){
+					 	  phantom.clearCookies();
+						  this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+								return document.title;
+						   })); 
+					 });
+                  
+				}
+				else{ 
+				  spooky.wait(10000 , function(){
+				  	    this.thenClick(selector , function() {
+							phantom.clearCookies();
+							this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+								return document.title;
+							}));
+					    });
+				  });
+				 
+				}
+
+				spooky.run();	
 			});
 			
 			// logs and listeners

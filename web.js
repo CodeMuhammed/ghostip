@@ -120,7 +120,7 @@ var runGhostProxy = function(ip , url , selector){
 	                  
 					}
 					else{
-					   spooky.waitUntilVisible(selector, function() {
+					   spooky.waitForSelector(selector, function() {
 							    this.thenClick(selector , function() {
 								phantom.clearCookies();
 								this.emit('hi', 'Hello, from ' + this.evaluate(function () {

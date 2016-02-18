@@ -103,27 +103,34 @@ var runGhostProxy = function(ip , url , selector){
 				
 				//start the main site visiting process
 				console.log('here init 00000000000000000000000000000000000 '+url+' '+selector);
-				spooky.start(url);
-				
-				if(selector=='none'){
-					 spooky.then(function(){
-					 	  phantom.clearCookies();
-						  this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-								return document.title;
-						   })); 
-					 });
-                  
-				}
-				else{
-					spooky.thenClick(selector , function() {
-						phantom.clearCookies();
-						this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-							return document.title;
-						})); 
-					   
-					});
-				}
-				
+
+				//
+				    
+					//
+					spooky.start(url);
+					  
+					//
+					if(selector=='none'){
+						 spooky.then(function(){
+						 	  phantom.clearCookies();
+							  this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+									return document.title;
+							   })); 
+						 });
+	                  
+					}
+					else{
+					   spooky.waitUntilVisible(selector, function() {
+							    this.thenClick(selector , function() {
+								phantom.clearCookies();
+								this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+									return document.title;
+								}));
+							});
+					   } , function(){
+					   	   this.emit('hi' , 'timeout');
+					   } , 15000);
+					}
 					
 					
 				spooky.run();

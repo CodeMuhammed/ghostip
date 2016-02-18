@@ -24,7 +24,7 @@ module.exports = function(cb , urlObj , done) {
 
     //Use fall back for the mean time before building your own what to do?
     //Read lines of ip use them to make request before resulting to gimmeproxy
-	pl = new LineByLineReader('proxies.txt');
+	/*pl = new LineByLineReader('proxies.txt');
 	pl.on('error', function (err) {
 		console.log('error while reading file');
 	});
@@ -36,14 +36,14 @@ module.exports = function(cb , urlObj , done) {
 	pl.on('end', function () {
 	   console.log(untestedIps.length);
 	   STOP_SEARCH = true;
-	});
+	});*/
 
 	//=============================
    
 
 	function getIp(){
 		if(!STOP_SEARCH){
-			 request.get('http://gimmeproxy.com/api/get/fc640de59e8e0022c01e14d4b4c0a0ef/?timeout=0' , function(err , response , body){
+			 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
 				 if(err){
 					 //console.log('cannot get ip address'); 
 					 getIp();
@@ -52,12 +52,23 @@ module.exports = function(cb , urlObj , done) {
 					 if(untestedIps.length > 2500){
 						 STOP_SEARCH = true;
 					 }
-					
-					 var rawIp = JSON.parse(body);
-					 untestedIps.push(rawIp);   
-					 setTimeout(function(){
-					 	getIp();
-					 } ,500)
+				     
+	                 try {
+						 var rawIp = JSON.parse(body);
+						 untestedIps.push(rawIp.curl);   
+						 setTimeout(function(){
+						 	getIp();
+						 } ,500)
+					 } 
+					 catch (err) {
+						  // Handle the error here.
+						   console.log(err+' =============================================================here');
+						   setTimeout(function(){
+						 	  getIp();
+						   } ,500)
+					 }
+
+					 
 					 
 				 }
 			 });
@@ -67,7 +78,7 @@ module.exports = function(cb , urlObj , done) {
 			return;
 		}
 	};
-
+    getIp();
 
 	//
 	var testIp = function(){

@@ -140,15 +140,12 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
        //
        var domains = [
-          'localhost:5003' , 
-          'localhost:5004' ,
-          'localhost:5005' ,
-          'localhost:5006' ,
-          'ghostip.herokuapp.com' ,
-          'ghostip1.herokuapp.com' ,
-          'ghostip2.herokuapp.com' ,
-          'ghostip3.herokuapp.com' ,
-          'ghostip4.herokuapp.com' ,
+          'localhost:5003', 
+          'ghostip.herokuapp.com',
+          'ghostip1.herokuapp.com',
+          'ghostip2.herokuapp.com',
+          'ghostip3.herokuapp.com',
+          'ghostip4.herokuapp.com',
           'ghostip5.herokuapp.com'//
        ];
 

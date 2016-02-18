@@ -78,14 +78,14 @@ var runGhostProxy = function(ip , url , selector){
 	}
 	else{
 		console.log('this ip has been visited already');
-		return ;//runGhostProxy(url);
+		return ;
 	}
 	
 	function continueT(ip){
 	
 		console.log('process starting '+ip+' '+url+' '+selector);
-		var spooky = new Spooky(
-			 {
+		
+		var spooky = new Spooky({
 				child: {
 					transport: 'http',
 					proxy: ip

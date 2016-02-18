@@ -150,7 +150,7 @@
 	 	 	      	   	  	   {{url.domain}}
 	 	 	      	   	  </span>
 	 	 	      	   	   <span ng-show="urlDomainMap[url.url] != 'none' && domainDone">
-	 	 	      	   	       {{getDomain(url.url)}}
+	 	 	      	   	       <a ng-href="{{getDomain(url.url)}}">{{getDomain(url.url)}}</a>
 	 	 	      	   	  </span>
 	 	 	      	   	 
 	 	 	      	   	</td>

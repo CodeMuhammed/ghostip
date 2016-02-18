@@ -100,7 +100,7 @@ var runGhostProxy = function(ip , url , selector){
 					e = new Error('Failed to initialize SpookyJS');
 					e.details = err;
 					throw e;
-				 }
+				 } 
 				
 				//start the main site visiting process
 				console.log('here init 00000000000000000000000000000000000 '+url+' '+selector);
@@ -119,15 +119,13 @@ var runGhostProxy = function(ip , url , selector){
                   
 				}
 				else{ 
-				  spooky.wait(10000 , function(){
-				  	    this.thenClick(selector , function() {
-							phantom.clearCookies();
-							this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-								return document.title;
-							}));
-					    });
-				  });
-				 
+				   spooky.thenClick(selector , function() {
+						phantom.clearCookies();
+						this.emit('hi', 'Hello, from ' + this.evaluate(function () {
+							return document.title;
+						}));
+				    });  
+				  //
 				}
 
 				spooky.run();	

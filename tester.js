@@ -56,7 +56,7 @@ module.exports = function(cb , urlObj , done) {
 	                 try {
 						 var rawIp = JSON.parse(body);
 						 if(rawIp.curl.indexOf('socks')<0){
-						 	 untestedIps.push(rawIp.curl);
+						 	 untestedIps.push('http://'+rawIp.ip);
 						 }
 						    
 						 setTimeout(function(){

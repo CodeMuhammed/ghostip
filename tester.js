@@ -70,8 +70,6 @@ module.exports = function(cb , urlObj , done) {
 						 	  getIp();
 						   } ,500)
 					 }
-
-					 
 					 
 				 }
 			 });

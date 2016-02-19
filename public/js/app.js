@@ -141,14 +141,15 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        //
        var domains = [
           'localhost:5003', 
-          'ghostip.herokuapp.com',
+          'ghostip.herokuapp.com' ,
           'ghostip1.herokuapp.com',
           'ghostip2.herokuapp.com',
           'ghostip3.herokuapp.com',
           'ghostip4.herokuapp.com',
           'ghostip5.herokuapp.com',
           'ghostip6.herokuapp.com',
-          'ghostip7.herokuapp.com'
+          'ghostip7.herokuapp.com', 
+          'ghostip8.herokuapp.com'
        ];
 
        function populateUrlDomainMap(mapObj){

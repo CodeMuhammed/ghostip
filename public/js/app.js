@@ -55,7 +55,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        }
 
         //
-       function updateUrl(O){
+       function updateUrl(O , token){
             var promise = $q.defer();
             var o = angular.copy(O);
             console.log(o);
@@ -63,7 +63,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
            //
            $http({
                method:'PUT',
-               url:'/api/urls/'+o._id,
+               url:'/api/urls/'+token,
                params:o
            })
            .success(function(status){
@@ -77,12 +77,13 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        }
 
         //
-       function removeUrl(UrlObj){
+       function removeUrl(UrlObj , token){
            var promise = $q.defer();
            //
            $http({
                method:'DELETE',
-               url:'/api/urls/'+UrlObj._id,
+               url:'/api/urls/'+UrlObj._id , 
+               params:{token:token}
            })
            .success(function(status){
                promise.resolve(status);
@@ -231,6 +232,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
     Urlservice.getAll().then(function(data){
          $scope.domainDone = false;
          $scope.Urls = data;
+         computeCategories();
          angular.forEach($scope.Urls , function(urlObj){
              $scope.urlDomainMap[urlObj.url] = "none";
              $scope.domainDone = false;
@@ -276,6 +278,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
          Urlservice.addUrl($scope.newUrl).then(function(data){
              $scope.Urls.push(data);
              $scope.processingNew = false;
+             computeCategories();
          } , function(err){
             $scope.processingNew = false; 
             alert(err); 
@@ -285,9 +288,10 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
      //
      $scope.saveUrl = function(urlObj , index){
          $scope.processing= true;
-         Urlservice.updateUrl(urlObj).then(function(status){
+         Urlservice.updateUrl(urlObj , $scope.newUrl.token).then(function(status){
               $scope.processing = false;
               $scope.resetEditorSettings(false , index);
+              computeCategories();
               console.log(status);
          },
          function(err){
@@ -299,7 +303,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
      //
      $scope.deleteUrl = function(urlObj){
          $scope.processingDel = true;
-         Urlservice.removeUrl(urlObj).then(function(status){
+         Urlservice.removeUrl(urlObj , $scope.newUrl.token).then(function(status){
              $scope.processingDel = false;
               //
               Urlservice.getAll().then(function(data){
@@ -316,14 +320,14 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
      //
      $scope.resetServer = function(){
-         Urlservice.resetServer($scope.newUrl.token).then(
+        /* Urlservice.resetServer($scope.newUrl.token).then(
              function(status){
                  alert(status);
              },
              function(err){
                  alert(err);
              }
-         );
+         );*/
      }
      
      //
@@ -344,10 +348,18 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
 
      //
-     $scope.categories = ['All selectors' ,'[value=cr]', 'a#skip' , '[value=skip]'];
+     $scope.categories = ['All'];
+     function computeCategories(){
+         angular.forEach($scope.Urls , function(url){
+             if($scope.categories.indexOf(url.selector)<0){
+                 $scope.categories.push(url.selector);
+             }
+         });
+     }
+
      $scope.activeCategory = '';
      $scope.setCategory = function(category){
-         category=category=='All selectors'?'':category;
+         category=category=='All'?'':category;
          $scope.activeCategory = category;
      };
       

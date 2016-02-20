@@ -49,8 +49,7 @@ module.exports = function(database , urlExplorer){
         })
 
         .post(function(req , res){
-             var my_token = '12345';
-             if(req.query.token==my_token){
+             if(req.query.token=='12345'){
                  req.query.dateCreated = Date.now()+'';
                  req.query.lastVisited = (Date.now()-60000*4)+'';   
                  Urls.insertOne(req.query , function(err , result){
@@ -94,37 +93,48 @@ module.exports = function(database , urlExplorer){
         }) 
         
         .put(function(req , res){
-                 
-             req.query._id = ObjectId(req.query._id);
-             console.log(req.query._id);
-             //req.query.selector = 'any';
-             Urls.update(
-                {_id : req.query._id},
-                req.query,
-                function(err , result){
-                    if(err){
-                        console.log(err);
-                        res.status(500).send('Not ok Url was not updated');
+             if(req.id == '12345'){
+                 req.query._id = ObjectId(req.query._id);
+                 console.log(req.id);
+                 //req.query.selector = 'any';
+                 Urls.update(
+                    {_id : req.query._id},
+                    req.query,
+                    function(err , result){
+                        if(err){
+                            console.log(err);
+                            res.status(500).send('Not ok Url was not updated');
+                        }
+                        else {
+                           urlExplorer.updateGlobal(req.query);
+                           res.status(200).send('update Url recieved on the server');
+                        }  
                     }
-                    else {
-                       urlExplorer.updateGlobal(req.query);
-                       res.status(200).send('update Url recieved on the server');
-                    }  
-                }
-             );    
+                 );
+             }
+             else{
+                    res.status(500).send('Cannot update url due to invalid token');
+             }
+             
         })
 
         .delete(function(req , res){
         	    //@TODO delete url
-                console.log('Delete called');
-            	Urls.remove({_id : ObjectId(req.id)} , function(err , result){
-                     if(err){
-                         res.status(500).send('Not ok url was not removed');
-                     }
-                     else{
-                         res.status(200).send('url removed successfully');
-                     }
-            	});
+                console.log(req.query);
+                if(req.query.token == '12345'){
+                     Urls.remove({_id : ObjectId(req.id)} , function(err , result){
+                         if(err){
+                             res.status(500).send('Not ok url was not removed');
+                         }
+                         else{
+                             res.status(200).send('url removed successfully');
+                         }
+                     });
+                }
+                else{
+                    res.status(500).send('Cannot delete url due to invalid token');
+                }
+            	
 
         });
 
@@ -153,7 +163,7 @@ module.exports = function(database , urlExplorer){
                     });
              }
              else{
-                 res.status(200).send('Cannot reset server due to invalid token');
+                 res.status(500).send('Cannot reset server due to invalid token');
              }
  
         })

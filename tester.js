@@ -55,7 +55,8 @@ module.exports = function(cb , urlObj , done) {
 				     
 	                 try {
 						 var rawIp = JSON.parse(body);
-						 if(rawIp.curl.indexOf('socks')<0){
+						 //only http proxies allowed
+						 if(rawIp.curl.indexOf('socks')<0 && rawIp.curl.indexOf('https')<0){
 						 	 untestedIps.push('http://'+rawIp.ip);
 						 }
 						    

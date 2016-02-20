@@ -15,7 +15,7 @@ app.use(cors({credentials: true, origin: true}));
 var database = require('./database')('restapi' , app);
 
 var port = process.env.PORT || 5003;
-
+//
 var Greeting = 'Hello ghost';
 var counter = 0;
 var herokuAppsUrls = [];
@@ -27,7 +27,7 @@ var OO;
 
 //
 function pingGhostWhite(cb){
-	
+	//
     console.log('heroku ping here');
     //Read lines of ip use them to make request before resulting to gimmeproxy
 	ha = new LineByLineReader('herokuapps.txt');

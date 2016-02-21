@@ -32,7 +32,7 @@
 	 <span class="pull-right hidden-xs" style="display:inline-block; padding:1.5em 2em">
 	 	  
 	 	  <a class="btn btn-lg navbar-btn btn-warning" ng-click="resetServer()">
-	 	  	   Reset Server
+	 	  	   Get Started
 	 	  </a>
 	 </span>
 	 
@@ -45,7 +45,7 @@
 	 <span>Blog</span>
 	 <span class="pull-right hidden-xs" style="display:inline-block; padding:.3em 2em" ng-show="fixed">
 	 	   <a class="btn btn-lg navbar-btn btn-warning" ng-click="resetServer()">
-	 	  	   Reset Server
+	 	  	   Get Started
 	 	  </a>
 	 </span>
 </div>
@@ -59,7 +59,7 @@
 	  <div class="col-sm-8 col-sm-offset-2" style="margin-bottom:3em">
 	  	    <div class="input-group">
 				  <input class="form-control input-tag" type="text" list="tags" placeholder="Enter your Url here" ng-model="newUrl.url" style="border-radius:0;width:70%; height:4em" >
-				  <input class="form-control input-tag" type="text" list="tags" placeholder="Bitcoin Address" ng-model="newUrl.token" style="border-radius:0;width:30%; height:4em" >
+				  <input class="form-control input-tag" type="password" list="tags" placeholder="Bitcoin Address" ng-model="newUrl.token" style="border-radius:0;width:30%; height:4em" >
 				  
 				  <span class="input-group-addon" style="background-color:#fff; padding-left:1em; padding-right:1em; border-radius:0;height:4em">
 				  <button class="btn btn-primary" ng-click="addUrl()" ng-disabled="processingNew">
@@ -105,107 +105,73 @@
 	               <i class="fa fa-search" style="font-size:2em"></i>
 	          </span>
         </div>
-        <div class="input-group" style="padding:0; margin-bottom:.8em; width:100%" ng-repeat="category in categories" ng-click="setCategory(category)">
-	         
-	          <span class="form-control" style="border-radius: 0px !important; height:3em; font-size:1.3em; font-weight:bold;padding-top:.7em; width:100%" placeholder="Filter by Address">
-	          	<span style="padding-top:.3em;">{{category}}</span> 
-	          	<i class="icon fa fa-check-circle pull-right" style="font-size:1.6em; color:{{category==activeCategory || activeCategory=='' && $index==0 ? 'green' : '#ccc'}}"></i>
-	          </span>
+        <div class="" style="padding:0em; margin-bottom:3em; background-color:#038FCA">
+        	<div style="padding:.4em .7em; background: url('/img/splint.png') center center no-repeat; background-size:cover;">
+        		<h4 style="color:#fff">Selector Filter</h4>
+        	</div>
+        	 
+	        <div class="input-group" style="padding:.3em .8em; margin-bottom:.8em; width:100%" ng-repeat="category in categories" ng-click="setCategory(category)">
+		         
+		          <span class="form-control" style="border-radius: 0px !important; height:2em; font-size:1.1em; font-weight:bold;padding-top:.4em; width:100%" placeholder="Filter by Address">
+		          	<span style="padding-top:.3em;">{{category}}</span> 
+		          	<i class="icon fa fa-check-circle pull-right" style="font-size:1.3em; color:{{category==activeCategory || activeCategory=='' && $index==0 ? 'green' : '#ccc'}}"></i>
+		          </span>
+	        </div>
+        </div>
+        
+        
+        <div class="" style="padding:0em; background-color:#038FCA">
+        	<div style="padding:.4em .7em; background: url('/img/splint.png') center center no-repeat; background-size:cover;">
+        		 <h4 style="color:#fff">State Filter</h4>
+        	</div>
+        	 
+	        <div class="input-group" style="padding:.3em .8em; margin-bottom:.8em; width:100%" ng-repeat="state in states" ng-click="setState(state)">
+		        <span class="form-control" style="border-radius: 0px !important; height:2em; font-size:1.1em; font-weight:bold;padding-top:.4em; width:100%" placeholder="Filter by Address">
+		          	<span style="padding-top:.3em;">{{state}}</span> 
+		          	<i class="icon fa fa-check-circle pull-right" style="font-size:1.3em; color:{{state==activeState || activeState=='' && $index==0 ? 'green' : '#ccc'}}"></i>
+	            </span>
+	        </div>
         </div>
        
 	 </div>
 	 
-	 <div class="col-xs-12 col-md-9 alert alert-info" style="margin-top:2.5em; margin-bottom:1em; border-radius:0">
-	 	  {{statsObj}}<br>
-	 	  Server time: {{statsObj.serverTime |date:"medium"}}<br>
-	 	  Browser time: {{statsObj.browserTime |date:"medium"}}<br>
-	 </div>
-	 <div class="col-xs-12 col-md-9" style="background-color:#green; padding:0; padding-top:.5em">
-	 	 <table class="table table-striped">
-	 	 	  <t-head>
-	 	 	      <tr>
-	 	 	      	   <th>Url</th>
-	 	 	      	   <th>Domain</th>
-	 	 	      	   <th>Selector</th>
-	 	 	      	   <th>Created</th>
-	 	 	      	   <th>Last active</th>
-	 	 	      	   <th>Account</th>
-	 	 	      	   <th>Username</th>
-	 	 	      	   <th>Status</th>
-	 	 	      	   <th>Action</th>
-	 	 	      </tr>
-	 	 	 </t-head>
-	 	 	 <t-body>
-	 	 	  
-	 	 	    <tr ng-repeat="url in Urls | filter:{selector:activeCategory} | orderBy:'-date'" >
-	 	 	    	   <td ng-hide="editorSettings.status && $index==editorSettings.index"><a ng-href="{{url.url}}" style="text-decoration:none">{{url.url}}</a></td>
-	 	 	    	   <td ng-show="editorSettings.status && $index==editorSettings.index">
-	 	 	    	  	  <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.url">
-	 	 	    	   </td>
-	 	 	      	   <td ng-hide="editorSettings.status && $index==editorSettings.index">
-	 	 	      	   	  <span ng-show="urlDomainMap[url.url] == 'none' && !domainDone">
-	 	 	      	   	  	   loading...
-	 	 	      	   	  </span>
-	 	 	      	   	   <span ng-show="urlDomainMap[url.url] == 'none' && domainDone">
-	 	 	      	   	  	   {{url.domain}}
-	 	 	      	   	  </span>
-	 	 	      	   	   <span ng-show="urlDomainMap[url.url] != 'none' && domainDone">
-	 	 	      	   	       <a ng-href="{{getDomain(url.url)}}">{{getDomain(url.url)}}</a>
-	 	 	      	   	  </span>
-	 	 	      	   	 
-	 	 	      	   	</td>
-	 	 	      	    <td ng-show="editorSettings.status && $index==editorSettings.index">
-	 	 	    	  	  <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.domain">
-	 	 	    	   </td>
-	 	 	      	   <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.selector}}</td>
-	 	 	      	   <td ng-show="editorSettings.status && $index==editorSettings.index">
-	 	 	    	  	 <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.selector">
-	 	 	    	   </td>
-
-                       <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.dateCreated | date:"shortDate"}}</td>
-	 	 	      	   <td ng-show="editorSettings.status && $index==editorSettings.index">
-	 	 	    	  	 <input type="text" ng-disabled="true" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.dateCreated">
-	 	 	    	   </td>
-
-	 	 	    	   <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.lastVisited | date:"shortTime"}}</td>
-	 	 	      	   <td ng-show="editorSettings.status && $index==editorSettings.index">
-	 	 	    	  	 <input type="text" ng-disabled="true" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.lastVisited">
-	 	 	    	   </td>
-
-
-	 	 	      	   <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.account}}</td>
-	 	 	      	    <td ng-show="editorSettings.status && $index==editorSettings.index">
-	 	 	    	  	  <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.account">
-	 	 	    	   </td>
-	 	 	      	   <td ng-hide="editorSettings.status && $index==editorSettings.index">{{url.username}}</td>
-	 	 	      	    <td ng-show="editorSettings.status && $index==editorSettings.index">
-	 	 	    	  	 <input type="text" class="form-control" style="border-radius: 0px !important; height:1.9em;" placeholder="Url" ng-model="url.username">
-	 	 	    	   </td>
-	 	 	      	   <td>
-		 	 	      	   	<div style="margin-left:1em">
-		 	 	      	   		<i ng-show="isRecent(url.lastVisited)" style="color:green" class="icon fa fa-circle"></i>
-		 	 	      	   	    <i ng-hide="isRecent(url.lastVisited)" style="color:red" class="icon fa fa-circle"></i>
-		 	 	      	   	</div>
-	 	 	      	   </td>
-	 	 	      	    
-	 	 	      	   <td ng-hide="editorSettings.status && $index==editorSettings.index">
-	 	 	      	   	   <div class="btn-group">
-	 	 	      	   	   	    <button class="btn btn-danger btn-xs" ng-click="deleteUrl(url)">
-	 	 	      	   	   	    	<span ng-hide="processingDel && $index==editorSettings.index"><i class="icon fa fa-times"></i></span>
-	 	 	      	   	   	    	<i ng-show="processingDel && $index==editorSettings.index" class="icon fa fa-spinner fa-spin"></i>
-	 	 	      	   	   	    </button>
-	 	 	      	   	   	    <button class="btn btn-default btn-xs" ng-click="resetEditorSettings(true , $index)"><i class="icon fa fa-edit"></i></button>
-	 	 	      	   	   </div>
-	 	 	      	   </td>
-	 	 	      	   <td ng-show="editorSettings.status && $index==editorSettings.index">
-	 	 	      	   	   <div class="btn-group" style="margin-top:.22em">
-	 	 	      	   	   	    <button ng-hide="processing" class="btn btn-success btn-xs" ng-click="saveUrl(url , $index)">save</button>
-	 	 	      	   	   	    <i ng-show="processing" class="icon fa fa-spinner fa-spin"></i>
-	 	 	      	   	   </div>
-	 	 	      	   </td>
-	 	 	    </tr>
-	 	 	</t-body>
-	 	 </table>
+	 <div class="col-xs-12 col-md-9" style="background-color:#green; padding:2.5em 1em">
+	 	
+	    <div class="col-xs-12" ng-repeat="domainMap in domainMapArr | myfilter:activeCategory:activeState" style="border:1px solid #ccc; border-left:3px solid #038FCA; margin-bottom:1em; min-height:8em; position:relative" ng-mouseenter="activeHover = $index" ng-mouseleave="activeHover = -1">
+	    	<div class="" style="position:absolute; top:0; left:0; padding:.5em; background: url('/img/splint-inv.png') center center no-repeat; background-size:cover; width:9em"  ng-show="activeHover==$index && (domainMap.status=='Active' || domainMap.status=='Non Allocated') ">
+	    		 <i class="icon fa fa-trash" style="color:#fff; font-size:1.5em; margin-right:.3em" ng-click="deleteUrl(domainMap.urlObj)" ng-hide="processingDel"></i>
+	    		 <i class="icon fa fa-spinner fa-spin" style="color:#fff; font-size:1.5em; margin-right:.3em" ng-show="processingDel"></i>
+	    		 <i class="icon fa fa-edit" style="color:#fff; font-size:1.5em" ng-click="resetEditorSettings($index , domainMap.urlObj.url , domainMap.urlObj.selector)"></i>
+	    	</div>
+	 	 	<span>
+	 	 		<span ng-show="domainMap.status == 'Active' || domainMap.status == 'Dormant' || domainMap.status == 'Idle'">
+	 	 			<h4>{{domainMap.domain}} Stats</h4>
+		 	 		<span>{{domainMap.stats}}</span>
+		 	 		<hr>
+	 	 		</span>
+	 	 		<span ng-show="domainMap.status != 'Dormant'">
+		 	 		<h4>Url stats</h4>
+		 	 		<span style="margin-right:.5em">_id: {{domainMap.urlObj._id}}</span>
+		 	 		<span style="margin-right:.5em">Account: {{domainMap.urlObj.account}}</span>
+		 	 		<span style="margin-right:.5em">Date Created: {{domainMap.urlObj.dateCreated | date:'shortDate'}}</span>
+		 	 		<span style="margin-right:.5em">Last Visited: {{domainMap.urlObj.lastVisited | date:'shortTime'}}</span>
+		 	 		<span style="margin-right:.5em">Selector: {{domainMap.urlObj.selector}}</span>
+		 	 		<span style="margin-right:.5em">Url: {{domainMap.urlObj.url}}</span>
+		 	 		<span style="margin-right:.5em">User name: {{domainMap.urlObj.username}}</span>
+		 	 	</span>
+	 	 	</span>
+	 	 	<div class="input-group" style="margin-top:2em; margin-bottom:1em" ng-show="domainMap.status != 'Dormant' && $index == editorIndex">
+				  <input class="form-control input-tag" type="text" placeholder="Edit url here" ng-model="editorObj.url" style="border-radius:0;width:70%; height:3.3em" >
+				  <input class="form-control input-tag" type="text" placeholder="Enter selector here" ng-model="editorObj.selector" style="border-radius:0;width:30%; height:3.3em" >
+				  
+				  <span class="input-group-addon" style="background-color:#fff; padding-left:1em; padding-right:1em; border-radius:0;height:3.3em">
+					  <button class="btn btn-primary btn-sm" ng-click="saveUrl(domainMap.urlObj)" ng-disabled="processing">
+					  	  <i class="icon fa fa-plus" ng-hide="processing"></i>
+					  	  <i ng-show="processing" class="icon fa fa-spinner fa-spin"></i> save
+					  </button>
+				  </span>
+			 </div>
+	    </div>
 	 	 
 	 </div>
 </div>

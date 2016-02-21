@@ -95,7 +95,6 @@ module.exports = function(database , urlExplorer){
         .put(function(req , res){
              if(req.id == '12345'){
                  req.query._id = ObjectId(req.query._id);
-                 console.log(req.id);
                  //req.query.selector = 'any';
                  Urls.update(
                     {_id : req.query._id},
@@ -116,7 +115,7 @@ module.exports = function(database , urlExplorer){
                     res.status(500).send('Cannot update url due to invalid token');
              }
              
-        })
+        }) 
 
         .delete(function(req , res){
         	    //@TODO delete url

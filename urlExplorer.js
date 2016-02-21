@@ -201,7 +201,7 @@ module.exports = function(database){
 
 
 
-    //Keep the url updated by updating its laast visted status every 3 mins
+    //Keep the url updated by updating its last visted status every 2 mins
     setInterval(function(){
  
         if(!global){ 
@@ -234,7 +234,6 @@ module.exports = function(database){
 
   //
   function updateGlobal(newGlobalObj){
-       console.log(newGlobalObj);
        if(global){
             if(newGlobalObj._id.toString() == ObjectId(global._id).toString()){
                 console.log('This one was tweaked');
@@ -249,9 +248,15 @@ module.exports = function(database){
        }
   }
 
+  //
+  function getUrlObj(){
+      return global;
+  }
+
 	return{
 		getUrl : getUrl,
     getStat: getStat,
+    getUrlObj : getUrlObj,
     updateGlobal:updateGlobal,
 		exitProcess : exitProcess
   }

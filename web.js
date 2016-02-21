@@ -23,8 +23,6 @@ var visitedIps = [];
 var urlExplorer;
 var tester;
 
-var OO;
-
 //
 function pingGhostWhite(cb){
 	//
@@ -182,7 +180,6 @@ database.initColls(function(){
                 } , 10000 );
 			}
 			else{
-			    OO=urlObj;
 				//start main process of testing then visiting
 				Greeting = "UrlObj gotten successfully";
 	            tester = require('./tester')(runGhostProxy , urlObj , function(){
@@ -206,27 +203,23 @@ database.initColls(function(){
 app.use(express.static(path.join(__dirname , 'public')));
 
 app.get('/stats', function(req, res) {
-	if(tester){
-        var statsObj = tester.getFound();
+	if(true){
+		var data = {};
+	    var statsObj;
+	    var urlObj = urlExplorer.getUrlObj();
+
+		tester ?  statsObj = tester.getFound() : statsObj = {};
+        urlObj ? data.urlObj = urlObj : data.urlObj = {};
+
+		statsObj.explorer = urlExplorer.getStat();
 	    statsObj.progress ="visited "+counter+" times ";
 	    statsObj.status=Greeting;
-	    statsObj.explorer = urlExplorer.getStat();
-	    statsObj.url = OO.url;
 	    statsObj.serverTime = Date.now();
 	    statsObj.browserTime = '';
-        res.send(statsObj);
+
+	    data.statsObj = statsObj;
+	    res.send(data);
 	}
-	else{
-		var statsObj = {};
-		statsObj.progress ="visited "+counter+" times ";
-	    statsObj.status=Greeting;
-	    statsObj.serverTime = Date.now();
-	    statsObj.browserTime = '';
-	    statsObj.explorer = urlExplorer.getStat();
-	    statsObj.url = '';
-	    res.send(statsObj);
-	}
-	
 });
 
 

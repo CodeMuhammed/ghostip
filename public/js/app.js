@@ -32,6 +32,36 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
     }
 ])
 
+.filter("myfilter", function ($filter) {
+  return function (data, activeCategory, activeState) {
+      //console.log('category:'+activeCategory+' activeState:'+activeState);
+      var filtered = [];
+
+      angular.forEach(data , function(item){
+          var stateTest = item.status == activeState || activeState == '';
+          var categoryTest = false;
+          
+          //Test for category
+          if(activeState == 'Idle' || activeState == 'Dormant'){
+              var categoryTest = true;
+          }
+          else{
+              if(angular.isDefined(item.urlObj.selector)){
+                   categoryTest = item.urlObj.selector==activeCategory || activeCategory == '';
+              }
+          }
+          
+          
+          
+          if(stateTest && categoryTest){
+               filtered.push(item);
+          }
+      });
+      return filtered;
+  }
+})
+
+//======================================================FACTORY STARTS HERE
 .factory('Urlservice' , function($q , $http){
        
        //
@@ -56,22 +86,31 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
         //
        function updateUrl(O , token){
-            var promise = $q.defer();
-            var o = angular.copy(O);
-            console.log(o);
-            
+           var promise = $q.defer();
+        
            //
-           $http({
-               method:'PUT',
-               url:'/api/urls/'+token,
-               params:o
-           })
-           .success(function(status){
-               promise.resolve(status);
-           })
-           .error(function(err){
-               promise.reject(err);
-           });
+           if(token.length<5){
+              promise.reject('token not defined');
+           }
+           else{
+
+             var o = angular.copy(O);
+             console.log(o);
+              
+             //
+             $http({
+                 method:'PUT',
+                 url:'/api/urls/'+token,
+                 params:o
+             })
+             .success(function(status){
+                 promise.resolve(status);
+             })
+             .error(function(err){
+                 promise.reject(err);
+             });
+
+           }
            
            return promise.promise;
        }
@@ -80,18 +119,24 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        function removeUrl(UrlObj , token){
            var promise = $q.defer();
            //
-           $http({
-               method:'DELETE',
-               url:'/api/urls/'+UrlObj._id , 
-               params:{token:token}
-           })
-           .success(function(status){
-               promise.resolve(status);
-           })
-           .error(function(err){
-               promise.reject(err);
-           });
-           
+           if(!angular.isDefined(token)){
+              promise.reject('token not defined');
+           }
+           else{
+
+             $http({
+                 method:'DELETE',
+                 url:'/api/urls/'+UrlObj._id , 
+                 params:{token:token}
+             })
+             .success(function(status){
+                 promise.resolve(status);
+             })
+             .error(function(err){
+                 promise.reject(err);
+             });
+             
+           }
            return promise.promise;
        }
        
@@ -113,31 +158,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
             return promise.promise;
             
        }
-       
-       //
-       function resetServer(token){
-            var promise = $q.defer();
-            if(token.length > 4){ 
-                $http({
-                    method:'POST',
-                    url:'/api/reset',
-                    params : {token:token}
-                })
-                .success(function(status){
-                   promise.resolve(status);
-                })
-                .error(function(err){
-                   promise.reject(err);
-                });
-            }
-            else{
-                promise.reject('Invalid token');
-            }
-            
-
-            return promise.promise;
-            
-       }
+      
 
        //
        var domains = [
@@ -150,17 +171,21 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
           'ghostip5.herokuapp.com',
           'ghostip6.herokuapp.com',
           'ghostip7.herokuapp.com', 
-          'ghostip8.herokuapp.com'
+          'ghostip8.herokuapp.com',
+          'ghostip9.herokuapp.com',
+          'ghostip10.herokuapp.com'
        ];
 
-       function populateUrlDomainMap(mapObj){
-             console.log(mapObj);
+       function populateDomainMap(urlMapList){
+             var domainMapArr = []; 
              var promise = $q.defer();
              var counter = 0;
+             
+             console.log(urlMapList);
 
              function checkExit(){
                   if(counter == domains.length-1){
-                      return promise.resolve(mapObj);
+                      return aggregateNonAllocated();
                   }
                   else{
                       counter++;
@@ -174,26 +199,69 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
                          url:'http://'+domain+'/stats'
                     })
                     .success(function(data){
-                         if(data.url!=''){
-                            mapObj[data.url] = domain;
-                            mapObj.urlObj = data;
-                            checkExit();
+                         if(angular.isDefined(data.urlObj.url)){
+                             domainMapArr.push({
+                                domain:domain, 
+                                stats:data.statsObj, 
+                                urlObj:data.urlObj,
+                                status:'Active'     //process is actively handling a url
+                              });
+
+                             //remove the confirmed domain from the urlMapList
+                             console.log(data.urlObj.url);
+                             urlMapList[data.urlObj.url].splice(0 , 1);   
+
                          }
                          else{
-                             checkExit();
+                             domainMapArr.push({
+                                domain:domain, 
+                                stats:data.statsObj, 
+                                urlObj:data.urlObj,
+                                status:'Idle'    //Process is waiting for a non occupied url 
+                             });
                          }
+
+                         //
+                         checkExit();
                          
                     })
                     .error(function(err){
-                          checkExit();
+                         domainMapArr.push({
+                            domain:domain , 
+                            stats:{} , 
+                            urlObj:{},
+                            status:'Dormant'   //Process is offline due to error or change of protocol
+                         });
+                         checkExit();
                     });
              }
              //start the query process
              doQuery(domains[counter]);
 
+             //This functions filters out UrlOBjects that are curently  not allocated to a process
+             function aggregateNonAllocated() {
+                  console.log('computing non allocated urls');
+                  angular.forEach(Object.keys(urlMapList) , function(key){
+                       if(urlMapList[key].length>0){
+                           angular.forEach(urlMapList[key] , function(UMLObj){
+                                  domainMapArr.push({
+                                      domain:"no server", 
+                                      stats:{}, 
+                                      urlObj:UMLObj,
+                                      status:'Non Allocated'    //url not being processed at the moment 
+                                   });
+                           });
+                       }
+                       
+                  });
+
+                  //
+                  promise.resolve(domainMapArr);
+             }
+
 
              return promise.promise;
-       }
+       } 
 
 
        return {
@@ -201,65 +269,55 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
            updateUrl:updateUrl,
            removeUrl:removeUrl,
            getAll:getAll,
-           resetServer:resetServer,
-           populateUrlDomainMap:populateUrlDomainMap
+           populateDomainMap:populateDomainMap
        };
 })
+//======================================================FACTORY ENDS HERE
+
 
 
 //Controller controlling the logic of  the appication
 .controller ('homeController' , function($rootScope , $scope , $timeout  , $http, Urlservice){
-     //Stats for this particuar url to know if it is actively visiting a url or not
-    $http({
-         method:'GET',
-         url:'/stats'
-    })
-    .success(function(data){
-         $scope.statsObj = data;
-         $scope.statsObj.browserTime =Date.now();
-         //
-         $scope.isRecent = function(time){
-             return ($scope.statsObj.serverTime - time) <= 60000*2;
-         }
-    })
-    .error(function(err){
-          $scope.statsObj = err;
-    });
 
     //
-    $scope.urlDomainMap = {};
+    function startApp(){
+      Urlservice.getAll().then(function(data){
+           $scope.domainDone = false;
+           $scope.Urls = data;
+           computeCategories();
+           
+          //
+          computeUrlMapList();
 
-    Urlservice.getAll().then(function(data){
-         $scope.domainDone = false;
-         $scope.Urls = data;
-         computeCategories();
-         angular.forEach($scope.Urls , function(urlObj){
-             $scope.urlDomainMap[urlObj.url] = "none";
-             $scope.domainDone = false;
-         });
-         populateUrlDomainMap();
-    } , function(err){
-         alert(err);
-    });
-    
-    //this function populates the map with the active domain currently
-    //wworking on the urls
-    function populateUrlDomainMap(){
-         Urlservice.populateUrlDomainMap($scope.urlDomainMap).then(function(newUrlDomainMap){
-               $scope.urlDomainMap = newUrlDomainMap;
-               console.log($scope.urlDomainMap);
-
-               $scope.domainDone = true;
-
-               //
-               $scope.getDomain = function(url){
-                   return $scope.urlDomainMap[url];
-               }
-         });
-
-        
+      } , function(err){
+           alert(err);
+      });
     }
 
+    startApp();
+   /////////////////////////////
+    //
+    function computeUrlMapList(){
+         var urlMapList = {};
+         console.log($scope.Urls.length);
+         angular.forEach($scope.Urls , function(urlObj){
+              if(angular.isArray(urlMapList[urlObj.url])){
+                 urlMapList[urlObj.url].push(urlObj);
+              }
+              else {
+                urlMapList[urlObj.url] = [];
+                urlMapList[urlObj.url].push(urlObj);  
+              }
+
+         });
+
+         Urlservice.populateDomainMap(urlMapList).then(function(domainMapArr){
+             $scope.domainMapArr = domainMapArr;
+             console.log(domainMapArr);
+             $scope.domainDone = true;
+         });
+    }
+  
      //Functions to add a new url
      $scope.newUrl = {
          token:'',
@@ -276,9 +334,8 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
       $scope.addUrl = function(){
          $scope.processingNew = true;
          Urlservice.addUrl($scope.newUrl).then(function(data){
-             $scope.Urls.push(data);
              $scope.processingNew = false;
-             computeCategories();
+             startApp();
          } , function(err){
             $scope.processingNew = false; 
             alert(err); 
@@ -286,17 +343,20 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
      };     
 
      //
-     $scope.saveUrl = function(urlObj , index){
+     $scope.saveUrl = function(urlObj){
+
          $scope.processing= true;
+         urlObj.url = $scope.editorObj.url;
+         urlObj.selector = $scope.editorObj.selector;
          Urlservice.updateUrl(urlObj , $scope.newUrl.token).then(function(status){
               $scope.processing = false;
-              $scope.resetEditorSettings(false , index);
-              computeCategories();
-              console.log(status);
+              $scope.resetEditorSettings(-1);
+              $scope.editorObj = {};
+              startApp();
          },
          function(err){
               $scope.processing = false;
-              alert(err);
+              console.log(err);  
          });
      };
 
@@ -304,52 +364,33 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
      $scope.deleteUrl = function(urlObj){
          $scope.processingDel = true;
          Urlservice.removeUrl(urlObj , $scope.newUrl.token).then(function(status){
-             $scope.processingDel = false;
-              //
-              Urlservice.getAll().then(function(data){
-                   $scope.Urls = data;
-              } , function(err){
-                   alert(err);
-              });
+            $scope.processingDel = false;
+            startApp();
 
          } , function(err){
-            $scope.processingDel = false;
             alert(err);
-         }); 
+            $scope.processingDel = false;  
+            
+         });
      }
 
-     //
-     $scope.resetServer = function(){
-        /* Urlservice.resetServer($scope.newUrl.token).then(
-             function(status){
-                 alert(status);
-             },
-             function(err){
-                 alert(err);
-             }
-         );*/
-     }
      
      //
-     $scope.editorSettings = { 
-         status:false,
-         index:0
-     };    
+     $scope.editorIndex = -1;
+     $scope.editorObj = {url:'' , selector:''}
        
-     $scope.resetEditorSettings = function(status , index){
-          $scope.editorSettings = {
-               status:false,
-               index:0
-           }; 
-         console.log(status+' '+index);
-         $scope.editorSettings.status = status;
-         $scope.editorSettings.index = index; 
+     $scope.resetEditorSettings = function(index , url , selector){
+         $scope.editorObj.url = url;
+         $scope.editorObj.selector = selector
+         $scope.editorIndex = index;
      };
 
 
-     //
-     $scope.categories = ['All'];
+     
      function computeCategories(){
+         //
+         console.log($scope.Urls);
+         $scope.categories = ['All'];
          angular.forEach($scope.Urls , function(url){
              if($scope.categories.indexOf(url.selector)<0){
                  $scope.categories.push(url.selector);
@@ -362,7 +403,17 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
          category=category=='All'?'':category;
          $scope.activeCategory = category;
      };
-      
+
+     //
+     $scope.states = ['All' , 'Active' , 'Idle' , 'Dormant' , 'Non Allocated'];
+     $scope.activeState = '';
+     $scope.setState = function(state){
+         state=state=='All'?'':state;
+         $scope.activeState = state;
+     };
+    
+     //
+     $scope.activeHover = -1;
      //Scroll spy 
      $scope.fixed = false;
     

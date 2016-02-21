@@ -24,7 +24,7 @@ module.exports = function(cb , urlObj , done) {
 
     //Use fall back for the mean time before building your own what to do?
     //Read lines of ip use them to make request before resulting to gimmeproxy
-	pl = new LineByLineReader('proxies.txt');
+	/*pl = new LineByLineReader('proxies.txt');
 	pl.on('error', function (err) {
 		console.log('error while reading file');
 	});
@@ -36,7 +36,7 @@ module.exports = function(cb , urlObj , done) {
 	pl.on('end', function () {
 	   console.log(untestedIps.length);
 	   STOP_SEARCH = true;
-	});
+	});*/
 
 	//=================================
    
@@ -80,7 +80,7 @@ module.exports = function(cb , urlObj , done) {
 			return;
 		}
 	};
-    //getIp();
+    getIp();
 
 	//
 	var testIp = function(){

@@ -361,9 +361,9 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
      };
 
      //
-     $scope.deleteUrl = function(urlObj){
+     $scope.deleteUrl = function(domainMap){
          $scope.processingDel = true;
-         Urlservice.removeUrl(urlObj , $scope.newUrl.token).then(function(status){
+         Urlservice.removeUrl(domainMap , $scope.newUrl.token).then(function(status){
             $scope.processingDel = false;
             startApp();
 

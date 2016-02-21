@@ -24,19 +24,19 @@ module.exports = function(cb , urlObj , done) {
 
     //Use fall back for the mean time before building your own what to do?
     //Read lines of ip use them to make request before resulting to gimmeproxy
-	/*pl = new LineByLineReader('proxies.txt');
+	pl = new LineByLineReader('proxies.txt');
 	pl.on('error', function (err) {
 		console.log('error while reading file');
 	});
 
 	pl.on('line', function (line) {
-		untestedIps.push(line.toString());
+		untestedIps.push('http://'+line.toString());
 	});
 
 	pl.on('end', function () {
 	   console.log(untestedIps.length);
 	   STOP_SEARCH = true;
-	});*/
+	});
 
 	//=================================
    
@@ -80,7 +80,7 @@ module.exports = function(cb , urlObj , done) {
 			return;
 		}
 	};
-    getIp();
+    //getIp();
 
 	//
 	var testIp = function(){

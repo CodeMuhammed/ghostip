@@ -119,24 +119,33 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        function removeUrl(domainMap , token){
            var promise = $q.defer();
            //
-           if(!angular.isDefined(token)){
-              promise.reject('token not defined');
-           }
-           else{
-
-             $http({
-                 method:'DELETE',
-                 url:domainMap.domain+'/api/urls/'+domainMap.urlObj._id , 
-                 params:{token:token}
-             })
-             .success(function(status){
-                 promise.resolve(status);
-             })
-             .error(function(err){
-                 promise.reject(err);
-             });
-             
-           }
+            if(token){
+               if(!angular.isDefined(token)){
+                  promise.reject('token not defined');
+               }
+               else{
+                 var prefix = '';
+                 if(domainMap.domain != 'no server'){
+                     prefix = domainMap.domain;
+                     console.log(prefix);
+                 }
+                 $http({
+                     method:'DELETE',
+                     url:prefix+'/api/urls/'+domainMap.urlObj._id , 
+                     params:{token:token}
+                 })
+                 .success(function(status){
+                     promise.resolve(status);
+                 })
+                 .error(function(err){
+                     promise.reject(err);
+                 });
+                 
+               }
+             }
+             else{
+                promise.reject('token is undefined');
+             }
            return promise.promise;
        }
        
@@ -163,7 +172,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        //
        var domains = [
           'localhost:5003', 
-          'ghostip.herokuapp.com' ,
+          /*'ghostip.herokuapp.com' ,
           'ghostip1.herokuapp.com',
           'ghostip2.herokuapp.com',
           'ghostip3.herokuapp.com',
@@ -173,7 +182,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
           'ghostip7.herokuapp.com', 
           'ghostip8.herokuapp.com',
           'ghostip9.herokuapp.com',
-          'ghostip10.herokuapp.com'
+          'ghostip10.herokuapp.com'*/
        ];
 
        function populateDomainMap(urlMapList){
@@ -368,7 +377,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
             startApp();
 
          } , function(err){
-            alert(err);
+            console.log(err);
             $scope.processingDel = false;  
             
          });

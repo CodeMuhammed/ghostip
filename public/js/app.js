@@ -126,7 +126,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
              $http({
                  method:'DELETE',
-                 url:domainMap.domain+'/api/urls/'+domainMap.UrlObj._id , 
+                 url:domainMap.domain+'/api/urls/'+domainMap.urlObj._id , 
                  params:{token:token}
              })
              .success(function(status){

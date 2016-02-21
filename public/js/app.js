@@ -116,7 +116,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        }
 
         //
-       function removeUrl(UrlObj , token){
+       function removeUrl(domainMap , token){
            var promise = $q.defer();
            //
            if(!angular.isDefined(token)){
@@ -126,7 +126,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
              $http({
                  method:'DELETE',
-                 url:'/api/urls/'+UrlObj._id , 
+                 url:domainMap.domain+'/api/urls/'+domainMap.UrlObj._id , 
                  params:{token:token}
              })
              .success(function(status){

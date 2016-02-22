@@ -118,7 +118,7 @@ var runGhostProxy = function(ip , url , selector){
 							return go();
 						});
 						
-						this.waitForUrl('google.com' , function(){
+						this.waitForUrl('google' , function(){
 							phantom.clearCookies();
 							this.emit('hi' ,this.getCurrentUrl());
 						} , function(){} , 10000);

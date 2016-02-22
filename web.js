@@ -106,23 +106,39 @@ var runGhostProxy = function(ip , url , selector){
 
 				//
 				spooky.start(url);
-				  
-				//
-				if(selector=='none'){
+				 
+				//special case for credhot.com
+			    if(url.indexOf('crd.ht')>=0){
+                    console.log('cedhot starting here ');
+					spooky.then(function () {
+				        this.fillSelectors('form#form', {
+						  
+						}, false);
+						this.evaluate(function() {
+							return go();
+						});
+						
+						this.waitForUrl('google.com' , function(){
+							phantom.clearCookies();
+							this.emit('hi' ,this.getCurrentUrl());
+						} , function(){} , 10000);
+				    });
+				}
+
+				//Case for none selectors
+				else if(selector=='none'){
 					 spooky.then(function(){
 					 	  phantom.clearCookies();
-						  this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-								return document.title;
-						   })); 
+						  this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 					 });
                   
 				}
+				
+				//General case
 				else{ 
 				   spooky.thenClick(selector , function() {
 						phantom.clearCookies();
-						this.emit('hi', 'Hello, from ' + this.evaluate(function () {
-							return document.title;
-						}));
+						this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 				    });  
 				  //
 				}
@@ -132,7 +148,7 @@ var runGhostProxy = function(ip , url , selector){
 			
 			// logs and listeners
 			spooky.on('error', function (e, stack) {
-				console.log('here');
+				console.log('here');//
 				console.error(e);
 				Greeting = e;
 

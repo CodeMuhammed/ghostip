@@ -101,7 +101,7 @@ module.exports = function(database){
          	  console.log('getting url');
            
             Urls.find(  
-                 {"lastVisited":{"$lte": (Date.now() - 60000*6)+''}}  
+                 {"lastVisited":{"$lte": (Date.now() - 60000*4)+''}}  
             ).toArray(function(err , results){//get url that have not been updated in the past 4mins
                   if(err){ 
                      throw new Error('DB connection error explorer getting any urls');

@@ -186,7 +186,6 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        ];
 
        function populateDomainMap(urlMapList){
-             var domainMapArr = []; 
              var promise = $q.defer();
              var counter = 0;
              
@@ -209,7 +208,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
                     })
                     .success(function(data){
                          if(angular.isDefined(data.urlObj.url)){
-                             domainMapArr.push({
+                              promise.notify({
                                 domain:domain, 
                                 stats:data.statsObj, 
                                 urlObj:data.urlObj,
@@ -222,7 +221,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
                          }
                          else{
-                             domainMapArr.push({
+                              promise.notify({
                                 domain:domain, 
                                 stats:data.statsObj, 
                                 urlObj:data.urlObj,
@@ -235,7 +234,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
                          
                     })
                     .error(function(err){
-                         domainMapArr.push({
+                         promise.notify({
                             domain:domain , 
                             stats:{} , 
                             urlObj:{},
@@ -253,7 +252,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
                   angular.forEach(Object.keys(urlMapList) , function(key){
                        if(urlMapList[key].length>0){
                            angular.forEach(urlMapList[key] , function(UMLObj){
-                                  domainMapArr.push({
+                                   promise.notify({
                                       domain:"no server", 
                                       stats:{}, 
                                       urlObj:UMLObj,
@@ -265,7 +264,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
                   });
 
                   //
-                  promise.resolve(domainMapArr);
+                  promise.resolve('All Done asynchronously');
              }
 
 
@@ -290,8 +289,10 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
     //
     function startApp(){
+      $scope.domainMapArr = [];
+      $scope.domainDone = false;
+
       Urlservice.getAll().then(function(data){
-           $scope.domainDone = false;
            $scope.Urls = data;
            computeCategories();
            
@@ -320,10 +321,17 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
          });
 
-         Urlservice.populateDomainMap(urlMapList).then(function(domainMapArr){
-             $scope.domainMapArr = domainMapArr;
-             console.log(domainMapArr);
-             $scope.domainDone = true;
+         Urlservice.populateDomainMap(urlMapList).then(function(status){
+             console.log(status);
+             $timeout(function(){
+                  $scope.domainDone = true;
+             } , 3000);
+            
+         } , function(err){
+             alert(err);
+         } , function(notifyData){
+             $scope.domainMapArr.push(notifyData);
+             console.log(notifyData);
          });
     }
   

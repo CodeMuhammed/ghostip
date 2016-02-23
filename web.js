@@ -180,7 +180,7 @@ var runGhostProxy = function(ip , url , selector){
 database.initColls(function(){
 	 
 	//initialize  url explorer
-	urlExplorer  = require('./urlExplorer')(database , runGhostProxy);
+	urlExplorer  = require('./urlExplorer')(database);
 
 	//api routes starts here
 	app.use('/api' , require('./api')(database , urlExplorer));

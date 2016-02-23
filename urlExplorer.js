@@ -259,7 +259,7 @@ module.exports = function(database){
 
   //
   function getUrlObj(){
-      return global;
+      return global;//
   }
 
 	return{

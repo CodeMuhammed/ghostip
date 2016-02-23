@@ -233,11 +233,20 @@ module.exports = function(database){
   }
 
   //
-  function updateGlobal(newGlobalObj){
+  function updateGlobal(newGlobalObj , action){
+       console.log('this is '+newGlobalObj._id+' '+action);
        if(global){
             if(newGlobalObj._id.toString() == ObjectId(global._id).toString()){
-                console.log('This one was tweaked');
-                global = newGlobalObj;
+                
+                if(action == 'update'){
+                    console.log('This one updated');
+                    global = newGlobalObj;
+                }
+                else if(action == 'delete'){
+                    console.log('This one was deleted');
+                    global = undefined;
+                }
+                
             }
             else{
               console.log('not this one');

@@ -62,7 +62,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 })
 
 //======================================================FACTORY STARTS HERE
-.factory('Urlservice' , function($q , $http){
+.factory('Urlservice' , function($q , $http , $location){
        
        //
        function addUrl(UrlObj){
@@ -85,23 +85,26 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
        }
 
         //
-       function updateUrl(O , token){
+       function updateUrl(domainMap , token){
            var promise = $q.defer();
-        
+           console.log(domainMap);
+
            //
            if(token.length<5){
               promise.reject('token not defined');
            }
            else{
-
-             var o = angular.copy(O);
-             console.log(o);
-              
              //
+             var prefix = '';
+             if(domainMap.domain != 'no server' && $location.absUrl().indexOf(domainMap.domain)<0 ){
+                 prefix = domainMap.domain;
+                 console.log(prefix);
+             }
+
              $http({
                  method:'PUT',
-                 url:'/api/urls/'+token,
-                 params:o
+                 url:prefix+'/api/urls/'+token,
+                 params:domainMap.urlObj
              })
              .success(function(status){
                  promise.resolve(status);
@@ -123,9 +126,9 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
                if(!angular.isDefined(token)){
                   promise.reject('token not defined');
                }
-               else{
+               else{//
                  var prefix = '';
-                 if(domainMap.domain != 'no server'){
+                 if(domainMap.domain != 'no server' && $location.absUrl().indexOf(domainMap.domain)<0 ){
                      prefix = domainMap.domain;
                      console.log(prefix);
                  }
@@ -370,12 +373,11 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
      };     
 
      //
-     $scope.saveUrl = function(urlObj){
-
+     $scope.saveUrl = function(domainMap){
          $scope.processing= true;
-         urlObj.url = $scope.editorObj.url;
-         urlObj.selector = $scope.editorObj.selector;
-         Urlservice.updateUrl(urlObj , $scope.newUrl.token).then(function(status){
+         domainMap.urlObj.url = $scope.editorObj.url;
+         domainMap.urlObj.selector = $scope.editorObj.selector;
+         Urlservice.updateUrl(domainMap , $scope.newUrl.token).then(function(status){
               $scope.processing = false;
               $scope.resetEditorSettings(-1);
               $scope.editorObj = {};

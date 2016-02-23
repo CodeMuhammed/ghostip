@@ -95,7 +95,7 @@ module.exports = function(database , urlExplorer){
         .put(function(req , res){
              if(req.id == '12345'){
                  req.query._id = ObjectId(req.query._id);
-                 //req.query.selector = 'any';
+                 console.log(req.query);
                  Urls.update(
                     {_id : req.query._id},
                     req.query,
@@ -105,7 +105,7 @@ module.exports = function(database , urlExplorer){
                             res.status(500).send('Not ok Url was not updated');
                         }
                         else {
-                           urlExplorer.updateGlobal(req.query);
+                           urlExplorer.updateGlobal(req.query , 'update');
                            res.status(200).send('update Url recieved on the server');
                         }  
                     }
@@ -119,13 +119,13 @@ module.exports = function(database , urlExplorer){
 
         .delete(function(req , res){
         	    //@TODO delete url
-                console.log(req.query);
                 if(req.query.token == '12345'){
                      Urls.remove({_id : ObjectId(req.id)} , function(err , result){
                          if(err){
                              res.status(500).send('Not ok url was not removed');
                          }
                          else{
+                             urlExplorer.updateGlobal({_id : req.id} , 'delete');
                              res.status(200).send('url removed successfully');
                          }
                      });

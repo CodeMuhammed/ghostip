@@ -97,7 +97,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
              //
              var prefix = '';
              if(domainMap.domain != 'no server' && $location.absUrl().indexOf(domainMap.domain)<0 ){
-                 prefix = domainMap.domain;
+                 prefix = 'http://'+domainMap.domain;
                  console.log(prefix);
              }
 
@@ -129,7 +129,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
                else{//
                  var prefix = '';
                  if(domainMap.domain != 'no server' && $location.absUrl().indexOf(domainMap.domain)<0 ){
-                     prefix = domainMap.domain;
+                     prefix = 'http://'+domainMap.domain;
                      console.log(prefix);
                  }
                  $http({

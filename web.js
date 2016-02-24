@@ -202,15 +202,17 @@ database.initColls(function(){
 	            	console.log('Done here next is to exit the process successfully');
 	            	urlExplorer.exitProcess(urlObj);
 	            });
+
+	            //Register the tester module with urlExplorer
+	            urlExplorer.setTesterFn(tester);
 			}
 	        
 		});
 	}
+	//
 	getUrlFn();
 	 
 });
-
-
 
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

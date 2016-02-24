@@ -1,5 +1,6 @@
 var ObjectId = require('mongodb').ObjectId;
 var global;
+var tester;
 var stats= 'nothing yet from explorer';
 
 //generate a random 30 bits token that clearly identifies this process
@@ -234,13 +235,14 @@ module.exports = function(database){
 
   //
   function updateGlobal(newGlobalObj , action){
-       console.log('this is '+newGlobalObj._id+' '+action);
+       //console.log('this is '+newGlobalObj._id+' '+action);
        if(global){
             if(newGlobalObj._id.toString() == ObjectId(global._id).toString()){
                 
                 if(action == 'update'){
                     console.log('This one updated');
                     global = newGlobalObj;
+                    tester.updateUrlObj(global);
                 }
                 else if(action == 'delete'){
                     console.log('This one was deleted');
@@ -262,11 +264,18 @@ module.exports = function(database){
       return global;
   }
 
+  //
+  function setTesterFn(testerModule) {//
+      tester = testerModule;
+      console.log('tester module registered in url explorer');
+  }
+
 	return{
 		getUrl : getUrl,
     getStat: getStat,
     getUrlObj : getUrlObj,
     updateGlobal:updateGlobal,
+    setTesterFn : setTesterFn,
 		exitProcess : exitProcess
   }
 

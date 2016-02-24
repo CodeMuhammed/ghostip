@@ -3,7 +3,9 @@
 //you return -1 for no tested ip found but search is still on
 //you return -2 for no tested ip found and all untested ips have been tested and search has stopped
 //Exports important functions to calling program
-module.exports = function(cb , urlObj , done) {
+module.exports = function(cb , UrlObj , done) {
+	urlObj = UrlObj;
+
 	console.log(cb);
 	console.log('tester working');
 
@@ -150,10 +152,17 @@ module.exports = function(cb , urlObj , done) {
 	var getFound = function(){
 		return {good:goodIps.length, tested:untestedIpIndex};
 	}
-
+    
+    //
+    var updateUrlObj = function(newUrlObj){
+		urlObj = newUrlObj;
+		console.log('urlObj updated in tester');
+		console.log(urlObj);
+	}
 
 	return {
 	    getFound:getFound,
+	    updateUrlObj:updateUrlObj,
 	    stopSearch : stopSearch
 	}
 	

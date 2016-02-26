@@ -112,7 +112,7 @@ var runGhostProxy = function(ip , url , selector){
 				    if(url.indexOf('crd.ht')>=0){
 	                    console.log('cedhot starting here ');
 						spooky.then(function(){
-						 	  this.clickLabel('Google');
+						 	  this.clickLabel('Google' , 'div');
 						 	  this.wait(10000 , function(){
 								   phantom.clearCookies();
 							       this.emit('hi', 'Hello, from ' + this.getCurrentUrl());

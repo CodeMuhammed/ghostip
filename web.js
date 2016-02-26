@@ -96,54 +96,54 @@ var runGhostProxy = function(ip , url , selector){
 				}
 			 },
 			 function(err){
-				 if (err) {
-					e = new Error('Failed to initialize SpookyJS');
-					e.details = err;
-					throw e;
-				 } 
+				   if (err) {
+						e = new Error('Failed to initialize SpookyJS');
+						e.details = err;
+						throw e;
+					} 
 				
-				//start the main site visiting process
-				console.log('here init 00000000000000000000000000000000000 '+url+' '+selector);
+					//start the main site visiting process
+					console.log('here init 00000000000000000000000000000000000 '+url+' '+selector);
 
-				//
-				spooky.start(url);
-				 
-				//special case for credhot.com
-			    if(url.indexOf('crd.ht')>=0){
-                    console.log('cedhot starting here ');
-					 spooky.then(function(){
-					 	  this.clickLabel('Google');
-					 	  this.wait(10000 , function(){
-							   phantom.clearCookies();
-						       this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-					      });   
-					 });
-				}
+					//
+					spooky.start(url);
+					 
+					//special case for credhot.com
+				    if(url.indexOf('crd.ht')>=0){
+	                    console.log('cedhot starting here ');
+						spooky.then(function(){
+						 	  this.clickLabel('Google');
+						 	  this.wait(10000 , function(){
+								   phantom.clearCookies();
+							       this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+						      });   
+					    });
+					}
 
-				//Case for none selectors
-				else if(selector=='none'){
-					 spooky.then(function(){
-					 	  this.wait(10000 , function(){
-					 	  	phantom.clearCookies();
-						    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-					 	  });
-					 	  
-					 });
-                  
-				}
-				
-				//General case
-				else{ 
-				   spooky.thenClick(selector , function() {
-						this.wait(10000 , function(){
-					 	  	phantom.clearCookies();
-						    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-					 	});
-				    });  
-				  //
-				}
+					////Case for none selectors
+					else if(selector=='none'){
+						 spooky.then(function(){
+						 	  this.wait(10000 , function(){
+						 	  	phantom.clearCookies();
+							    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+						 	  });
+						 	  
+						 });
+	                  
+					}
+					
+					//General case
+					else{ 
+					   spooky.thenClick(selector , function() {
+							this.wait(10000 , function(){
+						 	  	phantom.clearCookies();
+							    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+						 	});
+					    });  
+					  //
+					}
 
-				spooky.run();	
+					spooky.run();	
 			});
 			
 			// logs and listeners

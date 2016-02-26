@@ -1,4 +1,4 @@
-angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
+angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
 //state configuration and routing setup
 .config([
@@ -360,15 +360,13 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
          lastVisited:'' 
      } //
    
-     // 
-      $scope.addUrl = function(){
+     $scope.addUrl = function(){
          $scope.processingNew = true;
          Urlservice.addUrl($scope.newUrl).then(function(data){
              $scope.processingNew = false;
              startApp();
          } , function(err){
-            $scope.processingNew = false; 
-            alert(err); 
+             console.log(err);
          });    
      };     
 
@@ -381,10 +379,8 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
               $scope.processing = false;
               $scope.resetEditorSettings(-1);
               $scope.editorObj = {};
-              startApp();
          },
          function(err){
-              $scope.processing = false;
               console.log(err);  
          });
      };
@@ -394,12 +390,11 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
          $scope.processingDel = true;
          Urlservice.removeUrl(domainMap , $scope.newUrl.token).then(function(status){
             $scope.processingDel = false;
-            startApp();
+            var index = domainMapArr.indexOf(domainMap);
+            domainMapArr.splice(index , 1);
 
          } , function(err){
             console.log(err);
-            $scope.processingDel = false;  
-            
          });
      }
 
@@ -441,6 +436,11 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
          $scope.activeState = state;
      };
     
+     //
+     $scope.menuVisible = false; 
+     $scope.toggleMenu = function(){
+         $scope.menuVisible=!$scope.menuVisible;
+     }
      //
      $scope.activeHover = -1;
      //Scroll spy 

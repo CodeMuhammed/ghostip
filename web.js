@@ -20,6 +20,7 @@ var Greeting = 'Hello ghost';
 var counter = 0;
 var herokuAppsUrls = [];
 var visitedIps = [];
+
 var urlExplorer;
 var tester;
 
@@ -128,8 +129,11 @@ var runGhostProxy = function(ip , url , selector){
 				//Case for none selectors
 				else if(selector=='none'){
 					 spooky.then(function(){
-					 	  phantom.clearCookies();
-						  this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+					 	  this.wait(10000 , function(){
+					 	  	phantom.clearCookies();
+						    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+					 	  });
+					 	  
 					 });
                   
 				}
@@ -137,8 +141,10 @@ var runGhostProxy = function(ip , url , selector){
 				//General case
 				else{ 
 				   spooky.thenClick(selector , function() {
-						phantom.clearCookies();
-						this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+						this.wait(10000 , function(){
+					 	  	phantom.clearCookies();
+						    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+					 	});
 				    });  
 				  //
 				}
@@ -220,24 +226,19 @@ database.initColls(function(){
 //configure express static
 app.use(express.static(path.join(__dirname , 'public')));
 
+//
 app.get('/stats', function(req, res) {
-	if(true){
-		var data = {};
-	    var statsObj;
-	    var urlObj = urlExplorer.getUrlObj();
-
-		tester ?  statsObj = tester.getFound() : statsObj = {};
-        urlObj ? data.urlObj = urlObj : data.urlObj = {};
-
-		statsObj.explorer = urlExplorer.getStat();
-	    statsObj.progress ="visited "+counter+" times ";
-	    statsObj.status=Greeting;
-	    statsObj.serverTime = Date.now();
-	    statsObj.browserTime = '';
-
-	    data.statsObj = statsObj;
-	    res.send(data);
-	}
+	 res.send({
+    	urlObj : (urlObj ? urlObj : {}),
+    	statsObj: {
+            explorer: urlExplorer.getStat(),
+		    progress: "visited "+counter+" times ",
+		    statusText: Greeting,
+		    getFound: tester ? tester.getFound() : {},
+		    serverTime: Date.now(),
+		    browserTime: ''
+    	}
+     });
 });
 
 

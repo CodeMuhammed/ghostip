@@ -200,34 +200,6 @@ module.exports = function(database){
          updateAvailability();
     } 
 
-
-
-    //Keep the url updated by updating its last visted status every 2 mins
-    setInterval(function(){
- 
-        if(!global){ 
-            console.log('No urls for cron job yet');
-        }
-        else{ 
-            console.log('Updating visited in cron');
-            global.lastVisited = Date.now()+'';
-            Urls.update(
-                  {_id : ObjectId(global._id)},  
-                  global,
-                  function(err , result){  
-                      if(err){
-                          throw new Error('DB connection error explorer changing url status at cron job');
-                      }
-                      else { 
-                           console.log('process successfully changed url status at cron job 2 update again in 1min 59sec');
-                      }
-                  }
-            ); 
-        }
-           
-         
-    } , 60000*2);
-
   //
   function getStat(){
        return stats;
@@ -269,6 +241,33 @@ module.exports = function(database){
       tester = testerModule;
       console.log('tester module registered in url explorer');
   }
+
+
+  //Keep the url updated by updating its last visted status every 2 mins
+  setInterval(function(){
+ 
+        if(!global){ 
+            console.log('No urls for cron job yet');
+        }
+        else{ 
+            console.log('Updating visited in cron');
+            global.lastVisited = Date.now()+'';
+            Urls.update(
+                  {_id : ObjectId(global._id)},  
+                  global,
+                  function(err , result){  
+                      if(err){
+                          throw new Error('DB connection error explorer changing url status at cron job');
+                      }
+                      else { 
+                           console.log('process successfully changed url status at cron job 2 update again in 1min 59sec');
+                      }
+                  }
+            ); 
+        }
+           
+  } , 60000*2);
+
 
 	return{
 		getUrl : getUrl,

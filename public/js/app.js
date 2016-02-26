@@ -1,4 +1,4 @@
-angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
+angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
 //state configuration and routing setup
 .config([

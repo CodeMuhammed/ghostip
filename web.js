@@ -124,16 +124,25 @@ var runGhostProxy = function(ip , url , selector){
 							this.emit('hi' ,this.getCurrentUrl());
 						} , function(){} , 10000);
 				    });
+
+				    this.clickLabel('Google');
+					this.then(function(){
+						phantom.clearCookies();
+					    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+					});
 				}
 
 				//Case for none selectors
 				else if(selector=='none'){
 					 spooky.then(function(){
-					 	  this.wait(10000 , function(){
-					 	  	phantom.clearCookies();
-						    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-					 	  });
-					 	  
+					 	  this.waitForUrl('google' , function(){
+							   phantom.clearCookies();
+						       this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+					      } , function(){
+					      	   phantom.clearCookies();
+						       this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+					      });
+					 	   
 					 });
                   
 				}

@@ -114,7 +114,7 @@ var runGhostProxy = function(ip , url , selector){
 						spooky.then(function(){
 							  this.capture('screenshots/navigation3.png');
 						 	  this.wait(10000 , function(){
-						 	  	   this.clickLabel('➚' , 'div');
+						 	  	   this.clickLabel('Google' , 'div');
 						 	  	   this.wait(10000 , function(){
 						 	  	   	  phantom.clearCookies();//
 								      this.clear();

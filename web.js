@@ -113,15 +113,16 @@ var runGhostProxy = function(ip , url , selector){
 	                    console.log('cedhot starting here ');
 						spooky.then(function(){
 							  this.capture('screenshots/navigation3.png');
-						 	  this.thenClick('div' , function(){
-					 	  	   	    this.wait(10000 , function(){
-						 	  	   	  phantom.clearCookies();
+						 	  this.wait(10000 , function(){
+						 	  	   this.clickLabel('➚' , 'div');
+						 	  	   this.wait(10000 , function(){
+						 	  	   	  phantom.clearCookies();//
 								      this.clear();
 							          this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 						 	  	   });
-					 	  	   });  
+						      });   
 					    });
-					}
+					}//
 
 					////Case for none selectors
 					else if(selector=='none'){

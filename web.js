@@ -113,14 +113,13 @@ var runGhostProxy = function(ip , url , selector){
 	                    console.log('cedhot starting here ');
 						spooky.then(function(){
 							  this.capture('screenshots/navigation3.png');
-						 	  this.wait(10000 , function(){
-						 	  	   this.clickLabel('Google' , 'div');
-						 	  	   this.wait(10000 , function(){
+						 	  this.thenClick('div' , function(){
+					 	  	   	    this.wait(10000 , function(){
 						 	  	   	  phantom.clearCookies();
 								      this.clear();
 							          this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 						 	  	   });
-						      });   
+					 	  	   });  
 					    });
 					}
 

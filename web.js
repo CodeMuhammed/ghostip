@@ -115,6 +115,7 @@ var runGhostProxy = function(ip , url , selector){
 						 	  this.clickLabel('Google' , 'div');
 						 	  this.wait(10000 , function(){
 								   phantom.clearCookies();
+								   this.clear();
 							       this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 						      });   
 					    });
@@ -125,6 +126,7 @@ var runGhostProxy = function(ip , url , selector){
 						 spooky.then(function(){
 						 	  this.wait(10000 , function(){
 						 	  	phantom.clearCookies();
+						 	  	this.clear();
 							    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 						 	  });
 						 	  
@@ -137,6 +139,7 @@ var runGhostProxy = function(ip , url , selector){
 					   spooky.thenClick(selector , function() {
 							this.wait(10000 , function(){
 						 	  	phantom.clearCookies();
+						 	  	this.clear();
 							    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 						 	});
 					    });  
@@ -170,7 +173,7 @@ var runGhostProxy = function(ip , url , selector){
 				console.log(greeting);
 				counter+=1;
 				Greeting = greeting;
-				//spooky.destroy();
+				spooky.destroy();
 			});
 
       }

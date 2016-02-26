@@ -113,11 +113,8 @@ var runGhostProxy = function(ip , url , selector){
                     console.log('cedhot starting here ');
 					 spooky.then(function(){
 					 	  this.clickLabel('Google');
-					 	  this.waitForUrl('google' , function(){
+					 	  this.wait(10000 , function(){
 							   phantom.clearCookies();
-						       this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-					      } , function(){
-					      	   phantom.clearCookies();
 						       this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 					      });   
 					 });

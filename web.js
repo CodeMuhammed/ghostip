@@ -143,6 +143,7 @@ var runGhostProxy = function(ip , url , selector){
 
 				if (stack) {
 					console.log(stack);
+					Greeting = stack;
 				}
 				//spooky.destroy();
 			});
@@ -159,7 +160,7 @@ var runGhostProxy = function(ip , url , selector){
 				console.log(greeting);
 				counter+=1;
 				Greeting = greeting;
-				spooky.destroy();
+				//spooky.destroy();
 			});
 
       }

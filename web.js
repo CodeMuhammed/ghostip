@@ -174,7 +174,7 @@ database.initColls(function(){
 	//api routes starts here
 	app.use('/api' , require('./api')(database , urlExplorer));
 
-	function getUrlFn(){
+	function getUrlFn(){//
 		urlExplorer.getUrl(function(urlObj){
 
 			if(urlObj == -1){

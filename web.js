@@ -103,7 +103,7 @@ var runGhostProxy = function(ip , url , selector){
 					} 
 				
 					//start the main site visiting process
-					console.log('here init 00000000000000000000000000000000000 '+url+' '+selector);
+					console.log('here init =========================== '+url+' '+selector);
 
 					//
 					spooky.start(url);

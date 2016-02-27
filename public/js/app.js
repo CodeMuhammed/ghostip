@@ -174,7 +174,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
 
        //
        var domains = [
-          'localhost:5003', 
+          //'localhost:5003', 
           'ghostip.herokuapp.com' ,
           'ghostip1.herokuapp.com',
           'ghostip2.herokuapp.com',
@@ -196,6 +196,7 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
           'ghostip18.herokuapp.com',
           'ghostip19.herokuapp.com',
           'ghostip20.herokuapp.com',
+          'ghostip21.herokuapp.com',
        ];
 
        function populateDomainMap(urlMapList){
@@ -284,7 +285,6 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
              return promise.promise;
        } 
 
-
        return {
            addUrl:addUrl,
            updateUrl:updateUrl,
@@ -293,8 +293,8 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
            populateDomainMap:populateDomainMap
        };
 })
-//======================================================FACTORY ENDS HERE
 
+//======================================================FACTORY ENDS HERE
 
 
 //Controller controlling the logic of  the appication

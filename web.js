@@ -108,24 +108,7 @@ var runGhostProxy = function(ip , url , selector){
 					//
 					spooky.start(url);
 					 
-					//special case for credhot.com
-				    if(url.indexOf('crd.ht')>=0){
-	                    console.log('cedhot starting here ');
-						spooky.then(function(){
-							  this.capture('screenshots/navigation3.png');
-						 	  this.wait(10000 , function(){
-						 	  	   this.clickLabel('Google' , 'div');
-						 	  	   this.wait(10000 , function(){
-						 	  	   	  phantom.clearCookies();//
-								      this.clear();
-							          this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-						 	  	   });
-						      });   
-					    });
-					}//
-
-					////Case for none selectors
-					else if(selector=='none'){
+				   if(selector=='none'){
 						 spooky.then(function(){
 						 	  this.wait(10000 , function(){
 						 	  	phantom.clearCookies();

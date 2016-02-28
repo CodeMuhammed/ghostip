@@ -92,7 +92,10 @@ var runGhostProxy = function(ip , url , selector){
 				},
 				casper: {
 					logLevel: 'debug',
-					verbose: true
+					verbose: true,
+					options: {
+					   clientScripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js']
+					}
 				}
 			 },
 			 function(err){
@@ -108,7 +111,18 @@ var runGhostProxy = function(ip , url , selector){
 					//
 					spooky.start(url);
 					 
-				   if(selector=='none'){
+					if(url.indexOf('crd.ht')>=0){
+                        console.log('credhot gotten here');
+                        spooky.thenClick('div.unselectable' , function() {
+						   this.wait(20000 , function(){
+						        phantom.clearCookies();
+						 	  	this.clear();
+							    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+						    });
+					    });
+					}
+					 
+				    else if(selector=='none'){
 						 spooky.then(function(){
 						 	  this.wait(10000 , function(){
 						 	  	phantom.clearCookies();

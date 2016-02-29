@@ -206,6 +206,11 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
           'ghostip28.herokuapp.com',
           'ghostip29.herokuapp.com',
           'ghostip30.herokuapp.com',
+          'ghostip31.herokuapp.com',
+          'ghostip32.herokuapp.com',
+          'ghostip33.herokuapp.com',
+          'ghostip34.herokuapp.com',
+          'ghostip35.herokuapp.com',
        ];
 
        function populateDomainMap(urlMapList){

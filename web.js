@@ -111,18 +111,7 @@ var runGhostProxy = function(ip , url , selector){
 					//
 					spooky.start(url);
 					spooky.then([{url:url , selector:selector} , function(){
-                       if(url.indexOf('crd.ht')>=0){
-	                        console.log('credhot gotten here');
-	                        this.thenClick('div.unselectable' , function() {
-							   this.wait(20000 , function(){
-								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-								    phantom.clearCookies();
-							 	  	this.clear();
-							    });
-						    });
-						}
-						 
-					    else if(selector=='none'){
+                      if(selector=='none'){
 							 this.then(function(){
 							 	  this.wait(20000 , function(){
 								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
@@ -228,17 +217,22 @@ app.use(express.static(path.join(__dirname , 'public')));
 
 //
 app.get('/stats', function(req, res) {
-	 res.send({
-    	urlObj : (urlObj ? urlObj : {}),
-    	statsObj: {
-            explorer: urlExplorer.getStat(),
-		    progress: "visited "+counter+" times ",
-		    statusText: Greeting,
-		    getFound: tester ? tester.getFound() : {},
-		    serverTime: Date.now(),
-		    browserTime: ''
-    	}
-     });
+	 if(urlObj){
+		 res.send({
+	    	urlObj : (urlObj ? urlObj : {}),
+	    	statsObj: {
+	            explorer: urlExplorer.getStat(),
+			    progress: "visited "+counter+" times ",
+			    statusText: Greeting,
+			    getFound: tester ? tester.getFound() : {},
+			    serverTime: Date.now(),
+			    browserTime: ''
+	    	}
+	     });
+	   }
+	   else{
+	   	   res.status(500).send('Explorer still searching for url obj');
+	   }
 });
 
 

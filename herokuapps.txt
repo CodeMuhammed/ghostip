@@ -27,11 +27,6 @@ http://fg-27.herokuapp.com
 http://fg-28.herokuapp.com
 http://fg-29.herokuapp.com
 http://fg-30.herokuapp.com
-http://fg-31.herokuapp.com
-http://fg-33.herokuapp.com
-http://fg-34.herokuapp.com
-http://fg-35.herokuapp.com
-http://fg-36.herokuapp.com
 http://fg-37.herokuapp.com
 http://fg-38.herokuapp.com
 http://fg-39.herokuapp.com

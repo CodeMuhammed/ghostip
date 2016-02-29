@@ -110,46 +110,48 @@ var runGhostProxy = function(ip , url , selector){
 
 					//
 					spooky.start(url);
-					 
-					if(url.indexOf('crd.ht')>=0){
-                        console.log('credhot gotten here');
-                        spooky.thenClick('div.unselectable' , function() {
-						   this.wait(20000 , function(){
-						        phantom.clearCookies();
-						 	  	this.clear();
-							    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+					spooky.then([{url:url} , function(){
+                       if(url.indexOf('crd.ht')>=0){
+	                        console.log('credhot gotten here');
+	                        this.thenClick('div.unselectable' , function() {
+							   this.wait(20000 , function(){
+								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+								    phantom.clearCookies();
+							 	  	this.clear();
+							    });
 						    });
-					    });
-					}
-					 
-				    else if(selector=='none'){
-						 spooky.then(function(){
-						 	  this.wait(10000 , function(){
-						 	  	phantom.clearCookies();
-						 	  	this.clear();
-							    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-						 	  });
-						 	  
-						 });
-	                  
-					}
-					
-					//General case
-					else{ 
-					   spooky.thenClick(selector , function() {
-							this.wait(10000 , function(){
-						 	  	phantom.clearCookies();
-						 	  	this.clear();
-							    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-						 	});
-					    });  
-					  //
-					}
-
+						}
+						 
+					    else if(selector=='none'){
+							 this.then(function(){
+							 	  this.wait(10000 , function(){
+								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+								    phantom.clearCookies();
+							 	  	this.clear();
+							 	  });
+							 	  
+							 });
+		                  
+						}
+						
+						//General case
+						else{ 
+						   this.thenClick(selector , function() {
+								this.wait(10000 , function(){
+								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+								    phantom.clearCookies();
+							 	  	this.clear();
+							 	});
+						    });  
+						  //
+						}
+					}]);
+                    
+                    //
 					spooky.run();	
 			});
 			
-			// logs and listeners
+			//logs and listeners
 			spooky.on('error', function (e, stack) {
 				console.log('here');//
 				console.error(e);
@@ -163,13 +165,12 @@ var runGhostProxy = function(ip , url , selector){
 			});
 
 			
-			// Uncomment this block to see all of the things Casper has to say.
-			// There are a lot.
-			// He has opinions.
+			//
 			spooky.on('console', function (line) {
 				console.log(line);
 			});
-			 
+			
+			//
 			spooky.on('hi', function (greeting) {
 				console.log(greeting);
 				counter+=1;
@@ -189,12 +190,12 @@ database.initColls(function(){
 	//api routes starts here
 	app.use('/api' , require('./api')(database , urlExplorer));
 
-	function getUrlFn(){////
+	function getUrlFn(){
 		urlExplorer.getUrl(function(urlObj){
 
 			if(urlObj == -1){
 				Greeting = 'All urls are occupied by processes trying again in 10 secs';
-                console.log('All urls are occupied by processes trying again in ten secs');
+                console.log(Greeting);
                 setTimeout(function(){
                      getUrlFn();
                 } , 10000 );
@@ -213,6 +214,7 @@ database.initColls(function(){
 	        
 		});
 	}
+
 	//
 	getUrlFn();
 	 
@@ -255,7 +257,7 @@ setTimeout(function(){
 	  
 } , 60000*20);
 
-//
+//Start the main Express server
 app.listen(port, function() {
     console.log("Listening on " + port);
 });

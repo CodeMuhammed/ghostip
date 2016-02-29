@@ -113,7 +113,7 @@ var runGhostProxy = function(ip , url , selector){
 					spooky.then([{url:url , selector:selector} , function(){
                       if(selector=='none'){
 							 this.then(function(){
-							 	  this.wait(20000 , function(){
+							 	  this.wait(10000 , function(){
 								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 								    phantom.clearCookies();
 							 	  	this.clear();
@@ -125,8 +125,13 @@ var runGhostProxy = function(ip , url , selector){
 						
 						//General case
 						else{ 
+						   this.then(function(){
+						   	   this.wait(10000 , function(){
+						   	   	   console.log('Ten seconds wait period over');
+						   	   });
+						   });
 						   this.thenClick(selector , function() {
-								this.wait(20000 , function(){
+								this.wait(10000 , function(){
 								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 								    phantom.clearCookies();
 							 	  	this.clear();

@@ -110,7 +110,7 @@ var runGhostProxy = function(ip , url , selector){
 
 					//
 					spooky.start(url);
-					spooky.then([{url:url} , function(){
+					spooky.then([{url:url , selector:selector} , function(){
                        if(url.indexOf('crd.ht')>=0){
 	                        console.log('credhot gotten here');
 	                        this.thenClick('div.unselectable' , function() {
@@ -124,7 +124,7 @@ var runGhostProxy = function(ip , url , selector){
 						 
 					    else if(selector=='none'){
 							 this.then(function(){
-							 	  this.wait(10000 , function(){
+							 	  this.wait(20000 , function(){
 								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 								    phantom.clearCookies();
 							 	  	this.clear();
@@ -137,7 +137,7 @@ var runGhostProxy = function(ip , url , selector){
 						//General case
 						else{ 
 						   this.thenClick(selector , function() {
-								this.wait(10000 , function(){
+								this.wait(20000 , function(){
 								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 								    phantom.clearCookies();
 							 	  	this.clear();

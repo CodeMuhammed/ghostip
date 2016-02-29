@@ -23,10 +23,6 @@ http://fg-23.herokuapp.com
 http://fg-24.herokuapp.com
 http://fg-25.herokuapp.com
 http://fg-26.herokuapp.com
-http://fg-27.herokuapp.com
-http://fg-28.herokuapp.com
-http://fg-29.herokuapp.com
-http://fg-30.herokuapp.com
 http://fg-37.herokuapp.com
 http://fg-38.herokuapp.com
 http://fg-39.herokuapp.com

@@ -126,18 +126,21 @@ var runGhostProxy = function(ip , url , selector){
 						//General case
 						else{ 
 						   this.then(function(){
-						   	   this.wait(10000 , function(){
-						   	   	   console.log('Ten seconds wait period over');
-						   	   });
+						   	   this.waitForSelector(selector , function(){
+						   	   	   this.thenClick(selector , function() {
+										this.wait(10000 , function(){
+										    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+										    phantom.clearCookies();
+									 	  	this.clear();
+									 	});
+								    });
+						   	   } , function(){
+						   	   	     this.emit('hi', 'The selector was not found');
+								     phantom.clearCookies();
+							 	  	 this.clear();
+						   	   } , 20000);
 						   });
-						   this.thenClick(selector , function() {
-								this.wait(10000 , function(){
-								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-								    phantom.clearCookies();
-							 	  	this.clear();
-							 	});
-						    });  
-						  //
+						     
 						}
 					}]);
                     

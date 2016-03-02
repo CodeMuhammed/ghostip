@@ -68,6 +68,11 @@ function pingGhostWhite(cb){
 	   doPing();
 	});
 };
+//initial pinging of ghost white
+pingGhostWhite(function(){
+	console.log('Initial pinging done');
+	Greeting = 'Initial pinging done';
+});
 
 var runGhostProxy = function(ip , url , selector){ 
 	console.log('starting ghost');

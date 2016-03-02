@@ -34,12 +34,12 @@ module.exports = function(database){
 		              }
 		              else if(results[0] == undefined){
 		                  //
-                      stats = 'Another process is currently accessing database tying again in 5secs';
-		                  console.log('Another process is currently accessing database tying again in 5secs');
+                      stats = 'Another process is currently accessing database tying again in 59secs';
+		                  console.log('Another process is currently accessing database tying again in 59secs');
 
 		                  setTimeout(function(){
 			                  checkLock();
-			              } , 5000);
+			              } , 59000);
 		              }
 		              else {
 		              	 console.log('Lock free on urls...');

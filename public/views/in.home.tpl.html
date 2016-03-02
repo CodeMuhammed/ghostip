@@ -113,7 +113,7 @@
 	 
 	 <div class="col-xs-12 col-md-9" style="background-color:#green; padding:2.5em 1em">
 	 	
-	    <div class="col-xs-12" ng-repeat="domainMap in domainMapArr | myfilter:activeCategory:activeState | orderBy:domainMap.urlObj.url?'urlObj.url':''" style="border:1px solid #ccc; border-left:3px solid #038FCA; margin-bottom:1em; min-height:8em; position:relative" ng-mouseenter="activeHover = $index" ng-mouseleave="activeHover = -1">
+	    <div class="col-xs-12" ng-repeat="domainMap in domainMapArr | myfilter:activeCategory:activeState | orderBy:'urlObj.url'" style="border:1px solid #ccc; border-left:3px solid #038FCA; margin-bottom:1em; min-height:8em; position:relative" ng-mouseenter="activeHover = $index" ng-mouseleave="activeHover = -1">
 	    	<div class="" style="position:absolute; top:0; left:0; padding:.5em; background: url('/img/splint-inv.png') center center no-repeat; background-size:cover; width:9em"  ng-show="activeHover==$index && (domainMap.status=='Active' || domainMap.status=='Non Allocated') ">
 	    		 <i class="icon fa fa-trash" style="color:#fff; font-size:1.5em; margin-right:.3em" ng-click="deleteUrl(domainMap)" ng-hide="processingDel"></i>
 	    		 <i class="icon fa fa-spinner fa-spin" style="color:#fff; font-size:1.5em; margin-right:.3em" ng-show="processingDel"></i>

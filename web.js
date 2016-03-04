@@ -118,7 +118,7 @@ var runGhostProxy = function(ip , url , selector){
 					spooky.then([{url:url , selector:selector} , function(){
                       if(selector=='none'){
 							 this.then(function(){
-							 	  this.wait(10000 , function(){
+							 	  this.wait(30000 , function(){
 								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
 								    phantom.clearCookies();
 							 	  	this.clear();

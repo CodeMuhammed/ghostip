@@ -39,7 +39,7 @@ module.exports = function(database){
 
 		                  setTimeout(function(){
 			                  checkLock();
-			              } , 59000);
+			              } , 30000);
 		              }
 		              else {
 		              	 console.log('Lock free on urls...');

@@ -4,7 +4,6 @@ var Spooky = require('spooky');
 var request = require('request');
 var express = require('express');
 var path = require('path');
-var LineByLineReader = require('line-by-line');
 var app = express();  
 var methodOverride = require('method-override');   
     
@@ -24,55 +23,6 @@ var visitedIps = [];
 var urlExplorer;
 var tester;
 
-//
-function pingGhostWhite(cb){
-	//
-    console.log('heroku ping here');
-    //Read lines of ip use them to make request before resulting to gimmeproxy
-	ha = new LineByLineReader('herokuapps.txt');
-	ha.on('error', function (err) {
-		console.log('error while reading file');
-	});
-
-	ha.on('line', function (line) {
-		herokuAppsUrls.push(line.toString());
-	});
-
-	ha.on('end', function () {
-	   console.log(herokuAppsUrls.length);
-	   
-	   //do pinging
-	   var currentUrl = 0;
-	   function doPing(){
-	       if(currentUrl < herokuAppsUrls.length){
-		        request.get(herokuAppsUrls[currentUrl] , function(err , response , body){
-					 if(err){
-						 console.log(err);
-						 currentUrl++;					 
-						 doPing();
-					 } 
-					 else {
-					     Greeting = herokuAppsUrls[currentUrl]+' test done';
-						 //console.log(herokuAppsUrls[currentUrl]+' test done'); 
-						 currentUrl++;					 
-						 doPing();
-					 }
-				 });
-		   }
-		   else{
-			  cb();
-		      return;
-		   }  
-	   };
-	   
-	   doPing();
-	});
-};
-//initial pinging of ghost white
-pingGhostWhite(function(){
-	console.log('Initial pinging done');
-	Greeting = 'Initial pinging done';
-});
 
 var runGhostProxy = function(ip , url , selector){ 
 	console.log('starting ghost');
@@ -183,7 +133,7 @@ var runGhostProxy = function(ip , url , selector){
       }
 };
 
-//init database get the urls specific to this session then run pingGhostWhite and testers
+//init database get the urls specific to this session then run testers
 database.initColls(function(){
 	 
 	//initialize  url explorer
@@ -251,16 +201,9 @@ app.get('/stats', function(req, res) {
 
 //stop searching for new ips after the first 10 minutes of app's uptime
 setTimeout(function(){
-	if(true){ 
-		pingGhostWhite(function(){
-		    console.log('ghost white pinged');
-		    //stop searching for  new ips
-			tester.stopSearch(function(){
-				console.log('searching stopped');
-			});
-		});
-	   
-	}
+	tester.stopSearch(function(){
+		 console.log('searching stopped');
+	});
 	  
 } , 60000*20);
 

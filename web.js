@@ -203,7 +203,8 @@ app.get('/stats', function(req, res) {
 			    statusText: Greeting,
 			    getFound: tester ? tester.getFound() : {},
 			    serverTime: Date.now(),
-			    browserTime: ''
+			    browserTime: '',
+			    token : urlExplorer.getToken()
 	    	}
 	     });
 	   }

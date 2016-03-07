@@ -232,8 +232,8 @@ module.exports = function(database){
   }
 
   ////
-  function getUrlObj(){
-      return global;
+  function getToken(){
+      return token;
   }
 
   //
@@ -272,7 +272,7 @@ module.exports = function(database){
 	return{
 		getUrl : getUrl,
     getStat: getStat,
-    getUrlObj : getUrlObj,
+    getToken : getToken,
     updateGlobal:updateGlobal,
     setTesterFn : setTesterFn,
 		exitProcess : exitProcess

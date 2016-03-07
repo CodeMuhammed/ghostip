@@ -4,7 +4,18 @@ var tester;
 var stats= 'nothing yet from explorer';
 
 //generate a random 30 bits token that clearly identifies this process
-var token = require('crypto').randomBytes(16).toString('hex');
+var token = '';
+
+function generateRandomBitToken(){
+	 if(token.length<20){
+         token+=Math.ceil(Math.random()*1000)%2;
+         generateRandomBitToken();
+	 }
+	 else{
+	 	return;
+	 }   
+}
+generateRandomBitToken();
 console.log(token);
   
 //

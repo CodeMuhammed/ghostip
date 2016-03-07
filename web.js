@@ -91,13 +91,16 @@ var runGhostProxy = function(ip , url , selector){
 							else{ 
 							   this.then(function(){
 							   	   this.waitForSelector(selector , function(){
-							   	   	   this.thenClick(selector , function() {
-											this.wait(10000 , function(){
-											    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-											    phantom.clearCookies();
-										 	  	this.clear();
-										 	});
-									    });
+							   	   	  this.wait(15000 , function(){
+							   	   	  	    this.thenClick(selector , function() {
+												this.wait(10000 , function(){
+												    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+												    phantom.clearCookies();
+											 	  	this.clear();
+											 	});
+										    });
+							   	   	  });
+								   	   	  
 							   	   } , function(){
 							   	   	     this.emit('hi', 'The selector was not found');
 									     phantom.clearCookies();

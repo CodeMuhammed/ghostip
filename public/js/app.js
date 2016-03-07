@@ -423,8 +423,8 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
          $scope.processingDel = true;
          Urlservice.removeUrl(domainMap , $scope.newUrl.token).then(function(status){
             $scope.processingDel = false;
-            var index = domainMapArr.indexOf(domainMap);
-            domainMapArr.splice(index , 1);
+            var index = $scope.domainMapArr.indexOf(domainMap);
+            $scope.domainMapArr.splice(index , 1);
 
          } , function(err){
             console.log(err);

@@ -57,7 +57,7 @@ module.exports = function(database){
                 {},
                 {
                    "$set": {
-                       accessingDomain: token,
+                       accessingDomain:token,
                        locked:true
                    }
                 },

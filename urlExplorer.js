@@ -4,18 +4,7 @@ var tester;
 var stats= 'nothing yet from explorer';
 
 //generate a random 30 bits token that clearly identifies this process
-var token = '';
-
-function generateRandomBitToken(){
-	 if(token.length<20){
-         token+=Math.ceil(Math.random()*1000)%2;
-         generateRandomBitToken();
-	 }
-	 else{
-	 	return;
-	 }   
-}
-generateRandomBitToken();
+var token = require('crypto').randomBytes(16).toString('hex');
 console.log(token);
   
 //
@@ -34,8 +23,8 @@ module.exports = function(database){
 		              }
 		              else if(results[0] == undefined){
 		                  //
-                      stats = 'Another process is currently accessing database tying again in 59secs';
-		                  console.log('Another process is currently accessing database tying again in 59secs');
+                      stats = 'Another process is currently accessing database tying again in 29secs';
+		                  console.log('Another process is currently accessing database tying again in 29secs');
 
 		                  setTimeout(function(){
 			                  checkLock();
@@ -84,10 +73,10 @@ module.exports = function(database){
 	              }
 	              else if(results[0] == undefined){
 	                  //
-	                  console.log('Unable to authenticate checking lock again in 5secs');
+	                  console.log('Unable to authenticate checking lock again in 29secs');
                     setTimeout(function(){
                        checkLock();
-                    } , 5000); 
+                    } , 30000); 
 	              }
 	              else {
 	              	 console.log('Authentication completed...');

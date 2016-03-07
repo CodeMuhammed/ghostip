@@ -49,58 +49,69 @@ var runGhostProxy = function(ip , url , selector){
 					logLevel: 'debug',
 					verbose: true,
 					options: {
-					   clientScripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js']
+					   clientScripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'],
+					   pageSettings: {
+					        Referer: 'https://www.google.com.ng'
+					    }
 					}
 				}
 			 },
 			 function(err){
-				   if (err) {
-						e = new Error('Failed to initialize SpookyJS');
-						e.details = err;
-						throw e;
-					} 
-				
-					//start the main site visiting process
-					console.log('here init =========================== '+url+' '+selector);
+			   if (err) {
+					e = new Error('Failed to initialize SpookyJS');
+					e.details = err;
+					throw e;
+				} 
+			
+				//start the main site visiting process
+				console.log('here init =========================== '+url+' '+selector);
 
-					//
-					spooky.start(url);
-					spooky.then([{url:url , selector:selector} , function(){
-                      if(selector=='none'){
-							 this.then(function(){
-							 	  this.wait(30000 , function(){
-								    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-								    phantom.clearCookies();
-							 	  	this.clear();
-							 	  });
-							 	  
-							 });
-		                  
-						}
-						
-						//General case
-						else{ 
-						   this.then(function(){
-						   	   this.waitForSelector(selector , function(){
-						   	   	   this.thenClick(selector , function() {
-										this.wait(10000 , function(){
-										    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
-										    phantom.clearCookies();
-									 	  	this.clear();
-									 	});
-								    });
-						   	   } , function(){
-						   	   	     this.emit('hi', 'The selector was not found');
-								     phantom.clearCookies();
-							 	  	 this.clear();
-						   	   } , 20000);
-						   });
-						     
-						}
-					}]);
-                    
-                    //
-					spooky.run();	
+				//
+				spooky.start(url);
+				spooky.then([{url:url , selector:selector} , function(){
+				  
+                     this.viewport(1024, 768, function() {
+						  console.log('Viewport size changed');
+				       
+				          //
+	                      if(selector=='none'){
+	                      	     
+								 this.then(function(){
+								 	  this.wait(30000 , function(){
+									    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+									    phantom.clearCookies();
+								 	  	this.clear();
+								 	  });
+								 	  
+								 });
+			                  
+							}
+							
+							//General case
+							else{ 
+							   this.then(function(){
+							   	   this.waitForSelector(selector , function(){
+							   	   	   this.thenClick(selector , function() {
+											this.wait(10000 , function(){
+											    this.emit('hi', 'Hello, from ' + this.getCurrentUrl());
+											    phantom.clearCookies();
+										 	  	this.clear();
+										 	});
+									    });
+							   	   } , function(){
+							   	   	     this.emit('hi', 'The selector was not found');
+									     phantom.clearCookies();
+								 	  	 this.clear();
+							   	   } , 20000);
+							   });
+							     
+							}
+					    });  
+
+				}]);
+                
+                //
+				spooky.run();	
 			});
 			
 			//logs and listeners

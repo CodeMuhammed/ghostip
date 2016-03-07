@@ -7,45 +7,45 @@ var stats= 'nothing yet from explorer';
 var token = '';
 
 function generateRandomBitToken(){
-	 if(token.length<20){
+   if(token.length<20){
          token+=Math.ceil(Math.random()*1000)%2;
          generateRandomBitToken();
-	 }
-	 else{
-	 	return;
-	 }   
+   }
+   else{
+    return;
+   }   
 }
 generateRandomBitToken();
 console.log(token);
   
 //
 module.exports = function(database){
-	  var Explorer = database.model('Explorer');
-	  var Urls = database.model('Urls');
+    var Explorer = database.model('Explorer');
+    var Urls = database.model('Urls');
 
     //
     var getUrl = function(cb){
          //
          function checkLock(){
                Explorer.find({locked: false}).toArray(function(err , results){
-		              if(err){
+                  if(err){
                     stats = err;
-		                 throw new Error('DB connection error explorer check locked');
-		              }
-		              else if(results[0] == undefined){
-		                  //
+                     throw new Error('DB connection error explorer check locked');
+                  }
+                  else if(results[0] == undefined){
+                      //
                       stats = 'Another process is currently accessing database tying again in 29secs';
-		                  console.log('Another process is currently accessing database tying again in 29secs');
+                      console.log('Another process is currently accessing database tying again in 29secs');
 
-		                  setTimeout(function(){
-			                  checkLock();
-			              } , 30000);
-		              }
-		              else {
-		              	 console.log('Lock free on urls...');
-		              	 lockAccessToUrls();  
-		              }
-		         });
+                      setTimeout(function(){
+                        checkLock();
+                    } , 30000);
+                  }
+                  else {
+                     console.log('Lock free on urls...');
+                     lockAccessToUrls();  
+                  }
+             });
 
          };
          checkLock();
@@ -76,30 +76,30 @@ module.exports = function(database){
 
          //
          function authenticateAccess(){
-         	 console.log('Authenticating access');
-         	 Explorer.find({locked: true , accessingDomain:token}).toArray(function(err , results){
-	              if(err){
+           console.log('Authenticating access');
+           Explorer.find({locked: true , accessingDomain:token}).toArray(function(err , results){
+                if(err){
                   stats= err;
-	                 throw new Error('DB connection error explorer authenticating');
-	              }
-	              else if(results[0] == undefined){
-	                  //
-	                  console.log('Unable to authenticate checking lock again in 29secs');
+                   throw new Error('DB connection error explorer authenticating');
+                }
+                else if(results[0] == undefined){
+                    //
+                    console.log('Unable to authenticate checking lock again in 29secs');
                     setTimeout(function(){
                        checkLock();
                     } , 30000); 
-	              }
-	              else {
-	              	 console.log('Authentication completed...');
-	              	 getAnyUrl(); 
-	              }
-	         });
+                }
+                else {
+                   console.log('Authentication completed...');
+                   getAnyUrl(); 
+                }
+           });
          } 
 
         
          //
          function getAnyUrl(){ 
-         	  console.log('getting url');
+            console.log('getting url');
            
             Urls.find(  
                  {"lastVisited":{"$lte": (Date.now() - 60000*6)+''}}  
@@ -123,20 +123,23 @@ module.exports = function(database){
          function releaseLock(urlObj){
               if(urlObj){
                    global=urlObj;
-                   urlObj.lastVisited = Date.now()+'';
-                   Urls.update(
-                          {_id : ObjectId(urlObj._id)},  
-                          urlObj,
+                   global.lastVisited = Date.now()+'';
+                   Urls.update({_id : ObjectId(urlObj._id)},  {
+                             "$set": {
+                                   lastVisited: global.lastVisited
+                              }
+                          },
                           function(err , result){  
                               if(err){
                                   throw new Error('DB connection error release lock');
                               }
                               else { 
                                  stats="url gotten successfullly";
-                                 release();
+                                 setTimeout(function(){
+                                     release();
+                                 } , 15000); 
                               }
-                          }
-                    ); //
+                           });
 
                }
                else{
@@ -150,8 +153,7 @@ module.exports = function(database){
                  Explorer.update({}, {
                      "$set": {
                          accessingDomain: '',
-                         locked:false,
-                         urlsAvailable:null
+                         locked:false
                      }
                   },
                   function(err , result){
@@ -171,35 +173,30 @@ module.exports = function(database){
                   });
               }
            }
-    	
+      
     };
 
     var exitProcess = function(urlObj){
-    	  console.log('Trying to exit process');
-
-          //          
-         function updateAvailability(){
-         	  console.log('updating availabilty');
-         	  Explorer.update(
-                {},
-                {
-                   "$set": {
-                       accessingDomain: '',
-                       locked:false,
-                   }
-                },
-                function(err , result){
-                    if(err){
-                        throw new Error('DB connection error explorer updateAvailability');
-                    }
-                    else {
-                        console.log('process successfully updated availability exiting app');
-                        process.exit(0);
-                    }
+        console.log('Trying to exit process');
+        console.log('updating availabilty');
+        Explorer.update(
+            {},
+            {
+               "$set": {
+                   accessingDomain: '',
+                   locked:false,
+               }
+            },
+            function(err , result){
+                if(err){
+                    throw new Error('DB connection error explorer updateAvailability');
                 }
-             );
-         }
-         updateAvailability();
+                else {
+                    console.log('process successfully updated availability exiting app');
+                    process.exit(0);
+                }
+            }
+         );
     } 
 
   //
@@ -271,13 +268,13 @@ module.exports = function(database){
   } , 60000*2);
 
 
-	return{
-		getUrl : getUrl,
+  return{
+    getUrl : getUrl,
     getStat: getStat,
     getToken : getToken,
     updateGlobal:updateGlobal,
     setTesterFn : setTesterFn,
-		exitProcess : exitProcess
+    exitProcess : exitProcess
   }
 
 };

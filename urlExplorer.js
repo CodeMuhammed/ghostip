@@ -119,14 +119,35 @@ module.exports = function(database){
              });
          }
 
-         //      
+         //update url object before updating explorer object....THATS THE SOLUTION      
          function releaseLock(urlObj){
-              
-               console.log('Releasing lock on database');
-                 //release lock and return url back to main process
-                 Explorer.update(
-                  {},
-                  {
+              if(urlObj){
+                   global=urlObj;
+                   urlObj.lastVisited = Date.now()+'';
+                   Urls.update(
+                          {_id : ObjectId(urlObj._id)},  
+                          urlObj,
+                          function(err , result){  
+                              if(err){
+                                  throw new Error('DB connection error release lock');
+                              }
+                              else { 
+                                 stats="url gotten successfullly";
+                                 release();
+                              }
+                          }
+                    ); //
+
+               }
+               else{
+                  stats = "No url ";
+                  release();
+               }
+
+              function release(){
+                 console.log('Releasing lock on database');
+                     //release lock and return url back to main process
+                 Explorer.update({}, {
                      "$set": {
                          accessingDomain: '',
                          locked:false,
@@ -139,36 +160,17 @@ module.exports = function(database){
                       }
                       else {
                           stats = "Url object gotten";
-                          console.log('process successfully released lock on database');
+                          console.log('process successfully released lock on database');  
                           if(urlObj){
-                               global=urlObj;
-                               urlObj.lastVisited = Date.now()+'';
-                               Urls.update(
-                                      {_id : ObjectId(urlObj._id)},  
-                                      urlObj,
-                                      function(err , result){  
-                                          if(err){
-                                              throw new Error('DB connection error release lock');
-                                          }
-                                          else { 
-                                             stats="url gotten successfullly";
-                                             cb(urlObj);
-                                          }
-                                      }
-                                ); //
-
-                              
-                          }
+                            cb(urlObj);
+                          } 
                           else{
-                              stats = "No url ";
-                              cb(-1);
-                          }
-                          
+                            cb(-1);
+                          }   
                       }
                   });
-
-              
-         }
+              }
+           }
     	
     };
 

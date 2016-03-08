@@ -26,7 +26,7 @@ module.exports = function(database){
     //
     var getUrl = function(cb){
          //
-         function checkLock(){
+         (function checkLock(){
                Explorer.find({locked: false}).toArray(function(err , results){
                   if(err){
                     stats = err;
@@ -44,8 +44,7 @@ module.exports = function(database){
                   }
              });
 
-         };
-         checkLock();
+         })();
 
          //
          function lockAccessToUrls(){
@@ -67,7 +66,7 @@ module.exports = function(database){
                         console.log('process successfully locked database');
                         setTimeout(function(){
                            authenticateAccess();
-                        } , 10000);
+                        } , 2000);
                     }
                 }
              );
@@ -84,9 +83,7 @@ module.exports = function(database){
                 else if(results[0] == undefined){
                     //
                     console.log('Unable to authenticate checking lock again in 29secs');
-                    setTimeout(function(){
-                       checkLock();
-                    } , 30000); 
+                    checkLock();
                 }
                 else {
                    console.log('Authentication completed...');
@@ -134,9 +131,7 @@ module.exports = function(database){
                               }
                               else { 
                                  stats="url gotten successfullly";
-                                 setTimeout(function(){
-                                     release();
-                                 } , 15000); 
+                                 release(); 
                               }
                            });
 

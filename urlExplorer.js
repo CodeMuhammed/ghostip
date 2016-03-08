@@ -36,10 +36,7 @@ module.exports = function(database){
                       //
                       stats = 'Another process is currently accessing database tying again in 29secs';
                       console.log('Another process is currently accessing database tying again in 29secs');
-
-                      setTimeout(function(){
-                        checkLock();
-                    } , 30000);
+                      checkLock();
                   }
                   else {
                      console.log('Lock free on urls...');

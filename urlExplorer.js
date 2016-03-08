@@ -26,7 +26,7 @@ module.exports = function(database){
     //
     var getUrl = function(cb){
          //
-         (function checkLock(){
+         function checkLock(){
                Explorer.find({locked: false}).toArray(function(err , results){
                   if(err){
                     stats = err;
@@ -44,8 +44,8 @@ module.exports = function(database){
                   }
              });
 
-         })();
-
+         };
+         checkLock();
          //
          function lockAccessToUrls(){
              console.log('Locking access to urls...');

@@ -156,7 +156,7 @@ database.initColls(function(){
 	//api routes starts here
 	app.use('/api' , require('./api')(database , urlExplorer));
 
-	function getUrlFn(){
+	(function getUrlFn(){
 		urlExplorer.getUrl(function(urlObj){
 
 			if(urlObj == -1){
@@ -179,50 +179,49 @@ database.initColls(function(){
 			}
 	        
 		});
-	}
+	})();
+
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	//=============================================================================
+	//configure express static
+	app.use(express.static(path.join(__dirname , 'public')));
 
 	//
-	getUrlFn();
+	app.get('/stats', function(req, res) {
+		 var urlObj = urlExplorer.getUrlObj();
+		 if(urlObj){
+			 res.send({
+		    	urlObj : urlObj,
+		    	statsObj: {
+		            explorer: urlExplorer.getStat(),
+				    progress: "visited "+counter+" times ",
+				    statusText: Greeting,
+				    getFound: tester ? tester.getFound() : {},
+				    serverTime: Date.now(),
+				    browserTime: '',
+				    token : urlExplorer.getToken()
+		    	}
+		     });
+		   }
+		   else{
+		   	   res.status(500).send('Explorer still searching for url obj');
+		   }
+	});
+
+
+	//stop searching for new ips after the first 10 minutes of app's uptime
+	setTimeout(function(){
+		tester.stopSearch(function(){
+			 console.log('searching stopped');
+		});
+		  
+	} , 60000*20);
+
+	//Start the main Express server
+	app.listen(port, function() {
+	    console.log("Listening on " + port);
+	});
 	 
 });
 
 
-//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//=============================================================================
-//configure express static
-app.use(express.static(path.join(__dirname , 'public')));
-
-//
-app.get('/stats', function(req, res) {
-	 if(urlObj){
-		 res.send({
-	    	urlObj : (urlObj ? urlObj : {}),
-	    	statsObj: {
-	            explorer: urlExplorer.getStat(),
-			    progress: "visited "+counter+" times ",
-			    statusText: Greeting,
-			    getFound: tester ? tester.getFound() : {},
-			    serverTime: Date.now(),
-			    browserTime: '',
-			    token : urlExplorer.getToken()
-	    	}
-	     });
-	   }
-	   else{
-	   	   res.status(500).send('Explorer still searching for url obj');
-	   }
-});
-
-
-//stop searching for new ips after the first 10 minutes of app's uptime
-setTimeout(function(){
-	tester.stopSearch(function(){
-		 console.log('searching stopped');
-	});
-	  
-} , 60000*20);
-
-//Start the main Express server
-app.listen(port, function() {
-    console.log("Listening on " + port);
-});

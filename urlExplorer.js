@@ -235,6 +235,10 @@ module.exports = function(database){
       console.log('tester module registered in url explorer');
   }
 
+  function getUrlObj(){
+       return global;
+  }
+
 
   //Keep the url updated by updating its last visted status every 2 mins
   setInterval(function(){
@@ -265,6 +269,7 @@ module.exports = function(database){
   return{
     getUrl : getUrl,
     getStat: getStat,
+    getUrlObj : getUrlObj,
     getToken : getToken,
     updateGlobal:updateGlobal,
     setTesterFn : setTesterFn,

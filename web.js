@@ -188,7 +188,7 @@ database.initColls(function(){
 
 	//
 	app.get('/stats', function(req, res) {
-		 var urlObj = urlExplorer.getUrlObj();
+		 var urlObj = urlExplorer? urlExplorer.getUrlObj() : undefined;
 		 if(urlObj){
 			 res.send({
 		    	urlObj : urlObj,

@@ -15,7 +15,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                  controller : 'home2Controller',
                  data :{}
                  
-             });//
+             });
             
              $urlRouterProvider.otherwise('v2_home');
         }

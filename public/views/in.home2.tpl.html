@@ -1,4 +1,4 @@
-<div class="alert alert-{{alert.type}}" style="position:fixed; min-height:5em; width:30em; left:35%;z-index:100000; border:1px solid #ccc" ng-show="alert.show" ng-click="closeAlert()">
+<div class="alert alert-{{alert.type}}" style="position:fixed; min-height:5em; width:30em; left:35%;z-index:100000; border:1px solid #ccc; border-radius:0" ng-show="alert.show" ng-click="closeAlert()">
 	<b>{{alert.msg}}</b>
 </div>
 
@@ -40,7 +40,7 @@
 	<div class="col-xs-12" style="padding:0" ng-show="$index == visibleBucketIndex">
 		
 			<div class="col-xs-12" style="min-height:15em; border:0; border-left:1px solid #ccc; width:95%; margin-left:5%;padding:0" ng-repeat="url in bucket.urls" >
-				<div class="col-xs-1" style="border:1px solid #ccc; margin-top:7em;border-radius:none">
+				<div class="col-xs-1" style="border:1px solid #ccc; border-left:none;border-right:none; margin-top:7em;border-radius:none">
 				     <span ng-hide="activeEditor.e && (activeEditor.b_id == bucket._id && $index == activeEditor.u_index)" >
 				          <span ng-hide="processingRemoveUrl && $index == activeEditor.u_index">
 				          	  <i class="icon fa fa-trash" style="color:#ccc; font-size:1.5em; margin-right:.3em" ng-click="removeUrl(bucket._id , $index)"></i>

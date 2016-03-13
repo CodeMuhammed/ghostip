@@ -1,4 +1,4 @@
-angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
+angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory'])
 
 //state configuration and routing setup
 .config([
@@ -7,18 +7,17 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
           //enabling HTML5 mode
           $locationProvider.html5Mode(false).hashPrefix('!');
         
-            //Logged in state
-            $stateProvider
+           $stateProvider
              
-             .state('home' , {
-                 url : '/home',
-                 templateUrl : 'views/in.home.tpl.html',
-                 controller : 'homeController',
+             .state('new' , {
+                 url : '/v2_home',
+                 templateUrl : 'views/in.home2.tpl.html',
+                 controller : 'home2Controller',
                  data :{}
                  
-             });
+             });//
             
-             $urlRouterProvider.otherwise('/home');
+             $urlRouterProvider.otherwise('v2_home');
         }
 ])
 
@@ -32,463 +31,201 @@ angular.module('uniben' , ['ui.router' ,'mgcrea.ngStrap'])
     }
 ])
 
-.filter("myfilter", function ($filter) {
-  return function (data, activeCategory, activeState) {
-      //console.log('category:'+activeCategory+' activeState:'+activeState);
-      var filtered = [];
 
-      angular.forEach(data , function(item){
-          var stateTest = item.status == activeState || activeState == '';
-          var categoryTest = false;
-          
-          //Test for category
-          if(activeState == 'Idle' || activeState == 'Dormant'){
-              var categoryTest = true;
-          }
-          else{
-              if(angular.isDefined(item.urlObj.selector)){
-                   categoryTest = item.urlObj.selector==activeCategory || activeCategory == '';
-              }
-          }
-          
-          
-          
-          if(stateTest && categoryTest){
-               filtered.push(item);
-          }
-      });
-      return filtered;
-  }
-})
-
-//======================================================FACTORY STARTS HERE
-.factory('Urlservice' , function($q , $http , $location){
-       
-       //
-       function addUrl(UrlObj){
-           var promise = $q.defer();
-
-           //
-           $http({
-               method:'POST',
-               url:'/api/urls/1',
-               params:UrlObj
-           })
-           .success(function(data){
-               promise.resolve(data);
-           })
-           .error(function(err){
-               promise.reject(err);
-           });
-           
-           return promise.promise;
-       }
-
-        //
-       function updateUrl(domainMap , token){
-           var promise = $q.defer();
-           console.log(domainMap);
-
-           //
-           if(token.length<5){
-              promise.reject('token not defined');
-           }
-           else{
-             //
-             var prefix = '';
-             if(domainMap.domain != 'no server' && $location.absUrl().indexOf(domainMap.domain)<0 ){
-                 prefix = 'http://'+domainMap.domain;
-                 console.log(prefix);
-             }
-
-             $http({
-                 method:'PUT',
-                 url:prefix+'/api/urls/'+token,
-                 params:domainMap.urlObj
-             })
-             .success(function(status){
-                 promise.resolve(status);
-             })
-             .error(function(err){
-                 promise.reject(err);
-             });
-
-           }
-           
-           return promise.promise;
-       }
-
-        //
-       function removeUrl(domainMap , token){
-           var promise = $q.defer();
-           //
-            if(token){
-               if(!angular.isDefined(token)){
-                  promise.reject('token not defined');
+//====================v2 implementation ============================
+.controller('home2Controller' , function($scope , $timeout , bucketFactory){
+       $scope.alert = {msg:'' , show:false , type:''};
+       $scope.showAlert  = function(msg , type , err){
+           $scope.alert.msg = msg;
+           $scope.alert.type = type;
+           $scope.alert.show = true;
+           $timeout(function(){
+               if(!err){
+                  $scope.alert.show = false;
                }
-               else{//
-                 var prefix = '';
-                 if(domainMap.domain != 'no server' && $location.absUrl().indexOf(domainMap.domain)<0 ){
-                     prefix = 'http://'+domainMap.domain;
-                     console.log(prefix);
-                 }
-                 $http({
-                     method:'DELETE',
-                     url:prefix+'/api/urls/'+domainMap.urlObj._id , 
-                     params:{token:token}
-                 })
-                 .success(function(status){
-                     promise.resolve(status);
-                 })
-                 .error(function(err){
-                     promise.reject(err);
-                 });
-                 
-               }
-             }
-             else{
-                promise.reject('token is undefined');
-             }
-           return promise.promise;
-       }
-       
-       //
-       function getAll(){
-            var promise = $q.defer();
+           } , 3000);
+       };
 
-            $http({
-                method:'GET',
-                url:'/api/urls/all',
-            })
-            .success(function(data){
-               promise.resolve(data);
-            })
-            .error(function(err){
-               promise.reject(err);
-            });;
+        $scope.closeAlert  = function(){
+           $scope.alert.show = false;
+       };
 
-            return promise.promise;
-            
+
+       $scope.defaultUrlObj = {
+         userName:'Default user1',
+         accountEmail:'example@gmail.com',
+         serviceName:'service',
+         urlName:'https://sh.rt/url',
+         selector:'div.selector',
+         dateCreated:Date.now(),
+         visited:'0',
+         statusText:'No status yet'
+       };
+
+       $scope.tempBucketObj = {};
+
+       $scope.defaultBucketObj =  {
+           _id:'123456789',
+           bucketName:'New Test',
+           processName:'No process',
+           dateCreated:Date.now(),
+           lastActive:Date.now(),
+           lastModified:Date.now(),
+           serverToken:'1010',
+           userToken:'Your_token',
+           urls:[]
+       };
+
+       $scope.buckets = [
+          {
+           _id:'123456789',
+           bucketName:'Experimental Test',
+           processName:'No process',
+           dateCreated:Date.now(),
+           lastActive:Date.now(),
+           lastModified:Date.now(),
+           serverToken:'10111110101001000',
+           userToken:'',
+           urls:[
+              {
+                 userName:'codemuhammed',
+                 accountEmail:'codemuhammed@gmail.com',
+                 serviceName:'credhot',
+                 urlName:'https://crd.ht/qZ05',
+                 selector:'div.unselectable',
+                 dateCreated:Date.now(),
+                 visited:'0',
+                 statusText:'No status yet'
+              },
+           ]
        }
+      ];
+
+      //Editor controls
+      $scope.activeEditor = {
+         b_id:-1,
+         u_index:-1,
+         e:false
+      };
+
+      //
+      $scope.setEditor = function(bucket_id , url_index , status){
+    
+            //if editor mode is on, store the bucketObj in the tempBucket
+            if(status){
+                angular.forEach($scope.buckets , function(bucket){
+                     if(bucket_id == bucket._id){
+                          $scope.tempBucketObj = angular.copy(bucket);
+                          $scope.showAlert('bucket stored in temp' , 'info');
+                     }
+                });
+            }
+            else {
+                for(var i=0; i<$scope.buckets.length; i++){
+                      console.log($scope.buckets[i]._id+' '+bucket_id);
+                      if($scope.buckets[i]._id === bucket_id){
+                          $scope.buckets[i] = angular.copy($scope.tempBucketObj);
+                          console.log($scope.tempBucketObj);
+                          $scope.tempBucketObj  = {};
+                          $scope.showAlert('bucket data reverted back' , 'info');
+                     }
+
+                }
+                
+            }
+
+           //
+           console.log(bucket_id+' '+url_index);
+           $scope.activeEditor = {
+               e:status,
+               b_id:url_index==-1? -1 : bucket_id,
+               u_index:url_index
+            };
+      };
+
+      //
+      $scope.visibleBucketIndex = 0;
+      $scope.setBucketIndex = function(index){
+          $scope.visibleBucketIndex  =index;
+      }
       
 
+      //
+      $scope.createNewBucket = function(){
+           $scope.processingNewBucket =true;
+           bucketFactory.newBucket(angular.copy($scope.defaultBucketObj))
+           .then(function(result){
+               $scope.buckets.push(result);
+               $scope.showAlert('Bucket successfully created' , 'success');
+               $scope.processingNewBucket =false;
+           } , function(err){
+              $scope.showAlert('Error creating bucket' , 'warning' , true);
+              $scope.processingNewBucket =false;
+           });
+      }
+
+      //
+      $scope.updateBucket = function(bucket , u_index){
+           $scope.processingUpdateBucket =true;
+           $scope.activeEditor.u_index = u_index;
+           bucketFactory.updateBucket(bucket)
+           .then(function(status){
+               $scope.showAlert(status , 'success');
+               $scope.processingUpdateBucket =false;
+               $scope.setEditor(-1 , -1 , false);
+           } , function(err){
+              $scope.showAlert('Error creating bucket' , 'warning' , true);
+              $scope.processingUpdateBucket =false;
+           });
+      }
+
        //
-       var domains = [
-          //'localhost:5003',
-          'ghostip1.herokuapp.com', 
-          'ghostip2.herokuapp.com',
-          'ghostip3.herokuapp.com',
-          'ghostip4.herokuapp.com',
-          'ghostip5.herokuapp.com',
-          'ghostip6.herokuapp.com',
-          'ghostip7.herokuapp.com', 
-          'ghostip8.herokuapp.com',
-          'ghostip9.herokuapp.com',
-          'ghostip10.herokuapp.com',
-          'ghostip11.herokuapp.com',
-          'ghostip12.herokuapp.com',
-          'ghostip13.herokuapp.com',
-          'ghostip14.herokuapp.com',
-          'ghostip15.herokuapp.com',
-          'ghostip16.herokuapp.com',
-          'ghostip17.herokuapp.com',
-          'ghostip18.herokuapp.com',
-          'ghostip19.herokuapp.com',
-          'ghostip20.herokuapp.com',
-          'ghostip21.herokuapp.com',
-          'ghostip22.herokuapp.com',
-          'ghostip23.herokuapp.com',
-          'ghostip24.herokuapp.com',
-          'ghostip25.herokuapp.com',
-          'ghostip26.herokuapp.com',
-          'ghostip27.herokuapp.com',
-          'ghostip28.herokuapp.com',
-          'ghostip29.herokuapp.com',
-          'ghostip30.herokuapp.com',
-          'ghostip31.herokuapp.com',
-          'ghostip32.herokuapp.com',
-          'ghostip33.herokuapp.com',
-          'ghostip34.herokuapp.com',
-          'ghostip35.herokuapp.com',
-          'ghostip36.herokuapp.com',
-          'ghostip37.herokuapp.com',
-          'ghostip38.herokuapp.com',
-          'ghostip39.herokuapp.com',
-          'ghostip40.herokuapp.com',
-          'ghostip41.herokuapp.com',
-          'ghostip42.herokuapp.com',
-          'ghostip43.herokuapp.com',
-          'ghostip44.herokuapp.com',
-          'ghostip45.herokuapp.com',
-          'ghostip46.herokuapp.com',
-          'ghostip47.herokuapp.com',
-          'ghostip48.herokuapp.com',
-          'ghostip49.herokuapp.com',
-          'ghostip50.herokuapp.com',
-          'ghostip51.herokuapp.com',
-          'ghostip52.herokuapp.com',
-          'ghostip53.herokuapp.com',
-          'ghostip54.herokuapp.com',
-          'ghostip55.herokuapp.com',
-       ];
+      $scope.removeBucket = function(){
+           /*$scope.processingRemoveBucket =true;
+           bucketFactory.newBucket(angular.copy($scope.defaultBucketObj))
+           .then(function(result){
+               $scope.showAlert(status , 'success');
+               $scope.processingRemoveBucket =false;
+           } , function(err){
+              $scope.showAlert('Error creating bucket' , 'warning' , true);
+              $scope.processingRemoveBucket =false;
+           });*/
+      }
 
-       function populateDomainMap(urlMapList){
-             var promise = $q.defer();
-             var counter = 0;
-             
-             console.log(urlMapList);
+      //
+      $scope.pushNewUrl = function(bucket){
+          $scope.setEditor(-1 , -1 , false);
+          $scope.defaultUrlObj.userName+='1';
+          bucket.urls.push(angular.copy($scope.defaultUrlObj));
+      };
 
-             function checkExit(){
-                  if(counter == domains.length-1){
-                      return aggregateNonAllocated();
-                  }
-                  else{
-                      counter++;
-                      doQuery(domains[counter]);
-                  }
-             }
+      //
+      $scope.removeUrl = function(bucket_id , u_index){
+           $scope.processingRemoveUrl =true;
+           $scope.activeEditor.u_index = u_index;
+           for(var i=0; i<$scope.buckets.length; i++){
+                if($scope.buckets[i]._id === bucket_id){
+                   $scope.tempBucketObj = angular.copy($scope.buckets[i]);
+                   $scope.tempBucketObj.urls.splice(u_index , 1);
+                   update(i);
+                   break;
+               }
+           }
 
-             function doQuery(domain){
-                    $http({
-                         method:'GET',
-                         url:'http://'+domain+'/stats'
-                    })
-                    .success(function(data){
-                         if(angular.isDefined(data.urlObj.url)){
-                              promise.notify({
-                                domain:domain, 
-                                stats:data.statsObj, 
-                                urlObj:data.urlObj,
-                                status:'Active'     //process is actively handling a url
-                              });
+           //
+           function update(index){
+                bucketFactory.updateBucket($scope.tempBucketObj)
+                 .then(function(status){
+                     $scope.buckets[index] = angular.copy($scope.tempBucketObj);
+                     $scope.tempBucketObj = {};
+                     $scope.showAlert('Url deleted from '+$scope.buckets[index].bucketName , 'success');
+                     $scope.processingRemoveUrl =false;
+                     $scope.setEditor(-1 , -1 , false);
+                 } , function(err){
+                    $scope.showAlert('Error removing bucket' , 'warning' , true);
+                    $scope.processingRemoveUrl =false;
+                 });
+           };
+      }
 
-                             //remove the confirmed domain from the urlMapList
-                             console.log(data.urlObj.url);
-                             urlMapList[data.urlObj.url].splice(0 , 1);   
-
-                         }
-                         else{
-                              promise.notify({
-                                domain:domain, 
-                                stats:data.statsObj, 
-                                urlObj:data.urlObj,
-                                status:'Idle'    //Process is waiting for a non occupied url 
-                             });
-                         }
-
-                         //
-                         checkExit();
-                         
-                    })
-                    .error(function(err){
-                         promise.notify({
-                            domain:domain , 
-                            stats:{} , 
-                            urlObj:{},
-                            status:'Dormant'   //Process is offline due to error or change of protocol
-                         });
-                         checkExit();
-                    });
-             }
-             //start the query process
-             doQuery(domains[counter]);
-
-             //This functions filters out UrlOBjects that are curently  not allocated to a process
-             function aggregateNonAllocated() {
-                  console.log('computing non allocated urls');
-                  angular.forEach(Object.keys(urlMapList) , function(key){
-                       if(urlMapList[key].length>0){
-                           angular.forEach(urlMapList[key] , function(UMLObj){
-                                   promise.notify({
-                                      domain:"no server", 
-                                      stats:{}, 
-                                      urlObj:UMLObj,
-                                      status:'Non Allocated'    //url not being processed at the moment 
-                                   });
-                           });
-                       }
-                       
-                  });
-
-                  //
-                  promise.resolve('All Done asynchronously');
-             }
-
-
-             return promise.promise;
-       } 
-
-       return {
-           addUrl:addUrl,
-           updateUrl:updateUrl,
-           removeUrl:removeUrl,
-           getAll:getAll,
-           populateDomainMap:populateDomainMap
-       };
-})
-
-//======================================================FACTORY ENDS HERE
-
-
-//Controller controlling the logic of  the appication
-.controller ('homeController' , function($rootScope , $scope , $timeout  , $http, Urlservice){
-
-    //
-    function startApp(){
-      $scope.domainMapArr = [];
-      $scope.domainDone = false;
-
-      Urlservice.getAll().then(function(data){
-           $scope.Urls = data;
-           computeCategories();
-           
-          //
-          computeUrlMapList();
-
-      } , function(err){
-           alert(err);
-      });
-    }
-
-    startApp();
-   /////////////////////////////
-    //
-    function computeUrlMapList(){
-         var urlMapList = {};
-         console.log($scope.Urls.length);
-         angular.forEach($scope.Urls , function(urlObj){
-              if(angular.isArray(urlMapList[urlObj.url])){
-                 urlMapList[urlObj.url].push(urlObj);
-              }
-              else {
-                urlMapList[urlObj.url] = [];
-                urlMapList[urlObj.url].push(urlObj);  
-              }
-
-         });
-
-         Urlservice.populateDomainMap(urlMapList).then(function(status){
-             console.log(status);
-             $timeout(function(){
-                  $scope.domainDone = true;
-             } , 3000);
-            
-         } , function(err){
-             alert(err);
-         } , function(notifyData){
-             $scope.domainMapArr.push(notifyData);
-             console.log(notifyData);
-         });
-    }
-  
-     //Functions to add a new url
-     $scope.newUrl = {
-         token:'',
-         url:'http://www.yoururl.com',
-         domain:'Server',   
-         selector:'none',
-         account:'account email', 
-         username:'account name',
-         dateCreated:'',
-         lastVisited:'' 
-     } //
-   
-     $scope.addUrl = function(){
-         $scope.processingNew = true;
-         Urlservice.addUrl($scope.newUrl).then(function(data){
-             $scope.processingNew = false;
-             startApp();
-         } , function(err){
-             console.log(err);
-         });    
-     };     
-
-     //
-     $scope.saveUrl = function(domainMap){
-         $scope.processing= true;
-         domainMap.urlObj.url = $scope.editorObj.url;
-         domainMap.urlObj.selector = $scope.editorObj.selector;
-         Urlservice.updateUrl(domainMap , $scope.newUrl.token).then(function(status){
-              $scope.processing = false;
-              $scope.resetEditorSettings(-1);
-              $scope.editorObj = {};
-         },
-         function(err){
-              console.log(err);  
-         });
-     };
-
-     //
-     $scope.deleteUrl = function(domainMap){
-         $scope.processingDel = true;
-         Urlservice.removeUrl(domainMap , $scope.newUrl.token).then(function(status){
-            $scope.processingDel = false;
-            var index = $scope.domainMapArr.indexOf(domainMap);
-            $scope.domainMapArr.splice(index , 1);
-
-         } , function(err){
-            console.log(err);
-         });
-     }
-
-     
-     //
-     $scope.editorIndex = -1;
-     $scope.editorObj = {url:'' , selector:''}
-       
-     $scope.resetEditorSettings = function(index , url , selector){
-         $scope.editorObj.url = url;
-         $scope.editorObj.selector = selector
-         $scope.editorIndex = index;
-     };
-
-
-     
-     function computeCategories(){
-         //
-         console.log($scope.Urls);
-         $scope.categories = ['All'];
-         angular.forEach($scope.Urls , function(url){
-             if($scope.categories.indexOf(url.selector)<0){
-                 $scope.categories.push(url.selector);
-             }
-         });
-     }
-
-     $scope.activeCategory = '';
-     $scope.setCategory = function(category){
-         category=category=='All'?'':category;
-         $scope.activeCategory = category;
-     };
-
-     //
-     $scope.states = ['All' , 'Active' , 'Idle' , 'Dormant' , 'Non Allocated'];
-     $scope.activeState = '';
-     $scope.setState = function(state){
-         state=state=='All'?'':state;
-         $scope.activeState = state;
-     };
-    
-     //
-     $scope.menuVisible = false; 
-     $scope.toggleMenu = function(){
-         $scope.menuVisible=!$scope.menuVisible;
-     }
-     //
-     $scope.activeHover = -1;
-     //Scroll spy 
-     $scope.fixed = false;
-    
-     $rootScope.$on('my:fixed' , function(e, a){
-          $timeout(function(){
-              $scope.fixed = true;
-          });
-          
-     });
-
-      $rootScope.$on('my:unfixed' , function(e, a){
-          $timeout(function(){
-              $scope.fixed = false;
-          });
-     });
 });

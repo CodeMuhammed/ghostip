@@ -110,7 +110,8 @@ module.exports = function(cb , UrlObj , done) {
 							 console.log('test done');
 							 goodIps.push(raw);
 							 untestedIpIndex++;
-							 cb(raw , urlObj.url , urlObj.selector);
+							 console.log('Logging  visit : remember to install tiny-json-rpc');
+							 //cb(raw , urlObj.url , urlObj.selector);
 							 return testIp();
 						 }
 						 else {

@@ -24,51 +24,34 @@ module.exports = function(dbName , app){
 					openedColls.Explorer = db.collection('Explorer');
 					DBOpened = true;
                     
-                    //check if urls with status inactive are available
-                    openedColls.Urls.find({status : 'inactive'}).toArray(function(err , results){
+                    //Initialize explorer object
+                    openedColls.Explorer.find({}).toArray(function(err , results){
 		                  if(err){
-		                     throw new Error('DB connection error here 2');
+		                     throw new Error('DB connection error here 1');
 		                  }
 		                  else if(results[0] == undefined){
-		                      initExplorer(false);
+		                     console.log('coll not defined');
+		                     var explorerObj = {
+		                     	 locked: false,
+		                     	 accessingDomain: ''
+		                     };
+		                      openedColls.Explorer.insertOne(explorerObj , function(err , result){
+			                     if(err){
+			                         throw new Error('DB connection error here 2');
+			                     } 
+			                     else {
+			                     	console.log('coll defined');
+			                     	console.log(result);
+			                        return cb(); 
+			                     }
+			                 });
 		                  }
 		                  else {
-		                      initExplorer(true);
+		                  	 console.log('coll already defined');
+		                     return cb();
 		                  }
-		             });
- 
-                    //Initialize explorer object
-                    function initExplorer(status){
-                         
-	                    openedColls.Explorer.find({}).toArray(function(err , results){
-			                  if(err){
-			                     throw new Error('DB connection error here 1');
-			                  }
-			                  else if(results[0] == undefined){
-			                     console.log('coll not defined');
-			                     var explorerObj = {
-			                     	 locked: false,
-			                     	 urlsAvailable : status,
-			                     	 accessingDomain: ''
-			                     };
-			                      openedColls.Explorer.insertOne(explorerObj , function(err , result){
-				                     if(err){
-				                         throw new Error('DB connection error here 2');
-				                     } 
-				                     else {
-				                     	console.log('coll defined');
-				                     	console.log(result);
-				                        return cb(); 
-				                     }
-				                 });
-			                  }
-			                  else {
-			                  	 console.log('coll already defined');
-			                     return cb();
-			                  }
-			             });
-                    }
-                   
+		            });
+	           
 				}
 			});
 		} else {

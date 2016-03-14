@@ -72,7 +72,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
            lastModified:Date.now(),
            serverToken:'1010',
            userToken:'',
-           urls:[]
+           urls:[$scope.defaultUrlObj]
        };
       
       //

@@ -23,9 +23,10 @@ module.exports = function(bucketExplorer , database) {
                 bucket.urls[i].statusText = 'No status yet';
             };
          }
-    	 
+         
     	 console.log(bucket);
     	 console.log('bucket set in visitor');
+         startUpdateDaemon();
     };
 
     var getBucket = function(){
@@ -54,6 +55,28 @@ module.exports = function(bucketExplorer , database) {
     	}
     }
 
+
+    var visitWith = function(ip){
+        if(ipQueue.indexOf(ip) < 0){
+        	console.log('Adding '+ip+' to visiting ip queue');
+            ipQueue.push(ip);
+        }
+        else{
+        	console.log('ip already exists in queue');
+        }
+        
+        if(!daemonStarted){
+            startVisitingDeamon();
+        }
+    }
+
+    //
+    var exitWhenDone = function(){
+         exitFlag = true;
+    }
+    
+    
+    
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	var runGhostProxy = function(ip , urlsArr , index , cb){ 
@@ -167,7 +190,8 @@ module.exports = function(bucketExplorer , database) {
 	};
 
 	//
-	var startVisitingDeamon = function(){
+	function startVisitingDeamon(){
+        console.log('Starting visiting daemon');
 		if(ipQueueIndex < ipQueue.length && bucket.urls.length > 0){
             runGhostProxy(ipQueue[ipQueueIndex] , bucket.urls , 0 , function(){
             	 startVisitingDeamon();
@@ -188,7 +212,8 @@ module.exports = function(bucketExplorer , database) {
 	};
     
     //updateBucket after every two minutes of activity
-    var startUpdateDaemon = function(){
+    function startUpdateDaemon(){
+        console.log('Starting cron daemon');
         setInterval(function(){
             bucket.lastActive = Date.now()+'';
             Buckets.update(
@@ -208,28 +233,6 @@ module.exports = function(bucketExplorer , database) {
     }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-    var visitWith = function(ip){
-        if(ipQueue.indexOf(ip) < 0){
-        	console.log('Adding '+ip+' to visiting ip queue');
-            ipQueue.push(ip);
-        }
-        else{
-        	console.log('ip already exists in queue');
-        }
-        
-        if(!daemonStarted){
-        	console.log('Starting visiting daemon');
-            startVisitingDeamon();
-            startUpdateDaemon();
-        }
-    }
-
-    //
-    var exitWhenDone = function(){
-         exitFlag = true;
-    }
-
 	return {
 	    visitWith:visitWith,
 	    getBucket:getBucket,

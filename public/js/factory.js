@@ -4,8 +4,8 @@ angular.module('customFactory' , [])
 .factory('bucketFactory' , function($q , $http , $location , $timeout){
        //
        var domains = [
-          //'localhost:5004'
-          'ghostip1.herokuapp.com', 
+          'localhost:5004'
+          /*'ghostip1.herokuapp.com', 
           'ghostip2.herokuapp.com',
           'ghostip3.herokuapp.com',
           'ghostip4.herokuapp.com',
@@ -59,7 +59,7 @@ angular.module('customFactory' , [])
           'ghostip52.herokuapp.com',
           'ghostip53.herokuapp.com',
           'ghostip54.herokuapp.com',
-          'ghostip55.herokuapp.com',
+          'ghostip55.herokuapp.com',*/
        ];
 
 	     //

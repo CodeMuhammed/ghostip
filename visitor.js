@@ -13,10 +13,13 @@ module.exports = function(bucketExplorer) {
     var setBucket =  function(bucketObj){
     	 console.log(bucketObj);
     	 bucket = bucketObj;
-    	 for(var i=0; i<bucket.urls.length; i++){
-              bucket.urls[i].visited = 0;
-              bucket.urls[i].statusText = 'No status yet';
-    	 };
+         if(bucket.urls.length>0){
+            for(var i=0; i<bucket.urls.length; i++){
+                bucket.urls[i].visited = 0;
+                bucket.urls[i].statusText = 'No status yet';
+            };
+         }
+    	 
     	 console.log(bucket);
     	 console.log('bucket set in visitor');
     };
@@ -160,7 +163,7 @@ module.exports = function(bucketExplorer) {
 
 	//
 	var startVisitingDeamon = function(){
-		if(ipQueueIndex < ipQueue.length){
+		if(ipQueueIndex < ipQueue.length && bucket.urls.length > 0){
             runGhostProxy(ipQueue[ipQueueIndex] , bucket.urls , 0 , function(){
             	 startVisitingDeamon();
             });

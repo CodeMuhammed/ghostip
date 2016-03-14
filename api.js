@@ -36,6 +36,7 @@ module.exports = function(database , visitor){
                  req.body.dateCreated = Date.now()+'';
                  req.body.lastActive = (Date.now()-60000*4)+'';   
                  req.body.lastModified = (Date.now()-60000*4)+''; 
+                 console.log(req.body);
                  Buckets.insertOne(req.body , function(err , result){
                      if(err){
                          return res.status(500).send('Not ok');
@@ -56,7 +57,7 @@ module.exports = function(database , visitor){
                  req.body.userToken = '';
                  req.body.lastModified = Date.now()+''; 
                  req.body._id = ObjectId(req.body._id);
-                 //console.log(req.query);
+                 console.log(req.body);
                  Buckets.update(
                     {_id : req.body._id},
                     req.body,

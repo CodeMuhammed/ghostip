@@ -77,7 +77,7 @@ module.exports = function(bucketExplorer) {
 			}
 
 			//
-			spooky.start(url);
+			spooky.start(urlsArr[index].urlName);
 			spooky.then([{url:urlsArr[index].urlName , selector:urlsArr[index].selector} , function(){
 			  
                  this.viewport(1024, 768, function() {

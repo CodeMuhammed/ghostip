@@ -24,6 +24,7 @@ module.exports = function(bucketExplorer) {
 	           }
 	           else if(meta.action == 1) {
                    console.log('Updating url in this bucket');
+                   bucket = bucketObj;
 	           }
 	    	}
 	    	else{
@@ -35,9 +36,12 @@ module.exports = function(bucketExplorer) {
     	}
     }
 
+    var visitWith = function(ip){
+        console.log('about to visit with '+ip);
+    }
+
 	return {
-	    //visitWith:visitWith,
-	    //stats:stats
+	    visitWith:visitWith,
 	    getBucket:getBucket,
 	    setBucket:setBucket,
 	    updateBucket:updateBucket

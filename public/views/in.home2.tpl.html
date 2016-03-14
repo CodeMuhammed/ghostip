@@ -20,13 +20,12 @@
 	  </span>
 </div>
 
-<div class="col-sm-8 col-sm-offset-2" style="padding:0; margin-bottom:2em" ng-repeat="bucket in buckets">
+<div class="col-sm-8 col-sm-offset-2 clearfix" style="padding:0; margin-bottom:2em" ng-repeat="bucket in buckets">
 	<div class="col-xs-12" style="border:1px solid {{bucket.active?'#5cb85c':'#f0ad4e'}}; min-height:4em; padding:0">
 	    <div class="col-xs-12" style="padding:.3em .3em; background-color:{{bucket.active?'#5cb85c':'#f0ad4e'}}">
 	        <i class="icon fa fa-caret-{{$index==visibleBucketIndex?'down':'up'}}" style="color:#fff; font-size:1.5em; margin-right:.3em" ng-click="setBucketId(bucket._id)"></i>
     		 <i class="icon fa fa-trash" style="color:#ccc; font-size:1.5em; margin-right:.3em"></i>
     		 <i class="icon fa fa-plus" style="color:#fff; font-size:1.5em" ng-click="pushNewUrl(bucket)"></i>
-    		 <i class="icon fa fa-flash pull-right" style="color:#fff; font-size:1.5em"></i>
     		 <span style="color:#fff; margin-right:.4em;" class="pull-right"><b>created: {{bucket.dateCreated | date:'shortDate'}} | last-modified: {{bucket.lastModified | date:'shortDate'}}</b> </span>
     	</div>
     	<div style="padding:.3em .3em">

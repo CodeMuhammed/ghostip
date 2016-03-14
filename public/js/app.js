@@ -90,6 +90,8 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                    function(data){
                         for(var i=0; i<data.length; i++){
                             data[i].active = '';
+                            data[i].processName = 'No process';
+                            data[i].serverToken = '1010';
                             $scope.buckets.push(data[i]);
                         }
                         $scope.showAlert(data.length+' dormant buckets gotten' , 'success');

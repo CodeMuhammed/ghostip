@@ -1,11 +1,10 @@
-/**This module searches for new ip addresses and tests thhem for validity**/
+/**This module searches for new ip addresses and tests them for validity**/
 //Main process tells you to stop searching
 //you return -1 for no tested ip found but search is still on
 //you return -2 for no tested ip found and all untested ips have been tested and search has stopped
 //Exports important functions to calling program
-module.exports = function(cb , bucketObj , done) {
-	console.log(cb);
-	console.log('tester working');
+module.exports = function() {
+	console.log('Search and test started');
 
 	var request = require('request'); 
 	var curl = require('curlrequest');
@@ -20,27 +19,7 @@ module.exports = function(cb , bucketObj , done) {
 	//
 	var STOP_SEARCH =false;
 
-	//
-    
-    //Use fall back for the mean time before building your own what to do?
-    //Read lines of ip use them to make request before resulting to gimmeproxy
-	/*pl = new LineByLineReader('proxies.txt');
-	pl.on('error', function (err) {
-		console.log('error while reading file');
-	});
-
-	pl.on('line', function (line) {
-		untestedIps.push('http://'+line.toString());
-	});
-
-	pl.on('end', function () {
-	   console.log(untestedIps.length);
-	   STOP_SEARCH = true;
-	});*/
-
-	//=================================
-   
-
+	
 	function getIp(){
 		if(!STOP_SEARCH){
 			 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
@@ -86,7 +65,6 @@ module.exports = function(cb , bucketObj , done) {
 	var testIp = function(){
 		if(untestedIpIndex<untestedIps.length){
 			var raw = untestedIps[untestedIpIndex];
-			console.log(raw);
 		    var options = {
 				url: 'https://fg1.herokuapp.com',
 				retries: 5,
@@ -107,8 +85,6 @@ module.exports = function(cb , bucketObj , done) {
 						 if(res){
 							 console.log('test done');
 							 goodIps.push(raw);
-							 untestedIpIndex++;
-							 console.log('Logging  visit : New definition for multiple visitis');
 							 return testIp();
 						 }
 						 else {
@@ -122,8 +98,6 @@ module.exports = function(cb , bucketObj , done) {
 		else{
 		    if(STOP_SEARCH && (untestedIpIndex==untestedIps.length)){
 		    	 console.log('All ips have been tested stopping testing phase');
-		    	 done();
-				 return;
 			}
 			else{
 			    console.log('No untested ips will retry in 30secs');
@@ -139,29 +113,19 @@ module.exports = function(cb , bucketObj , done) {
 	testIp();
 
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-
-	//
-	var stopSearch = function(cb){
-		STOP_SEARCH = true;
-		cb();
-	}
-
-	//
-	var getFound = function(){
-		return {good:goodIps.length, tested:untestedIpIndex};
-	}
-    
-    //
-    var updateUrlObj = function(newUrlObj){
-		bucketObj = newUrlObj;
-		console.log('bucketObj updated in tester');
-		console.log(bucketObj);
-	}
+    var getNext = function(){
+    	if(goodIps.length > 0 && goodIpIndex < goodIps.length && !STOP_SEARCH ){
+            var ip = goodIps[goodIpIndex];
+            goodIpIndex++;
+            return ip;
+    	}
+    	else{
+           return -1;
+    	}
+    }
 
 	return {
-	    getFound:getFound,
-	    updateUrlObj:updateUrlObj,
-	    stopSearch : stopSearch
+	    getNext:getNext
 	}
 	
 };

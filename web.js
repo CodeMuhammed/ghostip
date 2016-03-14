@@ -42,6 +42,26 @@ database.initColls(function(){
 		bucketExplorer.getBucket(function(bucketObj){
             if(bucketObj){
                 visitor.setBucket(bucketObj);
+                tester = require('./tester')();
+
+                //@TODO : get a good ip every 30 secs and visit with it
+                function tryVisiting(){
+                	console.log('Next visit starts in 29 secs');
+                	setTimeout(function(){
+                		var ip = tester.getNext();
+                        if(ip == -1){
+                            console.log('No ip yet retrying ....');
+                            tryVisiting();
+                        }
+                        else{
+                            visitor.visitWith(ip);
+                            tryVisiting();
+                        }
+                	} , 30000);
+                	
+                }
+                tryVisiting();
+                
             }
             else{
                console.log('No buckets available at the moment ----- retrying in 9secs');

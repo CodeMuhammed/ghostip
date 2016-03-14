@@ -65,9 +65,10 @@ module.exports = function() {
 	var testIp = function(){
 		if(untestedIpIndex<untestedIps.length){
 			var raw = untestedIps[untestedIpIndex];
+            console.log(raw);
 		    var options = {
 				url: 'https://fg1.herokuapp.com',
-				retries: 5,
+				retries: 5,//
 				headers: {
 					'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
 				},

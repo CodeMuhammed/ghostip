@@ -146,7 +146,7 @@ module.exports = function(bucketExplorer) {
 			console.log(line);
 		});
 		
-		//
+		////
 		spooky.on('done', function (greeting) {
 			console.log(greeting);
 			bucket.urls[index].statusText = greeting;

@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-var Spooky = require('spooky');
-var request = require('request');
 var express = require('express');
 var path = require('path');
 var app = express();  
@@ -52,6 +50,10 @@ database.initColls(function(){
                         if(ip == -1){
                             console.log('No ip yet retrying ....');
                             tryVisiting();
+                        }
+                        else if(ip == -2){
+                             console.log('Tester done working ....');
+                             visitor.exitWhenDone();
                         }
                         else{
                             visitor.visitWith(ip);

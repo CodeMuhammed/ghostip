@@ -119,8 +119,13 @@ module.exports = function() {
             goodIpIndex++;
             return ip;
     	}
+    	else if(goodIpIndex >= goodIps.length && STOP_SEARCH){
+    		//All good ips have been exhausted no more new ips
+            return -2;
+    	}
     	else{
-           return -1;
+    		//All good ips exhausted but untested ips available
+            return -1;
     	}
     }
 

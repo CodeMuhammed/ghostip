@@ -92,6 +92,9 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                             data[i].active = '';
                             data[i].processName = 'No process';
                             data[i].serverToken = '1010';
+                            for(var j=0; j<data[i].urls.length; j++){
+                                 data[i].urls[j].statusText = 'No status yet';
+                            }
                             $scope.buckets.push(data[i]);
                         }
                         $scope.showAlert(data.length+' dormant buckets gotten' , 'success');

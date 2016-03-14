@@ -79,10 +79,10 @@ angular.module('customFactory' , [])
                          data.processName = domain;
                          data.active = true;
                          promise.notify(data);
-                         getBucket(domains[index++]);
+                         getBucket(domains[++index]);
                     })
                     .error(function(err){
-                         getBucket(domains[index++]);
+                         getBucket(domains[++index]);
                     });
                 }
                 else{

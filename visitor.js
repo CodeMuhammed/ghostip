@@ -74,10 +74,7 @@ module.exports = function(bucketExplorer) {
 				e = new Error('Failed to initialize SpookyJS');
 				e.details = err;
 				throw e;
-			} 
-		
-			//start the main site visiting process
-			console.log('here init =========================== '+url+' '+selector);
+			}
 
 			//
 			spooky.start(url);

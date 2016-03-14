@@ -113,6 +113,7 @@ angular.module('customFactory' , [])
 
        //
        var newBucket = function(bucketObj){
+           console.log(bucketObj);
        	   var promise = $q.defer();
        	   $http.post('/api/buckets/1',bucketObj)
            .success(function(data){

@@ -1,13 +1,17 @@
 /* This module uses a give ip to visit the whole urls in the bucket assigned to it
 */
-module.exports = function(bucketExplorer) {
+module.exports = function(bucketExplorer , database) {
 	//
+    var ObjectId = require('mongodb').ObjectId;
 	var Spooky = require('spooky');
 	var ipQueue = [];
 	var ipQueueIndex = 0;
 	var bucket;
 	var daemonStarted = false;
 	var exitFlag = false;
+    
+    //
+    var Buckets = database.model('Buckets');
     
     //
     var setBucket =  function(bucketObj){
@@ -182,6 +186,26 @@ module.exports = function(bucketExplorer) {
            } ,15000);
 		}
 	};
+    
+    //updateBucket after every two minutes of activity
+    var startUpdateDaemon = function(){
+        setInterval(function(){
+            bucket.lastActive = Date.now()+'';
+            Buckets.update(
+                {_id : ObjectId(bucket._id)},
+                bucket,
+                function(err , result){
+                    if(err){
+                        console.log(err);
+                        res.status(500).send('Database error during cron update in visitor');
+                    }
+                    else {
+                        console.log('bucket updated in cron job');
+                    }  
+                }
+          );
+        } , 1000*120);
+    }
 
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -197,6 +221,7 @@ module.exports = function(bucketExplorer) {
         if(!daemonStarted){
         	console.log('Starting visiting daemon');
             startVisitingDeamon();
+            startUpdateDaemon();
         }
     }
 

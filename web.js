@@ -33,7 +33,7 @@ var visitor;
 database.initColls(function(){
 	
 	bucketExplorer  = require('./bucketExplorer')(database);
-    visitor = require('./visitor')(bucketExplorer);
+    visitor = require('./visitor')(bucketExplorer , database);
 	app.use('/api' , require('./api')(database , visitor));
 
 	function getBucketFn(){

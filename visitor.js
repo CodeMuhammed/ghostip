@@ -9,7 +9,7 @@ module.exports = function(bucketExplorer) {
 	var daemonStarted = false;
 	var exitFlag = false;
     
-    //////
+    ///
     var setBucket =  function(bucketObj){
     	 console.log(bucketObj);
     	 bucket = bucketObj;

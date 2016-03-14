@@ -150,6 +150,7 @@ module.exports = function(bucketExplorer) {
 		spooky.on('done', function (greeting) {
 			console.log(greeting);
 			bucket.urls[index].statusText = greeting;
+            bucket.urls[index].visited++;
 			if(index >= urlsArr.length){
                runGhostProxy(ip , urlsArr , index++ , cb);
 			}

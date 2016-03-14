@@ -86,6 +86,7 @@ module.exports = function() {
 						 if(res){
 							 console.log('test done');
 							 goodIps.push(raw);
+                             untestedIpIndex++;
 							 return testIp();
 						 }
 						 else {

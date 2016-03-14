@@ -85,5 +85,3 @@ database.initColls(function(){
 	});
 	 
 });
-
-

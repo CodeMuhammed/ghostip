@@ -4,7 +4,7 @@ angular.module('customFactory' , [])
 .factory('bucketFactory' , function($q , $http , $location , $timeout){
        //
        var domains = [
-          //'localhost:5004'
+          'localhost:5004',
           'ghostip1.herokuapp.com', 
           'ghostip2.herokuapp.com',
           'ghostip3.herokuapp.com',
@@ -132,7 +132,7 @@ angular.module('customFactory' , [])
        	   var promise = $q.defer();
            var prefix = '';
            if($location.absUrl().indexOf(bucketObj.processName)<0 && bucketObj.processName != 'No process'){
-               prefix = 'http://'+processName;
+               prefix = 'http://'+bucketObj.processName;
                console.log(prefix);
            }
 

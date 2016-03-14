@@ -65,41 +65,46 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
        $scope.tempBucketObj = {};
 
        $scope.defaultBucketObj =  {
-           _id:'123456789',
            bucketName:'New Test',
            processName:'No process',
            dateCreated:Date.now(),
            lastActive:Date.now(),
            lastModified:Date.now(),
            serverToken:'1010',
-           userToken:'Your_token',
+           userToken:'',
            urls:[]
        };
+      
+      //
+      $scope.buckets = [];
+      bucketFactory.getActiveBucketsAsync().then(
+           function(done){
+               $scope.showAlert(done , 'success');
+               var idsArr = [];
+               for(var i=0; i<$scope.buckets.length; i++){
 
-       $scope.buckets = [
-          {
-           _id:'123456789',
-           bucketName:'Experimental Test',
-           processName:'No process',
-           dateCreated:Date.now(),
-           lastActive:Date.now(),
-           lastModified:Date.now(),
-           serverToken:'10111110101001000',
-           userToken:'',
-           urls:[
-              {
-                 userName:'codemuhammed',
-                 accountEmail:'codemuhammed@gmail.com',
-                 serviceName:'credhot',
-                 urlName:'https://crd.ht/qZ05',
-                 selector:'div.unselectable',
-                 dateCreated:Date.now(),
-                 visited:'0',
-                 statusText:'No status yet'
-              },
-           ]
-       }
-      ];
+                   idsArr.push($scope.buckets[i]._id);
+               }
+
+               bucketFactory.getDormantBuckets(idsArr).then(
+                   function(data){
+                        for(var i=0; i<data.length; i++){
+                            data[i].active = '';
+                            $scope.buckets.push(data[i]);
+                        }
+                        $scope.showAlert(data.length+' dormant buckets gotten' , 'success');
+                   },
+                   function(err){
+                        $scope.showAlert(err , 'warning'  , true);
+                   }
+               );
+           },
+           function(err){
+           },
+           function(data){
+               $scope.buckets.push(data);
+           }
+      );
 
       //Editor controls
       $scope.activeEditor = {
@@ -144,9 +149,9 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
       };
 
       //
-      $scope.visibleBucketIndex = 0;
-      $scope.setBucketIndex = function(index){
-          $scope.visibleBucketIndex  =index;
+      $scope.visibleBucketId = -1;
+      $scope.setBucketId = function(b_id){
+          $scope.visibleBucketId  =b_id;
       }
       
 
@@ -159,22 +164,23 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                $scope.showAlert('Bucket successfully created' , 'success');
                $scope.processingNewBucket =false;
            } , function(err){
-              $scope.showAlert('Error creating bucket' , 'warning' , true);
+              $scope.showAlert(err , 'warning' , true);
               $scope.processingNewBucket =false;
            });
       }
 
       //
       $scope.updateBucket = function(bucket , u_index){
+           bucket.userToken = $scope.defaultBucketObj.userToken;
            $scope.processingUpdateBucket =true;
            $scope.activeEditor.u_index = u_index;
-           bucketFactory.updateBucket(bucket)
+           bucketFactory.updateBucket(bucket , 1)
            .then(function(status){
                $scope.showAlert(status , 'success');
                $scope.processingUpdateBucket =false;
                $scope.setEditor(-1 , -1 , false);
            } , function(err){
-              $scope.showAlert('Error creating bucket' , 'warning' , true);
+              $scope.showAlert(err , 'warning' , true);
               $scope.processingUpdateBucket =false;
            });
       }
@@ -203,6 +209,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
       $scope.removeUrl = function(bucket_id , u_index){
            $scope.processingRemoveUrl =true;
            $scope.activeEditor.u_index = u_index;
+           $scope.activeEditor.b_id = bucket_id;
            for(var i=0; i<$scope.buckets.length; i++){
                 if($scope.buckets[i]._id === bucket_id){
                    $scope.tempBucketObj = angular.copy($scope.buckets[i]);
@@ -214,7 +221,8 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
 
            //
            function update(index){
-                bucketFactory.updateBucket($scope.tempBucketObj)
+                $scope.tempBucketObj.userToken = $scope.defaultBucketObj.userToken;
+                bucketFactory.updateBucket($scope.tempBucketObj , 0)
                  .then(function(status){
                      $scope.buckets[index] = angular.copy($scope.tempBucketObj);
                      $scope.tempBucketObj = {};
@@ -222,7 +230,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                      $scope.processingRemoveUrl =false;
                      $scope.setEditor(-1 , -1 , false);
                  } , function(err){
-                    $scope.showAlert('Error removing bucket' , 'warning' , true);
+                    $scope.showAlert(err , 'warning' , true);
                     $scope.processingRemoveUrl =false;
                  });
            };

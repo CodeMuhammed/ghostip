@@ -20,7 +20,7 @@ module.exports = function(dbName , app){
 				} else { 
 					assert.equal(null ,err);
 					console.log('Connected correcctly to the database');
-					openedColls.Urls = db.collection('Urls');
+					openedColls.Buckets = db.collection('Buckets');
 					openedColls.Explorer = db.collection('Explorer');
 					DBOpened = true;
                     

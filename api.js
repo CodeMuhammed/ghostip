@@ -5,9 +5,9 @@ var path = require('path');
 var ObjectId = require('mongodb').ObjectId;
 
 //api routes
-module.exports = function(database , urlExplorer){
+module.exports = function(database , visitor){
   //models
-   var Urls = database.model('Urls');
+   var Buckets = database.model('Buckets');
    var Explorer = database.model('Explorer');
  
    router.param('id' , function(req , res , next , id){
@@ -18,101 +18,63 @@ module.exports = function(database , urlExplorer){
 
 	/*********************************************************************************
 	 *********************************************************************************/
-     router.route('/urls/:id')
+     router.route('/buckets/:id')
        .get(function(req , res){
-             var obj;
-             if(req.id == 'all'){
-                 obj = {};
-             }
-             else{
-                 obj = {"_id":ObjectId(req.id)};  
-             }
+            var bucket = visitor.getBucket();
 
-             Urls.find(obj).toArray(function(err , results){
-                  if(err){
-                     return res.status(500).send('urls Not ok');
-                  }
-                  else if(results[0] == undefined){
-                     return res.status(500).send('No urls available');
-                  }
-                  else {
-                    console.log('getall called here');
-                    if(req.id == 'all'){
-                         res.status(200).send(results); 
-                     }
-                     else{
-                         res.status(200).send(results[0]); 
-                     }
-                  }
-             });
-
+            if(bucket){
+                res.status(200).send(bucket);
+            }
+            else{
+                res.status(500).send('No active bucket on '+req.hostname);
+            }
         })
 
         .post(function(req , res){
-             if(req.query.token=='12345'){
-                 req.query.dateCreated = Date.now()+'';
-                 req.query.lastVisited = (Date.now()-60000*4)+'';   
-                 Urls.insertOne(req.query , function(err , result){
+             if(req.body.userToken=='nature'){
+                 req.body.userToken = '';
+                 req.body.dateCreated = Date.now()+'';
+                 req.body.lastActive = (Date.now()-60000*4)+'';   
+                 req.body.lastModified = (Date.now()-60000*4)+''; 
+                 Buckets.insertOne(req.body , function(err , result){
                      if(err){
                          return res.status(500).send('Not ok');
                      } 
                      else {
-                      req.query._id = result.ops[0]._id.toString();
-                      updateAvailable(req.query);
+                      req.body._id = result.ops[0]._id.toString();
+                      res.status(200).send(result.ops[0]);
                      }
                  }); 
-
-                 //
-                 function updateAvailable(data){
-                     //
-                     console.log('====================updating availabilty in add url path');
-                      Explorer.update(
-                        {},
-                        {
-                           "$set": {  
-                                urlsAvailable:true
-                           }
-                        },
-                        function(err , result){
-                            if(err){
-                                throw new Error('DB connection error api 1');
-                            }
-                            else {
-                                console.log('process successfully released lock on database');
-                                res.status(200).send(data);
-                            }
-                        }
-                     );
-                    
-                 };
              }
              else{
-                return res.status(500).send('invalid bitcoin address');
+                return res.status(500).send('invalid user token');
              }
-             
         }) 
         
         .put(function(req , res){
-             if(req.id == '12345'){
-                 req.query._id = ObjectId(req.query._id);
+             console.log(req.id);
+             if(req.body.userToken == 'nature'){
+                 req.body.userToken = '';
+                 req.body.lastModified = Date.now()+''; 
+                 req.body._id = ObjectId(req.body._id);
                  //console.log(req.query);
-                 Urls.update(
-                    {_id : req.query._id},
-                    req.query,
+                 Buckets.update(
+                    {_id : req.body._id},
+                    req.body,
                     function(err , result){
                         if(err){
                             console.log(err);
-                            res.status(500).send('Not ok Url was not updated');
+                            res.status(500).send('Database error during update');
                         }
                         else {
-                           urlExplorer.updateGlobal(req.query , 'update');
-                           res.status(200).send('update Url recieved on the server');
+                           visitor.updateBucket(req.body , req.id);
+                           res.status(200).send('Bucket updated on the server');
                         }  
                     }
                  );
              }
              else{
-                    res.status(500).send('Cannot update url due to invalid token');
+                    res.status(500).send('Cannot update Bucket due to invalid token');
              }
              
         }) 
@@ -139,32 +101,27 @@ module.exports = function(database , urlExplorer){
 
      /*********************************************************************************
      *********************************************************************************/
-      router.route('/reset')
+     router.route('/getAll')
        .post(function(req , res){
-             //
-             if(req.query.token == '12345'){
-                  Explorer.update(
-                    {},
-                    {
-                       "$set": {
-                           accessingDomain:'',
-                           locked:false,
-                       }
-                    },
-                    
-                    function(err , result){
-                        if(err){
-                             throw new Error('Api reset error 2');
-                        }
-                        else { //
-                            res.status(200).send('Server successfully reset');
-                        }  
-                    });
-             }
-             else{
-                 res.status(500).send('Cannot reset server due to invalid token');
-             }
- 
+            console.log(req.body);
+            var query = {};
+            if(req.body.ids.length > 0){
+               for(var i=0; i<req.body.ids.length; i++){
+                    req.body.ids[i] = ObjectId( req.body.ids[i]);
+               }
+            }
+            
+            Buckets.find({"_id":{"$nin": req.body.ids}}).toArray(function(err , results){
+                  if(err){
+                     return res.status(500).send('Database error during getAll');
+                  }
+                  else if(results[0] == undefined){
+                     return res.status(500).send('No Dormant Buckets available');
+                  }
+                  else {
+                   res.status(200).send(results); 
+                  }
+             });
         })
  
    

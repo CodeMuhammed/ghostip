@@ -71,7 +71,8 @@ angular.module('customFactory' , [])
        }
 
        //When updating, url params 1 means updated url while 0 means deleted url
-       var updateBucket = function(bucketObj , action){
+       var updateBucket = function(bucketObj , meta){
+           console.log(meta);
        	   var promise = $q.defer();
            var prefix = '';
            if($location.absUrl().indexOf(bucketObj.processName)<0 && bucketObj.processName != 'No process'){
@@ -79,7 +80,7 @@ angular.module('customFactory' , [])
                console.log(prefix);
            }
 
-       	   $http.put(prefix+'/api/buckets/'+action , bucketObj)
+       	   $http.put(prefix+'/api/buckets/1?'+'action='+meta.action+'&'+'index='+meta.index , bucketObj)
            .success(function(data){
               promise.resolve(data);
            })

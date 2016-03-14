@@ -52,7 +52,6 @@ module.exports = function(database , visitor){
         }) 
         
         .put(function(req , res){
-             console.log(req.id);
              if(req.body.userToken == 'nature'){
                  req.body.userToken = '';
                  req.body.lastModified = Date.now()+''; 
@@ -67,7 +66,7 @@ module.exports = function(database , visitor){
                             res.status(500).send('Database error during update');
                         }
                         else {
-                           visitor.updateBucket(req.body , req.id);
+                           visitor.updateBucket(req.body , req.query);
                            res.status(200).send('Bucket updated on the server');
                         }  
                     }

@@ -174,7 +174,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
            bucket.userToken = $scope.defaultBucketObj.userToken;
            $scope.processingUpdateBucket =true;
            $scope.activeEditor.u_index = u_index;
-           bucketFactory.updateBucket(bucket , 1)
+           bucketFactory.updateBucket(bucket , {action:1,index:u_index})
            .then(function(status){
                $scope.showAlert(status , 'success');
                $scope.processingUpdateBucket =false;
@@ -222,7 +222,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
            //
            function update(index){
                 $scope.tempBucketObj.userToken = $scope.defaultBucketObj.userToken;
-                bucketFactory.updateBucket($scope.tempBucketObj , 0)
+                bucketFactory.updateBucket($scope.tempBucketObj , {action:0,index:u_index})
                  .then(function(status){
                      $scope.buckets[index] = angular.copy($scope.tempBucketObj);
                      $scope.tempBucketObj = {};

@@ -67,9 +67,9 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
        $scope.defaultBucketObj =  {
            bucketName:'New Test',
            processName:'No process',
-           dateCreated:Date.now(),
-           lastActive:Date.now(),
-           lastModified:Date.now(),
+           dateCreated:'',
+           lastActive:'',
+           lastModified:'',
            serverToken:'1010',
            userToken:'',
            urls:[]

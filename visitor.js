@@ -69,6 +69,52 @@ module.exports = function(bucketExplorer , database) {
             startVisitingDeamon();
         }
     }
+    
+    //
+	function startVisitingDeamon(){
+        console.log('Starting visiting daemon');
+		if(ipQueueIndex < ipQueue.length && bucket.urls.length > 0){
+            runGhostProxy(ipQueue[ipQueueIndex] , bucket.urls , 0 , function(){
+                 ipQueueIndex++;
+            	 startVisitingDeamon();
+            });
+		}
+		else{
+           console.log('No ips in queue yet retrying in 4 secs');
+           setTimeout(function(){
+             
+           	  if(!exitFlag || (exitflag && ipQueueIndex < ipQueue.length)){
+                    startVisitingDeamon();
+               }
+               else{
+                   console.log('Visiting All Done. Exiting......');
+                   process.exit(0);
+               }
+               
+           } ,5000);
+		}
+	};
+    
+    //updateBucket after every 100 secs of activity
+    function startUpdateDaemon(){
+        console.log('Starting cron daemon');
+        setInterval(function(){
+            bucket.lastActive = Date.now()+'';
+            Buckets.update(
+                {_id : ObjectId(bucket._id)},
+                bucket,
+                function(err , result){
+                    if(err){
+                        console.log(err);
+                        res.status(500).send('Database error during cron update in visitor');
+                    }
+                    else {
+                        console.log('bucket updated in cron job');
+                    }  
+                }
+          );
+        } , 100000);
+    }
 
     //
     var exitWhenDone = function(){
@@ -79,7 +125,7 @@ module.exports = function(bucketExplorer , database) {
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	var runGhostProxy = function(ip , urlsArr , index , cb){ 
+	function runGhostProxy (ip , urlsArr , index , cb){ 
 		console.log('starting ghost');
 		console.log('process starting '+ip+' '+urlsArr[index].urlName+' '+urlsArr[index].selector);
 	
@@ -176,7 +222,7 @@ module.exports = function(bucketExplorer , database) {
 			console.log(greeting);
 			bucket.urls[index].statusText = greeting;
             bucket.urls[index].visited++;
-			if(index < urlsArr.length){
+			if(index < urlsArr.length - 1){
                index++;
                runGhostProxy(ip , urlsArr , index , cb);
 			}
@@ -187,51 +233,7 @@ module.exports = function(bucketExplorer , database) {
 			
 		});
 	};
-
-	//
-	function startVisitingDeamon(){
-        console.log('Starting visiting daemon');
-		if(ipQueueIndex < ipQueue.length && bucket.urls.length > 0){
-            runGhostProxy(ipQueue[ipQueueIndex] , bucket.urls , 0 , function(){
-                 ipQueueIndex++;
-            	 startVisitingDeamon();
-            });
-		}
-		else{
-           console.log('No ips in queue yet retrying in 4 secs');
-           setTimeout(function(){
-           	  if(!exitFlag){
-                    startVisitingDeamon();
-               }
-               else{
-                   console.log('Visiting All Done. Exiting......');
-                   process.exit(0);
-               }
-           } ,5000);
-		}
-	};
     
-    //updateBucket after every two minutes of activity
-    function startUpdateDaemon(){
-        console.log('Starting cron daemon');
-        setInterval(function(){
-            bucket.lastActive = Date.now()+'';
-            Buckets.update(
-                {_id : ObjectId(bucket._id)},
-                bucket,
-                function(err , result){
-                    if(err){
-                        console.log(err);
-                        res.status(500).send('Database error during cron update in visitor');
-                    }
-                    else {
-                        console.log('bucket updated in cron job');
-                    }  
-                }
-          );
-        } , 100000);
-    }
-
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	return {
 	    visitWith:visitWith,

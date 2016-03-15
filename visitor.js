@@ -210,7 +210,7 @@ module.exports = function(bucketExplorer , database) {
 				Greeting = stack;
 			}
             
-            //
+            ///
             if(index < urlsArr.length - 1){
                index++;
                runGhostProxy(ip , urlsArr , index , cb);

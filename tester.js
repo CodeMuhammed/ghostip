@@ -102,10 +102,10 @@ module.exports = function() {
 		    	 console.log('All ips have been tested stopping testing phase');
 			}
 			else{
-			    console.log('No untested ips will retry in 30secs');
+			    console.log('No untested ips will retry in 10secs');
 				return setTimeout(function(){
 					return testIp();
-				} , 30000);
+				} , 10000);
 			}
 			
 		}

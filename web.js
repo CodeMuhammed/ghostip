@@ -44,7 +44,7 @@ database.initColls(function(){
 
                 //@TODO : get a good ip every 30 secs and visit with it
                 function tryVisiting(){
-                	console.log('Next visit starts in 29 secs');
+                	console.log('Next visit starts in 5 secs');
                 	setTimeout(function(){
                 		var ip = tester.getNext();
                         if(ip == -1){
@@ -59,7 +59,7 @@ database.initColls(function(){
                             visitor.visitWith(ip);
                             tryVisiting();
                         }
-                	} , 30000);
+                	} , 5000);
                 	
                 }
                 tryVisiting();

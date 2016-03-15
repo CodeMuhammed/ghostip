@@ -116,7 +116,7 @@ module.exports = function(bucketExplorer , database) {
 			          //
                       if(selector=='none'){
 							 this.then(function(){
-							 	  this.wait(10000 , function(){
+							 	  this.wait(5000 , function(){
 								    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
 								    phantom.clearCookies();
 							 	  	this.clear();
@@ -129,21 +129,19 @@ module.exports = function(bucketExplorer , database) {
 						else{ 
 						   this.then(function(){
 						   	   this.waitForSelector(selector , function(){
-						   	   	  this.wait(15000 , function(){
-					   	   	  	    this.thenClick(selector , function() {
-										this.wait(5000 , function(){
+						   	   	  this.thenClick(selector , function() {
+										this.wait(1000 , function(){
 										    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
 										    phantom.clearCookies();
 									 	  	this.clear();
 									 	});
 								    });
-						   	   	  });
 							   	   	  
 						   	   } , function(){
 						   	   	     this.emit('done', 'The selector was not found');
 								     phantom.clearCookies();
 							 	  	 this.clear();
-						   	   } , 20000);
+						   	   } , 15000);
 						   });
 						}
 
@@ -195,11 +193,12 @@ module.exports = function(bucketExplorer , database) {
         console.log('Starting visiting daemon');
 		if(ipQueueIndex < ipQueue.length && bucket.urls.length > 0){
             runGhostProxy(ipQueue[ipQueueIndex] , bucket.urls , 0 , function(){
+                 ipQueueIndex++;
             	 startVisitingDeamon();
             });
 		}
 		else{
-           console.log('No ips in queue yet retrying in 14 secs');
+           console.log('No ips in queue yet retrying in 4 secs');
            setTimeout(function(){
            	  if(!exitFlag){
                     startVisitingDeamon();
@@ -208,7 +207,7 @@ module.exports = function(bucketExplorer , database) {
                    console.log('Visiting All Done. Exiting......');
                    process.exit(0);
                }
-           } ,15000);
+           } ,5000);
 		}
 	};
     

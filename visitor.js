@@ -178,8 +178,8 @@ module.exports = function(bucketExplorer , database) {
 			console.log(greeting);
 			bucket.urls[index].statusText = greeting;
             bucket.urls[index].visited++;
-			if(index >= urlsArr.length){
-               runGhostProxy(ip , urlsArr , index++ , cb);
+			if(index < urlsArr.length){
+               runGhostProxy(ip , urlsArr , ++index , cb);
 			}
             else{
                 console.log('This round done visiting');

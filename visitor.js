@@ -209,6 +209,16 @@ module.exports = function(bucketExplorer , database) {
 				console.log(stack);
 				Greeting = stack;
 			}
+            
+            //
+            if(index < urlsArr.length - 1){
+               index++;
+               runGhostProxy(ip , urlsArr , index , cb);
+			}
+            else{
+                console.log('This round done visiting');
+                cb();
+            }
 		});
 
 		

@@ -67,6 +67,7 @@ module.exports = function(bucketExplorer , database) {
         
         if(!daemonStarted){
             console.log('Daemon starting for the first time');
+            daemonStarted = true;
             startVisitingDeamon();
         }
     }

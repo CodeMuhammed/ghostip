@@ -118,7 +118,7 @@ module.exports = function(bucketExplorer , database) {
 
 			//
 			spooky.start(url.urlName);
-			spooky.then([{url.urlName , selector:url.selector} , function(){
+			spooky.then([{url:url.urlName , selector:url.selector} , function(){
 			  
                  this.viewport(1024, 768, function() {
 					  console.log('Viewport size changed');

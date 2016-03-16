@@ -4,11 +4,7 @@ module.exports = function(bucketExplorer , database) {
 	//
     var ObjectId = require('mongodb').ObjectId;
 	var Spooky = require('spooky');
-	var ipQueue = [];
-	var ipQueueIndex = 0;
 	var bucket;
-	var daemonStarted = false;
-	var exitFlag = false;
     
     //
     var Buckets = database.model('Buckets');
@@ -57,45 +53,9 @@ module.exports = function(bucketExplorer , database) {
 
 
     var visitWith = function(ip){
-        if(ipQueue.indexOf(ip) < 0){
-        	console.log('Adding '+ip+' to visiting ip queue');
-            ipQueue.push(ip);
-        }
-        else{
-        	console.log('ip already exists in queue');
-        }
-        
-        if(!daemonStarted){
-            console.log('Daemon starting for the first time');
-            daemonStarted = true;
-            startVisitingDeamon();
-        }
+        runGhostProxy (ip , bucket.urls , 0);
     }
     
-    //
-	function startVisitingDeamon(){
-        console.log('Starting visiting daemon');
-		if(ipQueueIndex < ipQueue.length && bucket.urls.length > 0){
-            runGhostProxy(ipQueue[ipQueueIndex] , bucket.urls , 0 , function(){
-                 ipQueueIndex++;
-            	 startVisitingDeamon();
-            });
-		}
-		else{
-           console.log('No ips in queue yet retrying in 4 secs');
-           setTimeout(function(){
-             
-           	  if(!exitFlag || (exitflag && ipQueueIndex < ipQueue.length)){
-                    startVisitingDeamon();
-               }
-               else{
-                   console.log('Visiting All Done. Exiting......');
-                   process.exit(0);
-               }
-               
-           } ,5000);
-		}
-	};
     
     //updateBucket after every 100 secs of activity
     function startUpdateDaemon(){
@@ -127,7 +87,7 @@ module.exports = function(bucketExplorer , database) {
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	function runGhostProxy (ip , urlsArr , index , cb){ 
+	function runGhostProxy (ip , urlsArr , index){ 
 		console.log('starting ghost');
 		console.log('process starting '+ip+' '+urlsArr[index].urlName+' '+urlsArr[index].selector);
 	
@@ -215,11 +175,10 @@ module.exports = function(bucketExplorer , database) {
             ///
             if(index < urlsArr.length - 1){
                index++;
-               runGhostProxy(ip , urlsArr , index , cb);
+               runGhostProxy(ip , urlsArr , index);
 			}
             else{
-                console.log('This round done visiting');
-                cb();
+                console.log('This round done visiting with '+ip);
             }
 		});
 
@@ -236,11 +195,10 @@ module.exports = function(bucketExplorer , database) {
             bucket.urls[index].visited++;
 			if(index < urlsArr.length - 1){
                index++;
-               runGhostProxy(ip , urlsArr , index , cb);
+               runGhostProxy(ip , urlsArr , index);
 			}
             else{
-                console.log('This round done visiting');
-                cb();
+                console.log('This round done visiting with '+ip);
             }
 			
 		});

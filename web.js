@@ -59,7 +59,7 @@ database.initColls(function(){
                             visitor.visitWith(ip);
                             tryVisiting();
                         }
-                	} , 5000);
+                	} , 60000);
                 	
                 }
                 tryVisiting();

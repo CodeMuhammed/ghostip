@@ -59,7 +59,7 @@ module.exports = function(bucketExplorer , database) {
     }
     
     
-    //updateBucket after every 100 secs of activity
+    ////updateBucket after every 100 secs of activity
     function startUpdateDaemon(){
         console.log('Starting cron daemon');
         setInterval(function(){

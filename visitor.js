@@ -5,8 +5,8 @@ module.exports = function(bucketExplorer , database) {
     var ObjectId = require('mongodb').ObjectId;
 	var Spooky = require('spooky');
 	var bucket;
-    var ipQueue = [],
-    var visited = 0,
+    var ipQueue = [];
+    var visited = 0;
     
     var exitFlag = false;
     

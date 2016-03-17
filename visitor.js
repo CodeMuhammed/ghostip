@@ -144,16 +144,22 @@ module.exports = function(bucketExplorer , database) {
                  }
                  this.viewport(1024, 768, function() {
 					  console.log('Viewport size changed');
-			       
+			          var allUrls = /\b((?:[a-z][\w\-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]|\((?:[^\s()<>]|(?:\([^\s()<>]+\)))*\))+(?:\((?:[^\s()<>]|(?:\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/i;
 			          //
                       if(selector=='none'){
-							 this.then(function(){
-							 	  this.wait(30000 , function(){
-								    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-								    phantom.clearCookies();
-							 	  });
-							 	  
-							 });
+                            this.waitForPopup(allUrls, function() {
+                                this.then(function(){
+                                    this.wait(10000 , function(){
+                                        this.emit('done', 'Hello, from ' + this.getCurrentUrl());
+                                        phantom.clearCookies();
+                                    });
+                                });
+                            } , function(){
+                                 console.log('No popups found');
+                                 this.emit('done', 'Hello, from ' + this.getCurrentUrl());
+                                 phantom.clearCookies();
+                            } , 10000);
+							 
 						}
 						
 						//General case

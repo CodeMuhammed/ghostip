@@ -5,6 +5,10 @@ module.exports = function(bucketExplorer , database) {
     var ObjectId = require('mongodb').ObjectId;
 	var Spooky = require('spooky');
 	var bucket;
+    var ipQueue = [],
+    var visited = 0,
+    
+    var exitFlag = false;
     
     //
     var Buckets = database.model('Buckets');
@@ -51,7 +55,7 @@ module.exports = function(bucketExplorer , database) {
     	}
     }
     
-    ////updateBucket after every 100 secs of activity
+    //updateBucket after every 100 secs of activity
     function startUpdateDaemon(){
         console.log('Starting cron daemon');
         setInterval(function(){
@@ -71,25 +75,31 @@ module.exports = function(bucketExplorer , database) {
           );
         } , 100000);
     }
-
+   
     //
     var exitWhenDone = function(){
-         setTimeout(function(){
-             console.log('Exiting process');
-             process.exit(0);
-         } , 10*60000);
+         exitFlag = true;
     }
-    
-    
     
    //
     var visitWith = function(ip){
-        runGhostProxy (ip , bucket.urls , 0);
+        if(ipQueue.indexOf(ip)<0){
+            ipQueue.push(ip);
+            runGhostProxy (ip , bucket.urls , 0 , function(){
+                if(exitFlag && visited >= ipQueue.length){
+                    console.log('All ips have been visited exiting process...');
+                    process.exit(0);
+                }
+            });
+        }
+        else{
+            console.log('ip alredy used or currently in use');
+        }
     }
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	function runGhostProxy (ip , urls , index){ 
+	function runGhostProxy (ip , urls , index , callback){ 
 		console.log('starting ghost');
 		console.log('process starting '+ip+' '+urls[index].urlName+' '+urls[index].selector);
 	
@@ -178,11 +188,13 @@ module.exports = function(bucketExplorer , database) {
             if(index < urls.length - 1){
                index++;
                spooky.destroy();
-               return runGhostProxy(ip , urls , index);
+               return runGhostProxy(ip , urls , index , callback);
 			}
             else{
                 console.log('This round done visiting with '+ip);
-                return spooky.destroy();
+                spooky.destroy();
+                visited ++;
+                return callback();
             }
 		});
 
@@ -201,11 +213,13 @@ module.exports = function(bucketExplorer , database) {
 			if(index < urls.length - 1){
                index++;
                spooky.destroy();
-               return runGhostProxy(ip , urls , index);
+               return runGhostProxy(ip , urls , index , callback);
 			}
             else{
                 console.log('This round done visiting with '+ip);
-                return spooky.destroy();
+                visited++;
+                spooky.destroy();
+                return callback();
             }
 			
 		});

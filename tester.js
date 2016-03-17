@@ -19,7 +19,13 @@ module.exports = function() {
 	//
 	var STOP_SEARCH =false;
 
-	
+	//Alternatives to gimmeproxy are
+    //http://proxy.tekbreak.com/
+    //https://happy-proxy.com/en
+    //https://incloak.com/proxy-list/
+    //https://kingproxies.com/register
+    //http://www.getproxy.jp/en/api
+    //https://getproxy.net/en/api/
 	function getIp(){
 		if(!STOP_SEARCH){
 			 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){

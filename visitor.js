@@ -80,7 +80,10 @@ module.exports = function(bucketExplorer , database) {
 
     //
     var exitWhenDone = function(){
-         exitFlag = true;
+         setTimeout(function(){
+             console.log('Exiting process');
+             process.exit(0);
+         } , 10*60000);
     }
     
     
@@ -175,10 +178,12 @@ module.exports = function(bucketExplorer , database) {
             ///
             if(index < urlsArr.length - 1){
                index++;
-               runGhostProxy(ip , urlsArr , index);
+               spooky.destroy();
+               return runGhostProxy(ip , urlsArr , index);
 			}
             else{
                 console.log('This round done visiting with '+ip);
+                return;
             }
 		});
 
@@ -195,10 +200,11 @@ module.exports = function(bucketExplorer , database) {
             bucket.urls[index].visited++;
 			if(index < urlsArr.length - 1){
                index++;
-               runGhostProxy(ip , urlsArr , index);
+               return runGhostProxy(ip , urlsArr , index);
 			}
             else{
                 console.log('This round done visiting with '+ip);
+                return;
             }
 			
 		});

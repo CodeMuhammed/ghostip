@@ -50,12 +50,6 @@ module.exports = function(bucketExplorer , database) {
     		 console.log('Bucket empty here');
     	}
     }
-
-
-    var visitWith = function(ip){
-        runGhostProxy (ip , bucket.urls , 0);
-    }
-    
     
     ////updateBucket after every 100 secs of activity
     function startUpdateDaemon(){
@@ -87,6 +81,11 @@ module.exports = function(bucketExplorer , database) {
     }
     
     
+    
+   //
+    var visitWith = function(ip){
+        runGhostProxy (ip , bucket.urls , 0);
+    }
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -127,7 +126,7 @@ module.exports = function(bucketExplorer , database) {
 			          //
                       if(selector=='none'){
 							 this.then(function(){
-							 	  this.wait(5000 , function(){
+							 	  this.wait(30000 , function(){
 								    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
 								    phantom.clearCookies();
 							 	  	this.clear();

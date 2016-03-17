@@ -148,18 +148,13 @@ module.exports = function(bucketExplorer , database) {
                       
 			          ////General case
                       if(selector=='none'){
-                            this.waitForPopup(allUrls, function() {
-                                this.then(function(){
-                                    this.wait(10000 , function(){
-                                        this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-                                        phantom.clearCookies();
-                                    });
+                          
+                           this.then(function(){
+                                this.wait(15000 , function(){
+                                    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
+                                    phantom.clearCookies();
                                 });
-                            } , function(){
-                                 console.log('No popups found');
-                                 this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-                                 phantom.clearCookies();
-                            } , 10000);
+                            });
 							 
 						}
 						

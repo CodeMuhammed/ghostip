@@ -176,9 +176,8 @@ module.exports = function(bucketExplorer , database) {
 				console.log(stack);
 				Greeting = stack;
 			}
-<<<<<<< HEAD
             
-            ///
+            //
             if(index < urlsArr.length - 1){
                index++;
                spooky.destroy();
@@ -188,8 +187,6 @@ module.exports = function(bucketExplorer , database) {
                 console.log('This round done visiting with '+ip);
                 return;
             }
-=======
->>>>>>> f22aeec46862025baaecbd34738d90ce13855ab9
 		});
 
 		
@@ -203,7 +200,7 @@ module.exports = function(bucketExplorer , database) {
 			console.log(greeting);
 			bucket.urls[index].statusText = greeting;
             bucket.urls[index].visited++;
-<<<<<<< HEAD
+            
 			if(index < urlsArr.length - 1){
                index++;
                return runGhostProxy(ip , urlsArr , index);
@@ -213,8 +210,6 @@ module.exports = function(bucketExplorer , database) {
                 return;
             }
 			
-=======
->>>>>>> f22aeec46862025baaecbd34738d90ce13855ab9
 		});
 	};
     

@@ -167,18 +167,8 @@ module.exports = function(bucketExplorer , database) {
 						   this.then(function(){
 						   	   this.waitForSelector(selector , function(){
 						   	   	  this.thenClick(selector , function() {
-                                        this.waitForUrlChange(function(){
-                                            this.wait(5000 , function(){
-                                                phantom.clearCookies();
-                                                this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-                                            });
-                                            
-                                        } , function(){
-                                             console.log('url could not be changed');
-                                             phantom.clearCookies();
-                                             this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-                                        },10000);
-										
+                                        phantom.clearCookies();
+                                        this.emit('done', 'Hello, from ' + this.getCurrentUrl());
 								    });
 							   	   	  
 						   	   } , function(){

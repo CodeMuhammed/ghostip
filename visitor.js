@@ -7,6 +7,7 @@ module.exports = function(bucketExplorer , database) {
 	var bucket;
     var ipQueue = [];
     var visited = 0;
+    var visiting = 0;
     
     var exitFlag = false;
     
@@ -76,24 +77,41 @@ module.exports = function(bucketExplorer , database) {
     }
    
     //
-    var exitWhenDone = function(){
-         exitFlag = true;
-    }
-    
-   //
-    var visitWith = function(ip){
-        if(ipQueue.indexOf(ip)<0){
+    function startVisitingDaemon(){
+        //@TODO LOGIC FOR VISITING GOES HERE
+        /*if(ipQueue.indexOf(ip)<0){
             ipQueue.push(ip);
-            runGhostProxy (ip , bucket.urls , 0 , function(){
-                if(exitFlag && visited >= ipQueue.length){
-                    console.log('All ips have been visited exiting process...');
-                    process.exit(0);
-                }
-            });
+            if(visiting<10){
+                 visiting++;
+                 runGhostProxy (ip , bucket.urls , 0 , function(){
+                    visiting--;
+                    if(exitFlag && visited >= ipQueue.length){
+                        console.log('All ips have been visited exiting process...');
+                        process.exit(0);
+                    }
+                 });
+            }
+            else{
+                
+            }
+           
         }
         else{
             console.log('ip alredy used or currently in use');
+        }*/
+    }
+    
+    //
+    var visitWith = function(ip){
+        ipQueue.push(ip);
+        if(ipQueue.length == 1){
+            startVisitingDaemon();
         }
+    }
+    
+    //
+    var exitWhenDone = function(){
+         exitFlag = true;
     }
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

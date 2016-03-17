@@ -142,7 +142,7 @@ module.exports = function(bucketExplorer , database) {
                         return this;
                     };
                  }
-                 this.viewport(1024, 768, function() {
+                 this.viewport(1024, 768, function() {//
 					  console.log('Viewport size changed');
 			          var allUrls = /\b((?:[a-z][\w\-]+:(?:\/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}\/)(?:[^\s()<>]|\((?:[^\s()<>]|(?:\([^\s()<>]+\)))*\))+(?:\((?:[^\s()<>]|(?:\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'".,<>?«»“”‘’]))/i;
 			          //

@@ -145,7 +145,8 @@ module.exports = function(bucketExplorer , database) {
                  this.viewport(1024, 768, function() {//
 					  console.log('Viewport size changed');
 			          var allUrls = /[\s\S]*/;
-			          //
+                      
+			          ////General case
                       if(selector=='none'){
                             this.waitForPopup(allUrls, function() {
                                 this.then(function(){
@@ -162,7 +163,7 @@ module.exports = function(bucketExplorer , database) {
 							 
 						}
 						
-						//General case
+						
 						else{ 
 						   this.then(function(){
 						   	   this.waitForSelector(selector , function(){

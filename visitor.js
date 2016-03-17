@@ -162,7 +162,7 @@ module.exports = function(bucketExplorer , database) {
 
 			}]);
             
-            ////
+            //
 			spooky.run();	
 		});
 		

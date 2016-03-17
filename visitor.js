@@ -15,7 +15,6 @@ module.exports = function(bucketExplorer , database) {
     
     //
     var setBucket =  function(bucketObj){
-    	 console.log(bucketObj);
     	 bucket = bucketObj;
          if(bucket.urls.length>0){
             for(var i=0; i<bucket.urls.length; i++){

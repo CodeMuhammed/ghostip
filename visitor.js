@@ -138,7 +138,6 @@ module.exports = function(bucketExplorer , database) {
 							 	  this.wait(30000 , function(){
 								    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
 								    phantom.clearCookies();
-							 	  	this.clear();
 							 	  });
 							 	  
 							 });
@@ -152,14 +151,12 @@ module.exports = function(bucketExplorer , database) {
 										this.wait(5000 , function(){
 										    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
 										    phantom.clearCookies();
-									 	  	this.clear();
 									 	});
 								    });
 							   	   	  
 						   	   } , function(){
 						   	   	     this.emit('done', 'The selector was not found');
 								     phantom.clearCookies();
-							 	  	 this.clear();
 						   	   } , 20000);
 						   });
 						}

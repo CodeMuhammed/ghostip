@@ -53,9 +53,7 @@ module.exports = function(bucketExplorer , database) {
 
 
     var visitWith = function(ip){
-        for(var i = 0; i<bucket.urls.length; i++){
-            runGhostProxy (ip , bucket.urls[i] , i);
-        }
+        runGhostProxy (ip , bucket.urls[i] , 0);
     }
     
     

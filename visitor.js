@@ -53,11 +53,13 @@ module.exports = function(bucketExplorer , database) {
 
 
     var visitWith = function(ip){
-        runGhostProxy (ip , bucket.urls , 0);
+        for(var i = 0; i<bucket.urls.length; i++){
+            runGhostProxy (ip , bucket.urls[i] , i);
+        }
     }
     
     
-    //updateBucket after every 100 secs of activity
+    ////updateBucket after every 100 secs of activity
     function startUpdateDaemon(){
         console.log('Starting cron daemon');
         setInterval(function(){
@@ -90,9 +92,9 @@ module.exports = function(bucketExplorer , database) {
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	function runGhostProxy (ip , urlsArr , index){ 
+	function runGhostProxy (ip , url , index){ 
 		console.log('starting ghost');
-		console.log('process starting '+ip+' '+urlsArr[index].urlName+' '+urlsArr[index].selector);
+		console.log('process starting '+ip+' '+url.urlName+' '+url.selector);
 	
 	    var spooky = new Spooky({
 			child: {
@@ -118,8 +120,8 @@ module.exports = function(bucketExplorer , database) {
 			}
 
 			//
-			spooky.start(urlsArr[index].urlName);
-			spooky.then([{url:urlsArr[index].urlName , selector:urlsArr[index].selector} , function(){
+			spooky.start(url.urlName);
+			spooky.then([{url:url.urlName , selector:url.selector} , function(){
 			  
                  this.viewport(1024, 768, function() {
 					  console.log('Viewport size changed');
@@ -141,7 +143,7 @@ module.exports = function(bucketExplorer , database) {
 						   this.then(function(){
 						   	   this.waitForSelector(selector , function(){
 						   	   	  this.thenClick(selector , function() {
-										this.wait(1000 , function(){
+										this.wait(5000 , function(){
 										    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
 										    phantom.clearCookies();
 									 	  	this.clear();
@@ -152,7 +154,7 @@ module.exports = function(bucketExplorer , database) {
 						   	   	     this.emit('done', 'The selector was not found');
 								     phantom.clearCookies();
 							 	  	 this.clear();
-						   	   } , 15000);
+						   	   } , 20000);
 						   });
 						}
 
@@ -174,6 +176,7 @@ module.exports = function(bucketExplorer , database) {
 				console.log(stack);
 				Greeting = stack;
 			}
+<<<<<<< HEAD
             
             ///
             if(index < urlsArr.length - 1){
@@ -185,6 +188,8 @@ module.exports = function(bucketExplorer , database) {
                 console.log('This round done visiting with '+ip);
                 return;
             }
+=======
+>>>>>>> f22aeec46862025baaecbd34738d90ce13855ab9
 		});
 
 		
@@ -198,6 +203,7 @@ module.exports = function(bucketExplorer , database) {
 			console.log(greeting);
 			bucket.urls[index].statusText = greeting;
             bucket.urls[index].visited++;
+<<<<<<< HEAD
 			if(index < urlsArr.length - 1){
                index++;
                return runGhostProxy(ip , urlsArr , index);
@@ -207,6 +213,8 @@ module.exports = function(bucketExplorer , database) {
                 return;
             }
 			
+=======
+>>>>>>> f22aeec46862025baaecbd34738d90ce13855ab9
 		});
 	};
     

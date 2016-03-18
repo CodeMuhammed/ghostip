@@ -26,12 +26,10 @@ module.exports = function(database){
          function checkLock(){
                Explorer.find({locked: false}).toArray(function(err , results){
                   if(err){
-                    stats = err;
                      throw new Error('DB connection error explorer check locked');
                   }
                   else if(results[0] == undefined){
                       //
-                      stats = 'Another process is currently accessing database tying again in 10secs';
                       console.log('Another process is currently accessing database tying again in 10secs');
                       setTimeout(function(){
                          checkLock();
@@ -78,7 +76,6 @@ module.exports = function(database){
            console.log('Authenticating access');
            Explorer.find({locked: true , accessingDomain:token}).toArray(function(err , results){
                 if(err){
-                  stats= err;
                    throw new Error('DB connection error explorer authenticating');
                 }
                 else if(results[0] == undefined){
@@ -122,14 +119,12 @@ module.exports = function(database){
                           throw new Error('DB connection error release lock');
                       }
                       else { 
-                         stats="url gotten successfullly";
                          release(); 
                       }
                    });
 
                }
                else{
-                  stats = "No url ";
                   release();
                }
 
@@ -147,7 +142,6 @@ module.exports = function(database){
                           throw new Error('DB connection error explorer lock releasing error 1');
                       }
                       else {
-                          stats = "Url object gotten";
                           console.log('process successfully released lock on database');  
                           if(bucketObj){
                             bucketObj.serverToken = token;

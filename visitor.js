@@ -79,15 +79,15 @@ module.exports = function(bucketExplorer , database) {
     //
     function startVisitingDaemon(){
        setInterval(function(){
-           if(visiting<20 && ipQueueIndex < ipQueue.length){
+           if(visiting<5 && ipQueueIndex < ipQueue.length){
                for(var i=0; i<bucket.urls.length; i++){
                     runGhostProxy (ipQueue[ipQueueIndex] , bucket.urls[i] , i , function(){
-                            console.log('visiting complete '+(visiting-1)+' currently running');
-                            visiting--;
-                            if(exitFlag && visiting == 0){
-                                console.log('All ips have been visited exiting process...');
-                                process.exit(0);
-                            }
+                        visiting--;
+                        console.log('visiting complete '+(visiting-1)+' currently running');
+                        if(exitFlag && visiting == 0){
+                            console.log('All ips have been visited exiting process...');
+                            process.exit(0);
+                        }
                     });
               }
               ipQueueIndex++;  

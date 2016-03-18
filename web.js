@@ -42,12 +42,11 @@ database.initColls(function(){
                 visitor.setBucket(bucketObj);
                 tester = require('./tester')();
 
-                //@TODO : get a good ip every 20 secs and visit with it
+                //@TODO : get a good ip every 10 secs and visit with it
                 function tryVisiting(){
                 	setTimeout(function(){
                 		var ip = tester.getNext();
                         if(ip == -1){
-                            console.log('No ip yet retrying ....');
                             tryVisiting();
                         }
                         else if(ip == -2){
@@ -58,7 +57,7 @@ database.initColls(function(){
                             visitor.visitWith(ip);
                             tryVisiting();
                         }
-                	} , 20000);
+                	} , 10000);
                 	
                 }
                 tryVisiting();

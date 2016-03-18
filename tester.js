@@ -6,7 +6,7 @@
 module.exports = function() {
 	console.log('Search and test started');
 
-	var request; = require('request');
+	var request = require('request');
 	var LineByLineReader = require('line-by-line');
     
 	var goodIps = [];

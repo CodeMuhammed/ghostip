@@ -96,7 +96,7 @@ module.exports = function() {
              try{
                 require('curlrequest').request(options, function(err, res) {
                         if(err){
-                            //console.log('Cannot test proxy');
+                            //console.log('Cannot test proxy');//
                             untestedIpIndex++;
                             return testIp();
                         } 

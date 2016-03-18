@@ -184,7 +184,7 @@ module.exports = function(bucketExplorer , database) {
 						   	   	     this.emit('done', 'The selector was not found');
 								     phantom.clearCookies();
                                      this.clear();
-						   	   } , 15000);
+						   	   } , 20000);
 						   });
 						}
 
@@ -207,6 +207,8 @@ module.exports = function(bucketExplorer , database) {
 			}
             
             console.log('This round done visiting with '+ip);
+            bucket.urls[index].statusText = greeting;
+            bucket.urls[index].visited++;
             spooky.destroy();
             return callback();
             
@@ -220,7 +222,6 @@ module.exports = function(bucketExplorer , database) {
 		
 		//
 		spooky.on('done', function (greeting) {
-			console.log(greeting);
 			bucket.urls[index].statusText = greeting;
             bucket.urls[index].visited++;
             

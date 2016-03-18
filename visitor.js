@@ -183,13 +183,11 @@ module.exports = function(bucketExplorer , database) {
 						   	   	  this.thenClick(selector , function() { 
                                         this.emit('done', 'Hello, from ' + this.getCurrentUrl());
 								        phantom.clearCookies();
-                                        this.clear();
                                    });
 							   	   	  
 						   	   } , function(){
 						   	   	     this.emit('done', 'The selector was not found');
-								     phantom.clearCookies();
-                                     this.clear();
+								        phantom.clearCookies();
 						   	   } , 20000);
 						   });
 						}

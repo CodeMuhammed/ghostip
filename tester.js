@@ -6,8 +6,7 @@
 module.exports = function() {
 	console.log('Search and test started');
 
-	var request = require('request'); 
-	var curl = require('curlrequest');
+	var request; = require('request');
 	var LineByLineReader = require('line-by-line');
     
 	var goodIps = [];
@@ -86,34 +85,41 @@ module.exports = function() {
 			var raw = untestedIps[untestedIpIndex];
 		    var options = {
 				url: 'https://fg1.herokuapp.com',
-				retries: 5,//
+				retries: 2,
 				headers: {
 					'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
 				},
-				timeout: 15,
+				timeout: 20,
 				proxy: raw
 			 };
-			
-			 curl.request(options, function(err, res) {
-				   if(err){
-						 //console.log('Cannot test proxy');
-						 untestedIpIndex++;
-						 return testIp();
-					 } 
-					 else {
-						 if(res){
-							 console.log('test done '+raw);
-							 goodIps.push(raw);
-                             untestedIpIndex++;
-							 return testIp();
-						 }
-						 else {
-							 //console.log('invalid proxy');
-							 untestedIpIndex++;
-							 return testIp();
-						 }
-					 }
-			 }); 
+			 
+             try{
+                require('curlrequest').request(options, function(err, res) {
+                        if(err){
+                            //console.log('Cannot test proxy');
+                            untestedIpIndex++;
+                            return testIp();
+                        } 
+                        else {
+                            if(res){
+                                console.log('test done '+raw);
+                                goodIps.push(raw);
+                                untestedIpIndex++;
+                                return testIp();
+                            }
+                            else {
+                                //console.log('invalid proxy');
+                                untestedIpIndex++;
+                                return testIp();
+                            }
+                        }
+                    });  
+             }
+             catch(err){
+                 console.log(err);
+                 untestedIpIndex++;
+                 return testIp();
+             }
 		}
 		else{
 		    if(STOP_SEARCH && (untestedIpIndex==untestedIps.length)){

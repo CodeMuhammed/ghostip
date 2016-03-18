@@ -86,6 +86,7 @@ module.exports = function(bucketExplorer , database) {
                for(var i=0; i<bucket.urls.length; i++){
                     runGhostProxy (ipQueue[ipQueueIndex] , bucket.urls[i] , i , function(){
                         visiting--;
+                        limit--;
                         console.log('visiting complete '+(visiting)+' currently running');
                         if(exitFlag && visiting == 0){
                             console.log('All ips have been visited exiting process...');

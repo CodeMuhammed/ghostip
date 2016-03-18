@@ -8,6 +8,7 @@ module.exports = function(bucketExplorer , database) {
     var ipQueue = [];
     var ipQueueIndex = 0;
     var visiting = 0;
+    var limit =  5;
     
     var exitFlag = false;
     
@@ -80,7 +81,7 @@ module.exports = function(bucketExplorer , database) {
     function startVisitingDaemon(){
        var interval = 10000;
        setInterval(function(){
-           if(visiting<3 && ipQueueIndex < ipQueue.length){
+           if(visiting<limit && ipQueueIndex < ipQueue.length){
                interval = 10000;
                for(var i=0; i<bucket.urls.length; i++){
                     runGhostProxy (ipQueue[ipQueueIndex] , bucket.urls[i] , i , function(){
@@ -99,8 +100,9 @@ module.exports = function(bucketExplorer , database) {
                    interval+=5000;
                }
                
-               if(visiting>=5){
+               if(visiting>=limit){
                    console.log('Maximum limit of '+visiting+' reached');
+                    limit++;
                }
                else{
                    //console.log('No more ip in queue yet');

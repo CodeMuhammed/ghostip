@@ -84,7 +84,6 @@ module.exports = function() {
 	var testIp = function(){
 		if(untestedIpIndex<untestedIps.length){
 			var raw = untestedIps[untestedIpIndex];
-            console.log(raw);
 		    var options = {
 				url: 'https://fg1.herokuapp.com',
 				retries: 5,//
@@ -103,7 +102,7 @@ module.exports = function() {
 					 } 
 					 else {
 						 if(res){
-							 //console.log('test done');
+							 console.log('test done '+raw);
 							 goodIps.push(raw);
                              untestedIpIndex++;
 							 return testIp();

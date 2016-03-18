@@ -102,6 +102,7 @@ module.exports = function(bucketExplorer , database) {
     
     //
     var visitWith = function(ip){
+        console.log('Adding ip to queue');
         if(ipQueue.indexOf(ip)<0){
             ipQueue.push(ip);
         }
@@ -150,7 +151,7 @@ module.exports = function(bucketExplorer , database) {
 
 			//
 			spooky.start(url.urlName);
-			spooky.then([{url:urls.urlName , selector:url.selector} , function(){
+			spooky.then([{url:url.urlName , selector:url.selector} , function(){
                  this.viewport(1024, 768, function() {//
 					  console.log('Viewport size changed');
                       

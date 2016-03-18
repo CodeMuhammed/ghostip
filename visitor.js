@@ -6,6 +6,7 @@ module.exports = function(bucketExplorer , database) {
 	var Spooky = require('spooky');
 	var bucket;
     var ipQueue = [];
+    var timer = 0;
     var ipQueueIndex = 0;
     var visiting = 0;
     var limit =  20;
@@ -70,11 +71,16 @@ module.exports = function(bucketExplorer , database) {
                         res.status(500).send('Database error during cron update in visitor');
                     }
                     else {
+                        timer+=2;
+                        if(timer > = 122){
+                            console.log('Maximum uptime of two hours exceeded exiting....');
+                            process.exit(0);
+                        }
                         console.log('bucket updated in cron job');
                     }  
                 }
           );
-        } , 100000);
+        } , 120000);
     }
    
     //

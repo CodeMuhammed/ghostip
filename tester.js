@@ -8,7 +8,8 @@ module.exports = function() {
 
 	var request = require('request');
 	var LineByLineReader = require('line-by-line');
-    
+    var EventEmitter = require('events').EventEmitter;
+    var events = new EventEmitter;
 	var goodIps = [];
 	var goodIpIndex = 0;
 
@@ -83,6 +84,7 @@ module.exports = function() {
 	var testIp = function(){
 		if(untestedIpIndex<untestedIps.length){
 			var raw = untestedIps[untestedIpIndex];
+            events.emit('notify' , raw);
 		    var options = {
 				url: 'https://fg1.herokuapp.com',
 				retries: 1,
@@ -93,42 +95,40 @@ module.exports = function() {
 				proxy: raw
 			 };
 			 
-             try{
-                require('curlrequest').request(options, function(err, res) {
-                        if(err){
-                            //console.log('Cannot test proxy');//
-                            untestedIpIndex++;
-                            return testIp();
-                        } 
-                        else {
-                            if(res){
-                                console.log('test done '+raw);
-                                goodIps.push(raw);
-                                untestedIpIndex++;
-                                return testIp();
-                            }
-                            else {
-                                //console.log('invalid proxy');
-                                untestedIpIndex++;
-                                return testIp();
-                            }
-                        }
-                    });  
-             }
-             catch(err){
-                 console.log(err);
-                 untestedIpIndex++;
-                 return testIp();
-             }
+           require('curlrequest').request(options, function(err, res) {
+               process.on('uncaughtException' , function(err){
+                   console.log(err);
+                   return testIp();
+               })
+                if(err){
+                    //console.log('Cannot test proxy');//
+                    untestedIpIndex++;
+                    return testIp();
+                } 
+                else {
+                    if(res){
+                        console.log('test done '+raw);
+                        events.emit('ip' , raw);
+                        untestedIpIndex++;
+                        return testIp();
+                    }
+                    else {
+                        //console.log('invalid proxy');
+                        untestedIpIndex++;
+                        return testIp();
+                    }
+                }
+            });
 		}
 		else{
 		    if(STOP_SEARCH && (untestedIpIndex==untestedIps.length)){
 		    	 console.log('All ips have been tested stopping testing phase');
+                 events.emit('done' , '');
 			}
 			else{
 				return setTimeout(function(){
 					return testIp();
-				} , 10000);
+				} , 5000);
 			}
 			
 		}
@@ -138,24 +138,6 @@ module.exports = function() {
 	testIp();
 
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-    var getNext = function(){
-    	if(goodIps.length > 0 && goodIpIndex < goodIps.length && !STOP_SEARCH ){
-            var ip = goodIps[goodIpIndex];
-            goodIpIndex++;
-            return ip;
-    	}
-    	else if(goodIpIndex >= goodIps.length && STOP_SEARCH){
-    		//All good ips have been exhausted no more new ips
-            return -2;
-    	}
-    	else{
-    		//All good ips exhausted but untested ips available
-            return -1;
-    	}
-    }
-
-	return {
-	    getNext:getNext
-	}
-	
+   
+	return events;	
 };

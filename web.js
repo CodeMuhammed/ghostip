@@ -42,26 +42,16 @@ database.initColls(function(){
                 visitor.setBucket(bucketObj);
                 tester = require('./tester')();
 
-                //@TODO : get a good ip every 10 secs and visit with it
-                function tryVisiting(){
-                	setTimeout(function(){
-                		var ip = tester.getNext();
-                        if(ip == -1){
-                            tryVisiting();
-                        }
-                        else if(ip == -2){
-                             console.log('Tester done working ....');
-                             visitor.exitWhenDone();
-                        }
-                        else{
-                            visitor.visitWith(ip);
-                            tryVisiting();
-                        }
-                	} , 10000);
-                	
-                }
-                tryVisiting();
-                
+                //
+                tester.on('ip' , function(ip){
+                    visitor.visitWith(ip);
+                });
+                tester.on('notify' , function(status){
+                    console.log(status);
+                }); 
+                tester.on('done' , function(){
+                    visitor.exitWhenDone();
+                }); 
             }
             else{
                console.log('No buckets available at the moment ----- retrying in 9secs');

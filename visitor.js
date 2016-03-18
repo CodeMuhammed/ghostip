@@ -95,7 +95,7 @@ module.exports = function(bucketExplorer , database) {
               ipQueueIndex++;  
            }
            else{
-               if(interval < 30000){
+               if(interval < 60000){
                    interval+=5000;
                }
                

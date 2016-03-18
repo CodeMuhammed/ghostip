@@ -26,6 +26,19 @@ module.exports = function() {
     //https://kingproxies.com/register
     //http://www.getproxy.jp/en/api
     //https://getproxy.net/en/api/
+    
+    //gip = 41-45
+    //gip1 = 36-40
+    //gip2 = 21-25
+    //gip3 = 1-5
+    //gip4 = 6-10
+    //gip5 = 11-15
+    //gip6 = 16-20
+    //gip7 = 26-30
+    //gip8 = 31-35
+    //gip9 = 46-50
+    //gip10 = 51-55
+    
 	function getIp(){
 		if(!STOP_SEARCH){
 			 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){

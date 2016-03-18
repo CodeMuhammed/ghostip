@@ -93,11 +93,11 @@ module.exports = function(bucketExplorer , database) {
               ipQueueIndex++;  
            }
            else{
-               if(visiting>=20){
+               if(visiting>=5){
                    console.log('Maximum limit of '+visiting+' reached');
                }
                else{
-                   console.log('No more ip in queue yet');
+                   //console.log('No more ip in queue yet');
                }
            }
            

@@ -97,19 +97,19 @@ module.exports = function() {
 			
 			 curl.request(options, function(err, res) {
 				   if(err){
-						 console.log('Cannot test proxy');
+						 //console.log('Cannot test proxy');
 						 untestedIpIndex++;
 						 return testIp();
 					 } 
 					 else {
 						 if(res){
-							 console.log('test done');
+							 //console.log('test done');
 							 goodIps.push(raw);
                              untestedIpIndex++;
 							 return testIp();
 						 }
 						 else {
-							 console.log('invalid proxy');
+							 //console.log('invalid proxy');
 							 untestedIpIndex++;
 							 return testIp();
 						 }

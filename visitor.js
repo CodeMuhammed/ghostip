@@ -78,10 +78,11 @@ module.exports = function(bucketExplorer , database) {
    
     //
     function startVisitingDaemon(){
-       setTimeout(function(){
+       setInterval(function(){
            if(visiting<20 && ipQueueIndex < ipQueue.length){
                for(var i=0; i<bucket.urls.length; i++){
                     runGhostProxy (ipQueue[ipQueueIndex] , bucket.urls[i] , i , function(){
+                            console.log('visiting complete '+(visiting-1)+' currently running');
                             visiting--;
                             if(exitFlag && visiting == 0){
                                 console.log('All ips have been visited exiting process...');
@@ -93,7 +94,7 @@ module.exports = function(bucketExplorer , database) {
               ipQueueIndex++;  
            }
            else{
-               console.log(visiting+' urls running');
+               console.log('Maximum limit exceeded');
            }
            
        } , 10000);

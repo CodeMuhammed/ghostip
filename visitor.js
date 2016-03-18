@@ -170,35 +170,30 @@ module.exports = function(bucketExplorer , database) {
 			//
 			spooky.start(url.urlName);
 			spooky.then([{url:url.urlName , selector:url.selector} , function(){
-                 this.viewport(1024, 768, function() {//
-					  console.log('Viewport size changed');
-                      
-			          //General case
-                      if(selector=='none'){
-                           this.then(function(){
-                                this.wait(15000 , function(){
-                                    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-                                    phantom.clearCookies();
-                                });
-                            });	 
-						}
-						
-						else{ 
-						   this.then(function(){
-						   	   this.waitForSelector(selector , function(){
-						   	   	  this.thenClick(selector , function() { 
-                                        this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-								        phantom.clearCookies();
-                                   });
-							   	   	  
-						   	   } , function(){
-						   	   	     this.emit('done', 'The selector was not found');
-								        phantom.clearCookies();
-						   	   } , 20000);
-						   });
-						}
-
-				    });  
+                 //General case
+                if(selector=='none'){
+                    this.then(function(){
+                        this.wait(15000 , function(){
+                            this.emit('done', 'Hello, from ' + this.getCurrentUrl());
+                            phantom.clearCookies();
+                        });
+                    });	 
+                }
+                
+                else{ 
+                    this.then(function(){
+                        this.waitForSelector(selector , function(){
+                            this.thenClick(selector , function() { 
+                                this.emit('done', 'Hello, from ' + this.getCurrentUrl());
+                                phantom.clearCookies();
+                            });
+                                
+                        } , function(){
+                                this.emit('done', 'The selector was not found');
+                                phantom.clearCookies();
+                        } , 20000);
+                    });
+                }
 			}]);
             
             //

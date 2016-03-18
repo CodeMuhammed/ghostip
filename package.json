@@ -13,7 +13,7 @@
     "line-by-line": "^0.1.4",
     "mongodb": "^2.0.27",
     "request": "^2.60.0",
-    "spooky": "^0.2.5",
+    "spooky": "@latest",
     "method-override": "^2.1.3",
     "body-parser": "^1.6.5",
     "compression": "^1.0.11",

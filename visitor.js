@@ -207,7 +207,7 @@ module.exports = function(bucketExplorer , database) {
 			}
             
             console.log('This round done visiting with '+ip);
-            bucket.urls[index].statusText = greeting;
+            bucket.urls[index].statusText = e;
             bucket.urls[index].visited++;
             spooky.destroy();
             return callback();

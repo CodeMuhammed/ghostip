@@ -9,7 +9,7 @@ module.exports = function() {
 	var request = require('request');
 	var LineByLineReader = require('line-by-line');
     var EventEmitter = require('events').EventEmitter;
-    var events = new EventEmitter;
+    var moduleEvents = new EventEmitter;
 	var goodIps = [];
 	var goodIpIndex = 0;
 
@@ -84,7 +84,7 @@ module.exports = function() {
 	var testIp = function(){
 		if(untestedIpIndex<untestedIps.length){
 			var raw = untestedIps[untestedIpIndex];
-            events.emit('notify' , raw);
+            moduleEvents.emit('notify' , raw);
 		    var options = {
 				url: 'https://fg1.herokuapp.com',
 				retries: 1,
@@ -108,7 +108,7 @@ module.exports = function() {
                 else {
                     if(res){
                         console.log('test done '+raw);
-                        events.emit('ip' , raw);
+                        moduleEvents.emit('ip' , raw);
                         untestedIpIndex++;
                         return testIp();
                     }
@@ -123,7 +123,7 @@ module.exports = function() {
 		else{
 		    if(STOP_SEARCH && (untestedIpIndex==untestedIps.length)){
 		    	 console.log('All ips have been tested stopping testing phase');
-                 events.emit('done' , '');
+                 moduleEvents.emit('done' , '');
 			}
 			else{
 				return setTimeout(function(){

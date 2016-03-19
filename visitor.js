@@ -72,7 +72,7 @@ module.exports = function(bucketExplorer , database) {
                     }
                     else {
                         timer+=2;
-                        if(timer >= 122){
+                        if(timer >= 162){
                             console.log('Maximum uptime of two hours exceeded exiting....');
                             process.exit(0);
                         }
@@ -107,7 +107,7 @@ module.exports = function(bucketExplorer , database) {
            else{
                if(visiting>=limit){
                    console.log('Maximum limit of '+visiting+' reached');
-                    limit+=5;
+                    limit+=10;
                }
                else{
                    //console.log('No more ip in queue yet');

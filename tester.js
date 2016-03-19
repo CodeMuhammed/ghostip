@@ -139,5 +139,5 @@ module.exports = function() {
 
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
    
-	return events;	
+	return moduleEvents;	
 };

@@ -4,7 +4,7 @@ var ObjectId = require('mongodb').ObjectId;
 var accessingDomains = [];
 var max_tries = 0;
 
-//generate a random 30 bits token that clearly identifies this process
+//generate a random 20 bits token that clearly identifies this process
 var token = '';
 
 function generateRandomBitToken(){

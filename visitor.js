@@ -101,6 +101,7 @@ module.exports = function(bucketExplorer , database) {
                             process.exit(0);
                         }
                     });
+                    visiting++;
               }
               ipQueueIndex++;  
            }
@@ -141,7 +142,6 @@ module.exports = function(bucketExplorer , database) {
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	function runGhostProxy (ip , url , index , callback){ 
-        visiting++;
 		console.log('starting ghost');
 		console.log('process starting '+ip+' '+url.urlName+' '+url.selector);
 	

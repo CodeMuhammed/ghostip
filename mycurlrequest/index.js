@@ -247,14 +247,27 @@ exports.request = function (options, callback) {
     var child = spawn(cmd, args, { cwd: options.cwd || cwd }, function (curl) {
 
         //Collect stdout
-        curl.stdout.on('data', function (data) {
-            if (complete) return;
-            var len = data.length, prev = stdout;
-            stdout = new Buffer(len + stdoutlen);
-            prev.copy(stdout, 0, 0, stdoutlen);
-            data.copy(stdout, stdoutlen, 0, len);
-            stdoutlen += len;
-        });
+        if(curl.stdout){
+            curl.stdout.on('data', function (data) {
+                if (complete) return;
+                var len = data.length, prev = stdout;
+                stdout = new Buffer(len + stdoutlen);
+                prev.copy(stdout, 0, 0, stdoutlen);
+                data.copy(stdout, stdoutlen, 0, len);
+                stdoutlen += len;
+            });
+        }
+        else{
+            if(complete){
+                return;
+            }
+            else{
+                curl.emit('close' , 0);
+            }
+            
+        }
+        
+
 
         //Pipe stderr to the current process?
         if (options.stderr) {

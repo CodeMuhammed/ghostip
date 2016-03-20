@@ -258,16 +258,8 @@ exports.request = function (options, callback) {
             });
         }
         else{
-            if(complete){
-                return;
-            }
-            else{
-               finish();
-            }
-            
+            return finish();   
         }
-        
-
 
         //Pipe stderr to the current process?
         if (options.stderr) {

@@ -1,5 +1,9 @@
 var ObjectId = require('mongodb').ObjectId;
 
+//
+var accessingDomains = [];
+var max_tries = 0;
+
 //generate a random 30 bits token that clearly identifies this process
 var token = '';
 
@@ -24,21 +28,62 @@ module.exports = function(database){
     var getBucket = function(cb){
          //
          function checkLock(){
-               Explorer.find({locked: false}).toArray(function(err , results){
+               Explorer.find({}).toArray(function(err , results){
                   if(err){
                      throw new Error('DB connection error explorer check locked');
                   }
-                  else if(results[0] == undefined){
-                      //
-                      console.log('Another process is currently accessing database tying again in 10secs');
-                      setTimeout(function(){
-                         checkLock();
-                      } , 10000);
-                      
+                  else if(!results[0]){
+                      throw new Error('No Explorer Object found');
                   }
                   else {
-                     console.log('Lock free on urls...');
-                     lockAccessToUrls();  
+                       if(results[0].locked){
+                           console.log('DB locked by '+results[0].accessingDomain);
+                           if(accessingDomains.indexOf(results[0].accessingDomain) < 0){
+                               accessingDomains.push(results[0].accessingDomain);
+                           }
+                           max_tries++;
+                           if(max_tries >= 5){
+                               if(accessingDomains.length > 1){
+                                   console.log('Database is not in a locked state.. retrying');
+                                   accessingDomains = [];
+                                   max_tries = 0;
+                                   return checkLock();
+                               }
+                               else{
+                                   console.log('Database is Jammed.. Trying to unlock...');
+                                   Explorer.update({}, {
+                                        "$set": {
+                                            accessingDomain: '',
+                                            locked:false
+                                        }
+                                    },
+                                    function(err , result){
+                                        if(err){
+                                            throw new Error('DB connection error explorer Jammed lock');
+                                        }
+                                        else {
+                                            console.log('Database is unjammed continuing .....');  
+                                            //
+                                            setTimeout(function(){
+                                                accessingDomains = [];
+                                                max_tries = 0;
+                                                return checkLock();
+                                            } , 10000);    
+                                        }
+                                    });
+                               }
+                           }
+                           else{
+                               //
+                               setTimeout(function(){
+                                   return checkLock();
+                               } , 10000);
+                           }
+                       }
+                       else{
+                          console.log('Database lock is free No accessing domain...');
+                          lockAccessToBuckets();  
+                       }
                   }
              });
 
@@ -46,7 +91,7 @@ module.exports = function(database){
          checkLock();
 
          //
-         function lockAccessToUrls(){
+         function lockAccessToBuckets(){
              console.log('Locking access to urls...');
              Explorer.update(
                 {},
@@ -130,7 +175,8 @@ module.exports = function(database){
 
               function release(){
                  console.log('Releasing lock on database');
-                     //release lock and return url back to main process
+                 
+                 //release lock
                  Explorer.update({}, {
                      "$set": {
                          accessingDomain: '',

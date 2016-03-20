@@ -122,7 +122,7 @@ module.exports = function(bucketExplorer , database) {
            else{
                if(visiting>=limit){
                    console.log('Maximum limit of '+visiting+' reached');
-                    limit+=10;
+                    limit+=5;
                }
                else{
                    //console.log('No more ip in queue yet');

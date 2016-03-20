@@ -95,7 +95,7 @@ module.exports = function() {
 				proxy: raw
 			 };
 			 
-           require('curlrequest').request(options, function(err, res) {
+           require('./mycurlrequest').request(options, function(err, res) {
                process.on('uncaughtException' , function(err){
                    console.log(err);
                    return testIp();

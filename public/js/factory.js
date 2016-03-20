@@ -147,12 +147,28 @@ angular.module('customFactory' , [])
 
        	   return promise.promise;
        }
+
+       //
+       var deleteBucket = function(bucketObj){
+           var promise = $q.defer();
+
+            $http.delete('/api/buckets/'+bucketObj._id+'?'+'token='+bucketObj.userToken)
+             .success(function(status){
+                promise.resolve(status);
+             })
+             .error(function(err){
+                 promise.reject(err);
+             });
+
+           return promise.promise;
+       }
        
        return {
            getActiveBucketsAsync:getActiveBucketsAsync,
            getDormantBuckets:getDormantBuckets,
            newBucket : newBucket,
-           updateBucket:updateBucket
+           updateBucket:updateBucket,
+           deleteBucket:deleteBucket
        };
 })
 

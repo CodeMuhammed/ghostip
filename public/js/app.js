@@ -191,16 +191,20 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
       }
 
        //
-      $scope.removeBucket = function(){
-           /*$scope.processingRemoveBucket =true;
-           bucketFactory.newBucket(angular.copy($scope.defaultBucketObj))
-           .then(function(result){
+      $scope.removeBucket = function(bucket , index){
+           console.log(index);
+           bucket.userToken = $scope.defaultBucketObj.userToken;
+           $scope.activeBucketIndex = index;
+           $scope.processingRemoveBucket =true;
+           bucketFactory.deleteBucket(bucket)
+           .then(function(status){
                $scope.showAlert(status , 'success');
+               $scope.buckets.splice(index , 1);
                $scope.processingRemoveBucket =false;
            } , function(err){
-              $scope.showAlert('Error creating bucket' , 'warning' , true);
+              $scope.showAlert(err , 'warning' , true);
               $scope.processingRemoveBucket =false;
-           });*/
+           });
       }
 
       //

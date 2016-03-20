@@ -56,6 +56,20 @@ module.exports = function(bucketExplorer , database) {
     		 console.log('Bucket empty here');
     	}
     }
+
+    var notifyDelete = function(_id){
+         console.log('Bucket with'+ _id +'deleted');
+         if(bucket && bucket._id == _id){
+             console.log('This bucket was deleted');
+             setTimeout(function(){
+                 process.exit(0);
+             } , 10000);
+            
+         }
+         else{
+            console.log('Not this one..');
+         }
+    }
     
     //updateBucket after every 100 secs of activity
     function startUpdateDaemon(){
@@ -244,6 +258,7 @@ module.exports = function(bucketExplorer , database) {
 	    getBucket:getBucket,
 	    setBucket:setBucket,
 	    updateBucket:updateBucket,
+        notifyDelete:notifyDelete,
 	    exitWhenDone:exitWhenDone
 	}
 	

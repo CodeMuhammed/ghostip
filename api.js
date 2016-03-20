@@ -31,7 +31,7 @@ module.exports = function(database , visitor){
         })
 
         .post(function(req , res){
-             if(req.body.userToken=='nature'){
+             if(req.body.userToken=='paper'){
                  req.body.userToken = '';
                  req.body.dateCreated = Date.now()+'';
                  req.body.lastActive = (Date.now()-60000*4)+'';   
@@ -53,7 +53,7 @@ module.exports = function(database , visitor){
         }) 
         
         .put(function(req , res){
-             if(req.body.userToken == 'nature'){
+             if(req.body.userToken == 'paper'){
                  req.body.userToken = '';
                  req.body.lastModified = Date.now()+''; 
                  req.body._id = ObjectId(req.body._id);
@@ -75,28 +75,25 @@ module.exports = function(database , visitor){
              }
              else{
                     res.status(500).send('Cannot update Bucket due to invalid token');
-             }
-             
+             }  
         }) 
 
         .delete(function(req , res){
-        	    //@TODO delete url
-                if(req.query.token == '12345'){
-                     Urls.remove({_id : ObjectId(req.id)} , function(err , result){
-                         if(err){
-                             res.status(500).send('Not ok url was not removed');
-                         }
-                         else{
-                             urlExplorer.updateGlobal({_id : req.id} , 'delete');
-                             res.status(200).send('url removed successfully');
-                         }
-                     });
-                }
-                else{
-                    res.status(500).send('Cannot delete url due to invalid token');
-                }
-            	
-
+            //@TODO delete Bucket
+            if(req.query.token == 'paper'){
+                Buckets.remove({_id : ObjectId(req.id)} , function(err , result){
+                    if(err){
+                        res.status(500).send('DB error while deleting bucket');
+                    }
+                    else{
+                        res.status(200).send('Bucket removed successfully');
+                        visitor.notifyDelete(req.id);
+                    }
+                });
+            }
+            else{
+                res.status(500).send('Cannot delete bucket due to invalid token');
+            }
         });
 
      /*********************************************************************************
@@ -122,7 +119,7 @@ module.exports = function(database , visitor){
                    res.status(200).send(results); 
                   }
              });
-        })
+        });
  
    
 	return router;

@@ -156,7 +156,7 @@ module.exports = function(bucketExplorer , database) {
 				options: {
 				   clientScripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'],
 				   pageSettings: {
-				        Referer: 'https://www.google.com.ng'
+				        //Referer: 'http://www.palingram.com'
 				    }
 				}
 			}

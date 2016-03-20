@@ -65,7 +65,7 @@ module.exports = function(database){
                         console.log('process successfully locked database');
                         setTimeout(function(){
                            authenticateAccess();
-                        } , 1000);
+                        } , 10000);
                     }
                 }
              );

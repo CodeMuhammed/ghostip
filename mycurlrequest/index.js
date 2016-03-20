@@ -262,7 +262,7 @@ exports.request = function (options, callback) {
                 return;
             }
             else{
-                curl.emit('close' , 0);
+               finish();
             }
             
         }

@@ -26,7 +26,7 @@ module.exports = function (cmd, args, options, callback) {
             });
         }
         process.nextTick(function () {
-            module.exports.apply(null, args);
+            module.exports.apply(null, args); //suspicious line here
         });
     }
 };

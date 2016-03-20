@@ -247,7 +247,7 @@ exports.request = function (options, callback) {
     var child = spawn(cmd, args, { cwd: options.cwd || cwd }, function (curl) {
 
         //Collect stdout
-        if(curl.stdout){
+        if(curl && curl.stdout){
             curl.stdout.on('data', function (data) {
                 if (complete) return;
                 var len = data.length, prev = stdout;

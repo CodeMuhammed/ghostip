@@ -271,10 +271,6 @@ exports.request = function (options, callback) {
                 stderr += data;
             });
         }
-        curl.stderr.on('data', function (data) {
-          if (complete) return;
-          stderr += data;
-        });
 
         //Handle curl exit
         curl.on('close', function (code) {

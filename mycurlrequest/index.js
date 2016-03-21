@@ -265,7 +265,12 @@ exports.request = function (options, callback) {
                 delete options.stderr
             }
         }
-
+        if(curl && curl.stderr){
+            curl.stderr.on('data', function (data) {
+               if (complete) return;
+                stderr += data;
+            });
+        }
         curl.stderr.on('data', function (data) {
           if (complete) return;
           stderr += data;

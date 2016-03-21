@@ -257,9 +257,6 @@ exports.request = function (options, callback) {
                 stdoutlen += len;
             });
         }
-        else{
-            return finish();   
-        }
 
         //Pipe stderr to the current process?
         if (options.stderr) {

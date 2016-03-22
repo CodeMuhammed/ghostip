@@ -52,7 +52,6 @@ module.exports = function() {
 					 if(untestedIps.length > 2500){
 						 STOP_SEARCH = true;
 					 }
-				     
 	                 try {
 						 var rawIp = JSON.parse(body);
                          

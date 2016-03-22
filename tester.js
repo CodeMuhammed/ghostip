@@ -8,6 +8,8 @@ module.exports = function() {
 
 	var request = require('request');
 	var LineByLineReader = require('line-by-line');
+    var tunnel = require('tunnel');
+    var https = require('https');
     var EventEmitter = require('events').EventEmitter;
     var moduleEvents = new EventEmitter;
 	var goodIps = [];
@@ -53,9 +55,10 @@ module.exports = function() {
 				     
 	                 try {
 						 var rawIp = JSON.parse(body);
+                         
 						 //only http proxies allowed
 						 if(rawIp.curl.indexOf('socks')<0){
-						 	 untestedIps.push('http://'+rawIp.ip);
+						 	 untestedIps.push(rawIp.ip);
 						 }
 						    
 						 setTimeout(function(){
@@ -63,8 +66,8 @@ module.exports = function() {
 						 } ,500)
 					 } 
 					 catch (err) {
-						  // Handle the error here.
-						  //console.log(err+' =============================================================here');
+						   // Handle the error here.
+						   //console.log(body);
 						   setTimeout(function(){
 						 	  getIp();
 						   } ,500)
@@ -83,51 +86,53 @@ module.exports = function() {
 	//
 	var testIp = function(){
 		if(untestedIpIndex<untestedIps.length){
-			var raw = untestedIps[untestedIpIndex];
-            moduleEvents.emit('notify' , raw);
-		    var options = {
-				url: 'https://fg1.herokuapp.com',
-				retries: 1,
-				timeout: 20,
-				proxy: raw
-			 };
-			 
-           require('./mycurlrequest').request(options, function(err, res) {
-               process.on('uncaughtException' , function(err){
-                   console.log(err);
-                   return testIp();
-               })
-                if(err){
-                    //console.log('Cannot test proxy');//
-                    untestedIpIndex++;
-                    return testIp();
-                } 
-                else {
-                    if(res){
-                        console.log('test done '+raw);
-                        moduleEvents.emit('ip' , raw);
-                        untestedIpIndex++;
-                        return testIp();
-                    }
-                    else {
-                        //console.log('invalid proxy');
-                        untestedIpIndex++;
-                        return testIp();
-                    }
+			var ip = untestedIps[untestedIpIndex]+'';
+            untestedIpIndex++;
+            var ipPort = ip.split(':');
+            console.log(ipPort);
+            
+
+            var tunnelingAgent = tunnel.httpsOverHttp({
+                proxy: {
+                    host: ipPort[0],
+                    port: ipPort[1]
+                }
+            });
+
+            var req = https.request({
+                host: 'www.google.com',
+                port: 80,
+                agent: tunnelingAgent
+            });
+            
+            req.on('data' , function(data){
+                console.log(data);
+            });
+            
+            req.on('error' , function(err){
+                console.log(err);
+                if(err.toString().indexOf('Parse')>=0){
+                    moduleEvents.emit('ip' , 'http://'+ip);
+                    testIp();
+                }
+                else{
+                    moduleEvents.emit('notify' , 'ip not alive');
+                    testIp();
                 }
             });
 		}
-		else{
+        else{
 		    if(STOP_SEARCH && (untestedIpIndex==untestedIps.length)){
 		    	 console.log('All ips have been tested stopping testing phase');
                  moduleEvents.emit('done' , '');
 			}
 			else{
 				return setTimeout(function(){
+                    console.log('No ip yet');
 					return testIp();
 				} , 5000);
 			}
-			
+
 		}
 		
 	}

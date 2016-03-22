@@ -110,7 +110,7 @@ module.exports = function() {
             });
             
             req.on('error' , function(err){
-                console.log(err);
+                //console.log(err);
                 if(err.toString().indexOf('Parse')>=0){
                     moduleEvents.emit('ip' , 'http://'+ip);
                     testIp();

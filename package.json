@@ -13,6 +13,7 @@
     "express": "^4.12.3",
     "express-session": "^1.7.6",
     "gimmeproxy": "^0.1.0",
+    "give-me-proxy": "^1.0.0",
     "http-proxy": "^1.13.2",
     "init-package-json": "^1.9.3",
     "line-by-line": "^0.1.4",

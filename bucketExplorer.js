@@ -88,9 +88,9 @@ module.exports = function(database){
              });
 
          };
-         checkLock();
+         //checkLock();
 
-         ////
+         //
          function lockAccessToBuckets(){
              console.log('Locking access to urls...');
              Explorer.update(

@@ -90,7 +90,7 @@ module.exports = function(database){
          };
          checkLock();
 
-         //
+         ////
          function lockAccessToBuckets(){
              console.log('Locking access to urls...');
              Explorer.update(

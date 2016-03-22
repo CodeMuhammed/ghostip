@@ -55,11 +55,9 @@ module.exports = function() {
 	                 try {
 						 var rawIp = JSON.parse(body);
                          
-						 //only http proxies allowed//
-						 if(rawIp.curl.indexOf('socks')<0){
-						 	 untestedIps.push(rawIp.ip);
-						 }
-						    
+						 //
+						 untestedIps.push(rawIp.ip);
+					    
 						 setTimeout(function(){
 						 	getIp();
 						 } ,500)

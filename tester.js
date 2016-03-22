@@ -63,7 +63,6 @@ module.exports = function() {
 						 } ,500)
 					 } 
 					 catch (err) {
-						   // Handle the error here.
 						   //console.log(body);
 						   setTimeout(function(){
 						 	  getIp();

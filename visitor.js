@@ -4,6 +4,8 @@ module.exports = function(bucketExplorer , database) {
 	//
     var ObjectId = require('mongodb').ObjectId;
 	var Spooky = require('spooky');
+    var EventEmitter = require('events').EventEmitter;
+    
 	var bucket;
     var ipQueue = [];
     var timer = 0;
@@ -59,17 +61,158 @@ module.exports = function(bucketExplorer , database) {
 
     var notifyDelete = function(_id){
          console.log('Bucket with'+ _id +'deleted');
-         if(bucket && bucket._id == _id){
-             console.log('This bucket was deleted');
-             setTimeout(function(){
-                 process.exit(0);
-             } , 10000);
+         if(bucket){
+             if(bucket._id == _id){
+                console.log('This bucket was deleted');
+                setTimeout(function(){
+                    process.exit(0);
+                } , 10000);
+             }
+             else{
+                 console.log('Not this one 1..');
+             }
             
          }
          else{
             console.log('Not this one..');
          }
     }
+    
+      
+    //
+    var visitWith = function(ip){
+        console.log('Adding ip to queue');
+        if(ipQueue.indexOf(ip)<0){
+            ipQueue.push(ip);
+        }
+        else{
+            console.log('ip alredy used or currently in use');
+        }
+        
+        if(ipQueue.length == 1){
+            startVisitingDaemon();
+        }
+    }
+    
+    //
+    var exitWhenDone = function(){
+         exitFlag = true;
+    }
+    
+    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    var V_WORKER = function(){
+        var ghostEvents = new EventEmitter;
+        
+        var visit = function(ip , urlsArr){ 
+            console.log('starting ghost');
+            console.log('ghostProxy starting with '+ip+' and '+urlsArr.length+' urls');
+        
+            var count = 0;
+            
+            var spooky = new Spooky({
+                child: {
+                    transport: 'http',
+                    proxy: ip
+                },
+                casper: {
+                    logLevel: 'debug',
+                    verbose: true,
+                    options: {
+                    pageSettings: {
+                            //Referer: 'http://www.palingram.com'
+                        }
+                    }
+                }
+            },
+            function(err){
+            if (err) {
+                    e = new Error('Failed to initialize SpookyJS');
+                    e.details = err;
+                    throw e;
+                }
+                
+                var worker = function(url , selector){
+                    //
+                    spooky.start(url);
+                    spooky.then([{url , selector} , function(){
+                        //General case
+                        if(selector=='none'){
+                            this.then(function(){
+                                this.wait(15000 , function(){
+                                    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
+                                    phantom.clearCookies();
+                                });
+                            });	 
+                        }
+                        
+                        else{ 
+                            this.then(function(){
+                                this.waitForSelector(selector , function(){
+                                    this.thenClick(selector , function() { 
+                                        this.emit('done', 'Hello, from ' + this.getCurrentUrl());
+                                        phantom.clearCookies();
+                                    });
+                                        
+                                } , function(){
+                                        this.emit('done', 'The selector was not found');
+                                        phantom.clearCookies();
+                                } , 20000);
+                            });
+                        }
+                    }]);
+                }
+                
+                //
+                for(var i=0; i<urlsArr.length; i++){
+                    worker(urlsArr[i].urlName , urlsArr[i].selector);
+                }
+                
+                //
+                spooky.run();	
+            });
+            
+            //
+            spooky.on('console', function (line) {
+                console.log(line);
+            });
+            
+            //
+            spooky.on('error', function (e, stack) {
+                count++;
+                console.error(e);
+
+                if (stack) {
+                    console.log(stack);
+                }
+                            
+                //DESTROY
+                ghostEvents.emit('done' , stack?stack:e);
+                
+                if(count >= urlsArr.length){
+                    spooky.destroy();
+                }
+            });
+
+            //
+            spooky.on('done', function (status) {
+                count++;
+                
+                //DESTROY
+                ghostEvents.emit('done' , status);
+                
+                if(count >= urlsArr.length){
+                    spooky.destroy();
+                }
+            });
+            
+        };
+        
+        return {
+            visit:visit,
+            status:ghostEvents 
+        }
+    }
+    //++++++++++++++++++++++++++++++++END++++++++++++++++++++++++++++++++++++++++++
     
     //updateBucket after every 100 secs of activity
     function startUpdateDaemon(){
@@ -96,28 +239,15 @@ module.exports = function(bucketExplorer , database) {
           );
         } , 120000);
     }
-   
+    
     //
     function startVisitingDaemon(){
-       var interval = 20000;
+       var v_worker = V_WORKER();
        setInterval(function(){
            if(visiting<limit && ipQueueIndex < ipQueue.length){
-               for(var i=0; i<bucket.urls.length; i++){
-                    runGhostProxy (ipQueue[ipQueueIndex] , bucket.urls[i] , i , function(){
-                        visiting--;
-                        if(limit > 20){
-                            limit--;
-                        }
-                        
-                        console.log('visiting complete '+(visiting)+' currently running');
-                        if(exitFlag && visiting == 0){
-                            console.log('All ips have been visited exiting process...');
-                            process.exit(0);
-                        }
-                    });
-                    visiting++;
-              }
-              ipQueueIndex++;  
+               runGhostProxy (ipQueue[ipQueueIndex] , bucket.urls);
+               visiting++;
+               ipQueueIndex++;  
            }
            else{
                if(visiting>=limit){
@@ -129,130 +259,25 @@ module.exports = function(bucketExplorer , database) {
                }
            }
            
-       } , interval);
+       } , 20000);
        
+       //
+       v_worker.status.on('done' , function(status){
+           
+            bucket.urls[0].statusText = status;
+            bucket.urls[0].visited++;
+            visiting--;
+            if(limit > 20){
+                limit--;
+            }
+            
+            if(exitFlag && visiting == 0){
+                console.log('All ips have been visited exiting process...');
+                process.exit(0);
+            }
+        });
     }
     
-    //
-    var visitWith = function(ip){
-        console.log('Adding ip to queue');
-        if(ipQueue.indexOf(ip)<0){
-            ipQueue.push(ip);
-        }
-        else{
-            console.log('ip alredy used or currently in use');
-        }
-        
-        if(ipQueue.length == 1){
-            startVisitingDaemon();
-        }
-    }
-    
-    //
-    var exitWhenDone = function(){
-         exitFlag = true;
-    }
-    
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-	function runGhostProxy (ip , url , index , callback){ 
-		console.log('starting ghost');
-		console.log('process starting '+ip+' '+url.urlName+' '+url.selector);
-	
-	    var spooky = new Spooky({
-			child: {
-				transport: 'http',
-				proxy: ip
-			},
-			casper: {
-				logLevel: 'debug',
-				verbose: true,
-				options: {
-				   clientScripts: ['http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js'],
-				   pageSettings: {
-				        //Referer: 'http://www.palingram.com'
-				    }
-				}
-			}
-		 },
-		 function(err){
-		   if (err) {
-				e = new Error('Failed to initialize SpookyJS');
-				e.details = err;
-				throw e;
-			}
-
-			//
-			spooky.start(url.urlName);
-			spooky.then([{url:url.urlName , selector:url.selector} , function(){
-                 //General case
-                if(selector=='none'){
-                    this.then(function(){
-                        this.wait(15000 , function(){
-                            this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-                            phantom.clearCookies();
-                        });
-                    });	 
-                }
-                
-                else{ 
-                    this.then(function(){
-                        this.waitForSelector(selector , function(){
-                            this.thenClick(selector , function() { 
-                                this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-                                phantom.clearCookies();
-                            });
-                                
-                        } , function(){
-                                this.emit('done', 'The selector was not found');
-                                phantom.clearCookies();
-                        } , 20000);
-                    });
-                }
-			}]);
-            
-            //
-			spooky.run();	
-		});
-		
-		//logs and listeners
-		spooky.on('error', function (e, stack) {
-			console.log('here');//
-			console.error(e);
-			Greeting = e;
-
-			if (stack) {
-				console.log(stack);
-				Greeting = stack;
-			}
-            
-            console.log('This round done visiting with '+ip);
-            bucket.urls[index].statusText = e;
-            bucket.urls[index].visited++;
-            spooky.destroy();
-            return callback();
-            
-		});
-
-		
-		//
-		spooky.on('console', function (line) {
-			console.log(line);
-		});
-		
-		//
-		spooky.on('done', function (greeting) {
-			bucket.urls[index].statusText = greeting;
-            bucket.urls[index].visited++;
-            
-			console.log('This round done visiting with '+ip);
-            spooky.destroy();
-            return callback();
-			
-		});
-	};
-    
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	return {
 	    visitWith:visitWith,
 	    getBucket:getBucket,

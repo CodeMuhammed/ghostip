@@ -81,7 +81,7 @@ module.exports = function(database){
                            }
                        }
                        else{
-                          console.log('Database lock is free No accessing domain...');
+                          console.log('Database lock is free No accessing domain currently...');
                           lockAccessToBuckets();  
                        }
                   }

@@ -249,8 +249,15 @@ module.exports = function(bucketExplorer , database) {
                visiting+= bucket.urls.length;   
           }
           else{
-              console.log('Visiting urls have exceeded the limit');
-              limit+=5;
+              if(limit < visiting){
+                  console.log('Visiting urls have exceeded the limit');
+                  limit+=5;
+              }
+              else{
+                  console.log('Good ip shortage');
+              }
+              
+            
           }
            
        } , 10000);

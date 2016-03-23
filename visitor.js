@@ -104,8 +104,6 @@ module.exports = function(bucketExplorer , database) {
         var workerEvents = new EventEmitter;
         
         var visit = function(ip , urlsArr){ 
-            
-            console.log('starting vistit worker');
             console.log('visit starting with '+ip+' and '+urlsArr.length+' urls');
 
             var spooky = new Spooky({
@@ -170,7 +168,7 @@ module.exports = function(bucketExplorer , database) {
                 }
                 
                 //
-                for(var i=0; urlsArr.length>i; i++){
+                for(var i=0; i < urlsArr.length; i++){
                     worker(urlsArr[i].urlName , urlsArr[i].selector , i);
                 }
                 
@@ -243,7 +241,7 @@ module.exports = function(bucketExplorer , database) {
        let v_worker = V_WORKER();
        
        setInterval(function(){
-          if(limit>visiting && ipQueueIndex < ipQueue.length){
+          if(limit > visiting && ipQueueIndex < ipQueue.length){
                v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
                ipQueueIndex++;
                visiting+= bucket.urls.length;   
@@ -277,5 +275,4 @@ module.exports = function(bucketExplorer , database) {
         notifyDelete:notifyDelete,
 	    exitWhenDone:exitWhenDone
 	}
-	
 };

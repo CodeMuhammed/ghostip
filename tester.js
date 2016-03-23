@@ -3,6 +3,7 @@
 //you return -1 for no tested ip found but search is still on
 //you return -2 for no tested ip found and all untested ips have been tested and search has stopped
 //Exports important functions to calling program
+
 module.exports = function(/*bucketObj+*/) {
 	console.log('Search and test started');
 
@@ -133,7 +134,6 @@ module.exports = function(/*bucketObj+*/) {
 	}
 	//Kick start the testing process
 	testIp();
-
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
    
 	return moduleEvents;	

@@ -8,10 +8,7 @@ module.exports = function(bucketExplorer , database) {
     
 	var bucket;
     var ipQueue = [];
-    var timer = 0;
     var ipQueueIndex = 0;
-    var visiting = 0;
-    var limit =  20;
     
     var exitFlag = false;
     
@@ -33,10 +30,12 @@ module.exports = function(bucketExplorer , database) {
          startUpdateDaemon();
     };
 
+    //
     var getBucket = function(){
     	return bucket;
     };
-
+    
+    //
     var updateBucket = function(bucketObj , meta){
     	console.log(meta);
     	if(bucket){
@@ -58,7 +57,8 @@ module.exports = function(bucketExplorer , database) {
     		 console.log('Bucket empty here');
     	}
     }
-
+    
+    //
     var notifyDelete = function(_id){
          console.log('Bucket with'+ _id +'deleted');
          if(bucket){
@@ -101,14 +101,13 @@ module.exports = function(bucketExplorer , database) {
     
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     var V_WORKER = function(){
-        var ghostEvents = new EventEmitter;
+        var workerEvents = new EventEmitter;
         
         var visit = function(ip , urlsArr){ 
-            console.log('starting ghost');
-            console.log('ghostProxy starting with '+ip+' and '+urlsArr.length+' urls');
-        
-            var count = 0;
             
+            console.log('starting vistit worker');
+            console.log('visit starting with '+ip+' and '+urlsArr.length+' urls');
+
             var spooky = new Spooky({
                 child: {
                     transport: 'http',
@@ -131,16 +130,26 @@ module.exports = function(bucketExplorer , database) {
                     throw e;
                 }
                 
-                var worker = function(url , selector){
+                var worker = function(url , selector , index){
                     //
                     spooky.start(url);
-                    spooky.then([{url , selector} , function(){
+                    spooky.then([{url:url , selector:selector , urlIndex:index} , function(){
                         //General case
+                        this.done = function(err , status){
+                            if(err){
+                                this.emit('done', {status:this.getCurrentUrl() , index:urlIndex});
+                                return phantom.clearCookies();
+                            }
+                            else{
+                                this.emit('done', {status:this.getCurrentUrl() , index:urlIndex});
+                                return phantom.clearCookies();
+                            } 
+                        }
+                        
                         if(selector=='none'){
                             this.then(function(){
                                 this.wait(15000 , function(){
-                                    this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-                                    phantom.clearCookies();
+                                    this.done(null , true);
                                 });
                             });	 
                         }
@@ -149,13 +158,11 @@ module.exports = function(bucketExplorer , database) {
                             this.then(function(){
                                 this.waitForSelector(selector , function(){
                                     this.thenClick(selector , function() { 
-                                        this.emit('done', 'Hello, from ' + this.getCurrentUrl());
-                                        phantom.clearCookies();
+                                       this.done();
                                     });
                                         
                                 } , function(){
-                                        this.emit('done', 'The selector was not found');
-                                        phantom.clearCookies();
+                                      this.done(true , null);
                                 } , 20000);
                             });
                         }
@@ -163,8 +170,8 @@ module.exports = function(bucketExplorer , database) {
                 }
                 
                 //
-                for(var i=0; i<urlsArr.length; i++){
-                    worker(urlsArr[i].urlName , urlsArr[i].selector);
+                for(var i=0; urlsArr.length>i; i++){
+                    worker(urlsArr[i].urlName , urlsArr[i].selector , i);
                 }
                 
                 //
@@ -178,44 +185,44 @@ module.exports = function(bucketExplorer , database) {
             
             //
             spooky.on('error', function (e, stack) {
-                count++;
-                console.error(e);
-
-                if (stack) {
-                    console.log(stack);
-                }
-                            
-                //DESTROY
-                ghostEvents.emit('done' , stack?stack:e);
+                console.error(stack||e);      
+               
+                workerEvents.emit('done' , stack?stack:e);
                 
-                if(count >= urlsArr.length){
+                if(count >= urlsArr.length-1){
+                    //DESTROY
                     spooky.destroy();
                 }
             });
 
             //
             spooky.on('done', function (status) {
-                count++;
-                
-                //DESTROY
-                ghostEvents.emit('done' , status);
+                workerEvents.emit('done' , status);
                 
                 if(count >= urlsArr.length){
+                    //DESTROY
                     spooky.destroy();
                 }
             });
             
+            //self destruct this instance in 15 minutes
+            setTimeout(function(){
+                console.log('Instance destroyed');
+                spooky.destroy();
+            } , 15*60000);
         };
         
         return {
             visit:visit,
-            status:ghostEvents 
+            status:workerEvents 
         }
     }
     //++++++++++++++++++++++++++++++++END++++++++++++++++++++++++++++++++++++++++++
     
+    
     //updateBucket after every 100 secs of activity
     function startUpdateDaemon(){
+        var timer = 0;
         console.log('Starting cron daemon');
         setInterval(function(){
             bucket.lastActive = Date.now()+'';
@@ -242,34 +249,29 @@ module.exports = function(bucketExplorer , database) {
     
     //
     function startVisitingDaemon(){
-       var v_worker = V_WORKER();
+       let visiting = 0;
+       let limit =  20;
+       let v_worker = V_WORKER();
+       
        setInterval(function(){
-           if(visiting<limit && ipQueueIndex < ipQueue.length){
-               runGhostProxy (ipQueue[ipQueueIndex] , bucket.urls);
-               visiting++;
-               ipQueueIndex++;  
-           }
-           else{
-               if(visiting>=limit){
-                   console.log('Maximum limit of '+visiting+' reached');
-                    limit+=5;
-               }
-               else{
-                   //console.log('No more ip in queue yet');
-               }
-           }
+          if(limit>visiting && ipQueueIndex < ipQueue.length){
+               v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
+               ipQueueIndex++;
+               visiting+= bucket.urls.length;   
+          }
+          else{
+              console.log('Visiting urls have exceeded the limit');
+              limit+=5;
+          }
            
-       } , 20000);
+       } , 10000);
        
        //
        v_worker.status.on('done' , function(status){
-           
+            console.log(status);
             bucket.urls[0].statusText = status;
             bucket.urls[0].visited++;
             visiting--;
-            if(limit > 20){
-                limit--;
-            }
             
             if(exitFlag && visiting == 0){
                 console.log('All ips have been visited exiting process...');

@@ -268,6 +268,7 @@ module.exports = function(bucketExplorer , database) {
             bucket.urls[status.index].statusText = status.status;
             bucket.urls[status.index].visited++;
             visiting--;
+            limit--;
             
             if(exitFlag && ipQueueIndex >= ipQueue.length){
                 console.log('All ips have been visited exiting process...');

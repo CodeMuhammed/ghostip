@@ -254,7 +254,7 @@ module.exports = function(bucketExplorer , database) {
                   limit+=5;
               }
               else{
-                  console.log('Good ip shortage');
+                  //console.log('Good ip shortage');
               }
               
             

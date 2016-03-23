@@ -1,5 +1,7 @@
 /* This module uses a give ip to visit the whole urls in the bucket assigned to it
 */
+'use strict';
+
 module.exports = function(bucketExplorer , database) {
 	//
     var ObjectId = require('mongodb').ObjectId;

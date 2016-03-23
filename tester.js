@@ -81,13 +81,12 @@ module.exports = function(/*bucketObj+*/) {
 
 	//
 	var testIp = function(){
-		if(untestedIpIndex<untestedIps.length){
+		if(untestedIps.length>untestedIpIndex){
 			var ip = untestedIps[untestedIpIndex]+'';
             untestedIpIndex++;
             var ipPort = ip.split(':');
             console.log(ipPort);
             
-
             var tunnelingAgent = tunnel.httpsOverHttp({
                 proxy: {
                     host: ipPort[0],

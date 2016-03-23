@@ -186,23 +186,12 @@ module.exports = function(bucketExplorer , database) {
             //
             spooky.on('error', function (e, stack) {
                 console.error(stack||e);      
-               
-                workerEvents.emit('done' , stack?stack:e);
-                
-                if(count >= urlsArr.length-1){
-                    //DESTROY
-                    spooky.destroy();
-                }
+                workerEvents.emit('done' , {status:stack?stack:e , index:0});
             });
 
             //
             spooky.on('done', function (status) {
                 workerEvents.emit('done' , status);
-                
-                if(count >= urlsArr.length){
-                    //DESTROY
-                    spooky.destroy();
-                }
             });
             
             //self destruct this instance in 15 minutes
@@ -269,11 +258,11 @@ module.exports = function(bucketExplorer , database) {
        //
        v_worker.status.on('done' , function(status){
             console.log(status);
-            bucket.urls[0].statusText = status;
-            bucket.urls[0].visited++;
+            bucket.urls[status.index].statusText = status.status;
+            bucket.urls[status.index].visited++;
             visiting--;
             
-            if(exitFlag && visiting == 0){
+            if(exitFlag && ipQueueIndex >= ipQueue.length){
                 console.log('All ips have been visited exiting process...');
                 process.exit(0);
             }

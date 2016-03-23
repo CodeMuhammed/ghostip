@@ -88,7 +88,7 @@ module.exports = function(database){
              });
 
          };
-         //checkLock();
+         checkLock();
 
          //
          function lockAccessToBuckets(){

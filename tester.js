@@ -87,15 +87,16 @@ module.exports = function(/*bucketObj+*/) {
             untestedIpIndex++;
             var ipPort = ip.split(':');
             console.log(ipPort);
-            
-            var tunnelingAgent = tunnel.httpsOverHttp({
+            moduleEvents.emit('ip' , 'http://'+ip);
+            testIp();
+             /*var tunnelingAgent = tunnel.httpsOverHttp({
                 proxy: {
                     host: ipPort[0],
                     port: ipPort[1]
                 }
             });
 
-            var req = https.request({
+           var req = https.request({
                 host: 'www.google.com',
                 port: 80,
                 agent: tunnelingAgent
@@ -115,7 +116,7 @@ module.exports = function(/*bucketObj+*/) {
                     moduleEvents.emit('notify' , 'ip not alive');
                     testIp();
                 }
-            });
+            });*/
 		}
         else{
 		    if(STOP_SEARCH && (untestedIpIndex==untestedIps.length)){

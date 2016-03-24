@@ -243,7 +243,7 @@ module.exports = function(bucketExplorer , database) {
        let v_worker = V_WORKER();
        
        setInterval(function(){
-          if(limit > visiting && ipQueueIndex < ipQueue.length){
+          if(ipQueueIndex < ipQueue.length){
                v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
                ipQueueIndex++;
                visiting+= bucket.urls.length;   

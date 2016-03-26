@@ -247,7 +247,7 @@ module.exports = function(bucketExplorer , database) {
        
        function fillVisiting(){
             console.log('fill visiting called');
-            if(ipQueueIndex < ipQueue.length && limit > visiting){
+            if(ipQueueIndex < ipQueue.length){
                child_processes++;
                console.log(child_processes+' child_processes currently running');
                v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
@@ -260,7 +260,7 @@ module.exports = function(bucketExplorer , database) {
                     limit+=100;
                 }
                 else{
-                    //console.log('Good ip shortage');
+                    console.log('Good ip shortage');
                 }    
             }
             

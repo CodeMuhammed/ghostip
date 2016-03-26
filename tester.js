@@ -4,7 +4,7 @@
 //you return -2 for no tested ip found and all untested ips have been tested and search has stopped
 //Exports important functions to calling program
 
-module.exports = function(/*bucketObj+*/) {
+module.exports = function(bucketObj) {
 	console.log('Search and test started');
 
 	var request = require('request');
@@ -86,7 +86,6 @@ module.exports = function(/*bucketObj+*/) {
 			var ip = untestedIps[untestedIpIndex]+'';
             untestedIpIndex++;
             var ipPort = ip.split(':');
-            console.log(ipPort);
             moduleEvents.emit('ip' , 'http://'+ip);
             testIp();
              /*var tunnelingAgent = tunnel.httpsOverHttp({

@@ -7,11 +7,12 @@ module.exports = function(bucketExplorer , database) {
     var ObjectId = require('mongodb').ObjectId;
 	var Spooky = require('spooky');
     var EventEmitter = require('events').EventEmitter;
+    var domain = require('domain');
     
 	var bucket;
     var ipQueue = [];
     var ipQueueIndex = 0;
-    
+    var child_processes = 0;
     var exitFlag = false;
     
     //
@@ -83,7 +84,7 @@ module.exports = function(bucketExplorer , database) {
       
     //
     var visitWith = function(ip){
-        console.log('Adding ip to queue');
+        console.log('Adding %s to queue' , ip);
         if(ipQueue.indexOf(ip)<0){
             ipQueue.push(ip);
         }
@@ -108,7 +109,7 @@ module.exports = function(bucketExplorer , database) {
         var visit = function(ip , urlsArr){ 
             console.log('visit starting with '+ip+' and '+urlsArr.length+' urls');
 
-            var spooky = new Spooky({
+            let spooky = new Spooky({
                 child: {
                     transport: 'http',
                     proxy: ip
@@ -130,7 +131,7 @@ module.exports = function(bucketExplorer , database) {
                     throw e;
                 }
                 
-                var worker = function(url , selector , index){
+                let worker = function(url , selector , index){
                     //
                     spooky.start(url);
                     spooky.then([{url:url , selector:selector , urlIndex:index} , function(){
@@ -170,7 +171,7 @@ module.exports = function(bucketExplorer , database) {
                 }
                 
                 //
-                for(var i=0; i < urlsArr.length; i++){
+                for(let i=0; i < urlsArr.length; i++){
                     worker(urlsArr[i].urlName , urlsArr[i].selector , i);
                 }
                 
@@ -198,7 +199,8 @@ module.exports = function(bucketExplorer , database) {
             setTimeout(function(){
                 console.log('Instance destroyed');
                 spooky.destroy();
-            } , 15*60000);
+                child_processes--;
+            } , 5*60000);
         };
         
         return {
@@ -225,7 +227,7 @@ module.exports = function(bucketExplorer , database) {
                     }
                     else {
                         timer+=2;
-                        if(timer >= 162){
+                        if(timer >= 122){
                             console.log('Maximum uptime of two hours exceeded exiting....');
                             process.exit(0);
                         }
@@ -240,30 +242,51 @@ module.exports = function(bucketExplorer , database) {
     function startVisitingDaemon(){
        let visiting = 0;
        let limit =  20;
+       
        let v_worker = V_WORKER();
        
-       setInterval(function(){
-          if(ipQueueIndex < ipQueue.length){
+       function fillVisiting(){
+            console.log('fill visiting called');
+            if(ipQueueIndex < ipQueue.length){
+               child_processes++;
+               console.log(child_processes+' child_processes currently running');
                v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
                ipQueueIndex++;
                visiting+= bucket.urls.length;   
-          }
-          else{
-              if(limit < visiting){
-                  console.log('Visiting urls have exceeded the limit');
-                  limit+=100;
-              }
-              else{
-                  //console.log('Good ip shortage');
-              }
-              
+            }
+            else{
+                if(limit < visiting){
+                    console.log('Visiting urls have exceeded the limit');
+                    limit+=100;
+                }
+                else{
+                    console.log('Good ip shortage');
+                }    
+            }
             
-          }
-           
-       } , 10000);
+            //
+            setTimeout(function(){
+                return domainSpooky();
+            } , 5000);
+       }
        
        //
-       v_worker.status.on('done' , function(status){
+       function domainSpooky(){
+            var d = domain.create();
+            d.on('error', function(err){
+                    console.log(err);
+                    setTimeout(function(){
+                        return domainSpooky();
+                    } , 60000);
+            });
+            d.run(function () {
+                fillVisiting();
+            });
+      }
+      domainSpooky();
+      
+      //
+      v_worker.status.on('done' , function(status){
             console.log(status);
             bucket.urls[status.index].statusText = status.status;
             bucket.urls[status.index].visited++;

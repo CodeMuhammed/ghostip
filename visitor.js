@@ -7,6 +7,7 @@ module.exports = function(bucketExplorer , database) {
     var ObjectId = require('mongodb').ObjectId;
 	var Spooky = require('spooky');
     var EventEmitter = require('events').EventEmitter;
+    var domain = require('domain');
     
 	var bucket;
     var ipQueue = [];
@@ -244,27 +245,40 @@ module.exports = function(bucketExplorer , database) {
        
        let v_worker = V_WORKER();
        
-       setInterval(function(){
-          if(ipQueueIndex < ipQueue.length){
+       function fillVisiting(){
+            if(ipQueueIndex < ipQueue.length){
                child_processes++;
                console.log(child_processes+' child_processes currently running');
                v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
                ipQueueIndex++;
                visiting+= bucket.urls.length;   
-          }
-          else{
-              if(limit < visiting){
-                  console.log('Visiting urls have exceeded the limit');
-                  limit+=100;
-              }
-              else{
-                  //console.log('Good ip shortage');
-              } 
-            
-          }
-           
-       } , 10000);
+            }
+            else{
+                if(limit < visiting){
+                    console.log('Visiting urls have exceeded the limit');
+                    limit+=100;
+                }
+                else{
+                    //console.log('Good ip shortage');
+                } 
+                
+            }
+       }
        
+       //
+       function domainSpooky(){
+            var d = domain.create();
+            d.on('error', function(err){
+                    console.log(err);
+                    setTimeout(function(){
+                        return domainSpooky();
+                    } , 60000);
+            });
+            d.run(function () {
+                fillVisiting();
+            });
+      }
+      domainSpooky();
        //
        v_worker.status.on('done' , function(status){
             console.log(status);

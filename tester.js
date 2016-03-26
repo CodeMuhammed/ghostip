@@ -86,7 +86,6 @@ module.exports = function(bucketObj) {
 			var ip = untestedIps[untestedIpIndex]+'';
             untestedIpIndex++;
             var ipPort = ip.split(':');
-            console.log(ipPort);
             moduleEvents.emit('ip' , 'http://'+ip);
             testIp();
              /*var tunnelingAgent = tunnel.httpsOverHttp({

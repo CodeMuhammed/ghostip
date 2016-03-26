@@ -84,6 +84,7 @@ module.exports = function(bucketExplorer , database) {
       
     //
     var visitWith = function(ip){
+        console.log('Adding %s to queue' , ip);
         if(ipQueue.indexOf(ip)<0){
             ipQueue.push(ip);
         }
@@ -92,7 +93,6 @@ module.exports = function(bucketExplorer , database) {
         }
         
         if(ipQueue.length == 1){
-            console.log('Adding ip to queue');
             startVisitingDaemon();
         }
     }
@@ -283,6 +283,7 @@ module.exports = function(bucketExplorer , database) {
                 fillVisiting();
             });
       }
+      domainSpooky();
       
       //
       v_worker.status.on('done' , function(status){

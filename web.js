@@ -40,7 +40,7 @@ database.initColls(function(){
 		bucketExplorer.getBucket(function(bucketObj){
             if(bucketObj){
                 visitor.setBucket(bucketObj);
-                tester = require('./tester')();
+                tester = require('./tester')(bucketObj);
 
                 //
                 tester.on('ip' , function(ip){

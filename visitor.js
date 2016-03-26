@@ -11,7 +11,7 @@ module.exports = function(bucketExplorer , database) {
 	var bucket;
     var ipQueue = [];
     var ipQueueIndex = 0;
-    
+    var child_processes = 0;
     var exitFlag = false;
     
     //
@@ -198,6 +198,7 @@ module.exports = function(bucketExplorer , database) {
             setTimeout(function(){
                 console.log('Instance destroyed');
                 spooky.destroy();
+                child_processes--;
             } , 5*60000);
         };
         
@@ -240,10 +241,13 @@ module.exports = function(bucketExplorer , database) {
     function startVisitingDaemon(){
        let visiting = 0;
        let limit =  20;
+       
        let v_worker = V_WORKER();
        
        setInterval(function(){
           if(ipQueueIndex < ipQueue.length){
+               child_processes++;
+               console.log(child_processes+' child_processes currently running');
                v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
                ipQueueIndex++;
                visiting+= bucket.urls.length;   

@@ -227,7 +227,7 @@ module.exports = function(bucketExplorer , database) {
                     }
                     else {
                         timer+=2;
-                        if(timer >= 162){
+                        if(timer >= 122){
                             console.log('Maximum uptime of two hours exceeded exiting....');
                             process.exit(0);
                         }

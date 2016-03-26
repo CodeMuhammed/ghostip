@@ -243,7 +243,7 @@ module.exports = function(bucketExplorer , database) {
        let v_worker = V_WORKER();
        
        setInterval(function(){
-          if(ipQueueIndex < ipQueue.length){
+          if(ipQueueIndex < ipQueue.length && limit > visiting){
                v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
                ipQueueIndex++;
                visiting+= bucket.urls.length;   
@@ -255,8 +255,7 @@ module.exports = function(bucketExplorer , database) {
               }
               else{
                   //console.log('Good ip shortage');
-              }
-              
+              } 
             
           }
            

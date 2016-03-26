@@ -117,8 +117,8 @@ module.exports = function(bucketExplorer , database) {
                     logLevel: 'debug',
                     verbose: true,
                     options: {
-                    pageSettings: {
-                            //Referer: 'http://www.palingram.com'
+                        pageSettings: {
+                            webSecurityEnabled: false
                         }
                     }
                 }
@@ -209,7 +209,7 @@ module.exports = function(bucketExplorer , database) {
     //++++++++++++++++++++++++++++++++END++++++++++++++++++++++++++++++++++++++++++
     
     
-    //updateBucket after every 100 secs of activity
+    //updateBucket after every 120 secs of activity
     function startUpdateDaemon(){
         var timer = 0;
         console.log('Starting cron daemon');

@@ -84,7 +84,6 @@ module.exports = function(bucketExplorer , database) {
       
     //
     var visitWith = function(ip){
-        console.log('Adding ip to queue');
         if(ipQueue.indexOf(ip)<0){
             ipQueue.push(ip);
         }
@@ -93,6 +92,7 @@ module.exports = function(bucketExplorer , database) {
         }
         
         if(ipQueue.length == 1){
+            console.log('Adding ip to queue');
             startVisitingDaemon();
         }
     }
@@ -246,7 +246,8 @@ module.exports = function(bucketExplorer , database) {
        let v_worker = V_WORKER();
        
        function fillVisiting(){
-            if(ipQueueIndex < ipQueue.length){
+            console.log('fill visiting called');
+            if(ipQueueIndex < ipQueue.length && limit > visiting){
                child_processes++;
                console.log(child_processes+' child_processes currently running');
                v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
@@ -260,9 +261,13 @@ module.exports = function(bucketExplorer , database) {
                 }
                 else{
                     //console.log('Good ip shortage');
-                } 
-                
+                }    
             }
+            
+            //
+            setTimeout(function(){
+                return domainSpooky();
+            } , 5000);
        }
        
        //
@@ -278,9 +283,9 @@ module.exports = function(bucketExplorer , database) {
                 fillVisiting();
             });
       }
-      domainSpooky();
-       //
-       v_worker.status.on('done' , function(status){
+      
+      //
+      v_worker.status.on('done' , function(status){
             console.log(status);
             bucket.urls[status.index].statusText = status.status;
             bucket.urls[status.index].visited++;

@@ -273,7 +273,7 @@ module.exports = function(bucketExplorer , database) {
             if(exitFlag && ipQueueIndex >= ipQueue.length){
                 console.log('All ips have been visited exiting process...');
                 process.exit(0);
-            }
+            }//
         });
     }
     

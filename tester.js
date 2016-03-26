@@ -44,7 +44,7 @@ module.exports = function(bucketObj) {
     
 	function getIp(){
 		if(!STOP_SEARCH){
-			 request.get('http://gimmeproxy.com/api/get/'+bucketObj._id+'/?timeout=19440' , function(err , response , body){
+			 request.get('http://gimmeproxy.com/api/get/'+bucketObj._id+'/?timeout=1000' , function(err , response , body){
 				 if(err){
 					 //console.log('cannot get ip address'); 
 					 getIp();

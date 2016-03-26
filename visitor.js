@@ -108,7 +108,7 @@ module.exports = function(bucketExplorer , database) {
         var visit = function(ip , urlsArr){ 
             console.log('visit starting with '+ip+' and '+urlsArr.length+' urls');
 
-            var spooky = new Spooky({
+            let spooky = new Spooky({
                 child: {
                     transport: 'http',
                     proxy: ip
@@ -130,7 +130,7 @@ module.exports = function(bucketExplorer , database) {
                     throw e;
                 }
                 
-                var worker = function(url , selector , index){
+                let worker = function(url , selector , index){
                     //
                     spooky.start(url);
                     spooky.then([{url:url , selector:selector , urlIndex:index} , function(){
@@ -170,7 +170,7 @@ module.exports = function(bucketExplorer , database) {
                 }
                 
                 //
-                for(var i=0; i < urlsArr.length; i++){
+                for(let i=0; i < urlsArr.length; i++){
                     worker(urlsArr[i].urlName , urlsArr[i].selector , i);
                 }
                 
@@ -198,7 +198,7 @@ module.exports = function(bucketExplorer , database) {
             setTimeout(function(){
                 console.log('Instance destroyed');
                 spooky.destroy();
-            } , 15*60000);
+            } , 5*60000);
         };
         
         return {

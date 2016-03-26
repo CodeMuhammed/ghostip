@@ -266,24 +266,12 @@ module.exports = function(bucketExplorer , database) {
             
             //
             setTimeout(function(){
-                return domainSpooky();
+                return fillVisiting();
             } , 5000);
        }
        
        //
-       function domainSpooky(){
-            var d = domain.create();
-            d.on('error', function(err){
-                    console.log(err);
-                    setTimeout(function(){
-                        return domainSpooky();
-                    } , 60000);
-            });
-            d.run(function () {
-                fillVisiting();
-            });
-      }
-      domainSpooky();
+       fillVisiting();
       
       //
       v_worker.status.on('done' , function(status){

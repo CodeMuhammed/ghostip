@@ -68,7 +68,7 @@ module.exports = function(database){
                                                 accessingDomains = [];
                                                 max_tries = 0;
                                                 return checkLock();
-                                            } , 10000);    
+                                            } , 5000);    
                                         }
                                     });
                                }
@@ -77,7 +77,7 @@ module.exports = function(database){
                                //
                                setTimeout(function(){
                                    return checkLock();
-                               } , 10000);
+                               } , 5000);
                            }
                        }
                        else{
@@ -110,7 +110,7 @@ module.exports = function(database){
                         console.log('process successfully locked database');
                         setTimeout(function(){
                            authenticateAccess();
-                        } , 10000);
+                        } , 5000);
                     }
                 }
              );

@@ -46,12 +46,6 @@ database.initColls(function(){
                 tester.on('ip' , function(ip){
                     visitor.visitWith(ip);
                 });
-                tester.on('notify' , function(status){
-                    console.log(status);
-                }); 
-                tester.on('done' , function(){
-                    visitor.exitWhenDone();
-                }); 
             }
             else{
                console.log('No buckets available at the moment ----- retrying in 9secs');

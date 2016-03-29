@@ -13,7 +13,6 @@ module.exports = function(bucketExplorer , database) {
     var ipQueue = [];
     var ipQueueIndex = 0;
     var child_processes = 0;
-    var exitFlag = false;
     
     //
     var Buckets = database.model('Buckets');
@@ -97,11 +96,7 @@ module.exports = function(bucketExplorer , database) {
         }
     }
     
-    //
-    var exitWhenDone = function(){
-         exitFlag = true;
-    }
-    
+   
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     var V_WORKER = function(){
         var workerEvents = new EventEmitter;
@@ -281,11 +276,6 @@ module.exports = function(bucketExplorer , database) {
             bucket.urls[status.index].visited++;
             visiting--;
             limit--;
-            
-            if(exitFlag && ipQueueIndex >= ipQueue.length){
-                console.log('All ips have been visited exiting process...');
-                process.exit(0);
-            }//
         });
     }
     
@@ -294,7 +284,6 @@ module.exports = function(bucketExplorer , database) {
 	    getBucket:getBucket,
 	    setBucket:setBucket,
 	    updateBucket:updateBucket,
-        notifyDelete:notifyDelete,
-	    exitWhenDone:exitWhenDone
+        notifyDelete:notifyDelete
 	}
 };

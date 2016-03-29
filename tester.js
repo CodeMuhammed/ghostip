@@ -8,17 +8,14 @@ module.exports = function(bucketObj) {
 	console.log('Search and test started');
 
 	var request = require('request');
+    var curl = require('curlrequest');
+    
 	var LineByLineReader = require('line-by-line');
     var tunnel = require('tunnel');
     var https = require('https');
     var EventEmitter = require('events').EventEmitter;
     var moduleEvents = new EventEmitter;
-	var goodIps = [];
-	var goodIpIndex = 0;
-
-	var untestedIps = [];
-	var untestedIpIndex=0;
-
+	
 	//
 	var STOP_SEARCH =false;
 
@@ -44,30 +41,29 @@ module.exports = function(bucketObj) {
     
 	function getIp(){
 		if(!STOP_SEARCH){
-			 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
+			 request.get('http://gimmeproxy.com/api/get/'+bucketObj._id+'/?timeout=21600' , function(err , response , body){
 				 if(err){
-					 //console.log('cannot get ip address'); 
 					 getIp();
 				 } 
 				 else {
-					 if(untestedIps.length > 2500){
-						 STOP_SEARCH = true;
-					 }
 	                 try {
-						 var rawIp = JSON.parse(body);
+						 var raw = JSON.parse(body);
+                         if(raw.status == 429){
+                             console.log('Rate limit exceeded');
+                             setTimeout(function(){
+                                  return getIp();
+                             } ,1000)
+                         }
+                         else{
+                             //@TODO test ip
+                             testIp(raw.curl);
+                         }
                          
-						 //
-						 untestedIps.push(rawIp.ip);
-					    
-						 setTimeout(function(){
-						 	getIp();
-						 } ,500)
 					 } 
 					 catch (err) {
-						   //console.log(body);
 						   setTimeout(function(){
 						 	  getIp();
-						   } ,500)
+						   } ,1000)
 					 }
 					 
 				 }
@@ -78,62 +74,40 @@ module.exports = function(bucketObj) {
 			return;
 		}
 	};
-    getIp();
 
 	//
-	var testIp = function(){
-		if(untestedIps.length>untestedIpIndex){
-			var ip = untestedIps[untestedIpIndex]+'';
-            untestedIpIndex++;
-            var ipPort = ip.split(':');
-            moduleEvents.emit('ip' , 'http://'+ip);
-            testIp();
-             /*var tunnelingAgent = tunnel.httpsOverHttp({
-                proxy: {
-                    host: ipPort[0],
-                    port: ipPort[1]
+	var testIp = function(curlIp){
+        var options = {
+            url: 'https://google.com',
+            retries: 2,
+            headers: {
+                'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
+            },
+            timeout: 15,
+            proxy: curlIp
+        };
+        
+        curl.request(options, function(err, res) {
+            if(err){
+                console.log('Cannot test proxy');
+                return getIp();
+            } 
+            else {
+                if(res){
+                    console.log('test done');
+                    moduleEvents.emit('ip' , curlIp);
+                    return getIp();
                 }
-            });
-
-           var req = https.request({
-                host: 'www.google.com',
-                port: 80,
-                agent: tunnelingAgent
-            });
-            
-            req.on('data' , function(data){
-                console.log(data);
-            });
-            
-            req.on('error' , function(err){
-                //console.log(err);
-                if(err.toString().indexOf('Parse')>=0){
-                    moduleEvents.emit('ip' , 'http://'+ip);
-                    testIp();
+                else {
+                    console.log('invalid proxy');
+                    return getIp();
                 }
-                else{
-                    moduleEvents.emit('notify' , 'ip not alive');
-                    testIp();
-                }
-            });*/
-		}
-        else{
-		    if(STOP_SEARCH && (untestedIpIndex==untestedIps.length)){
-		    	 console.log('All ips have been tested stopping testing phase');
-                 moduleEvents.emit('done' , '');
-			}
-			else{
-				return setTimeout(function(){
-                    console.log('No ip yet');
-					return testIp();
-				} , 5000);
-			}
-
-		}
-		
+            }
+        }); 
 	}
-	//Kick start the testing process
-	testIp();
+    
+    //Kick start the process
+    getIp();
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
    
 	return moduleEvents;	

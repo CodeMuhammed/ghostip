@@ -114,6 +114,7 @@ module.exports = function(bucketExplorer , database) {
                     transport: 'http',
                     proxy: ip
                 },
+                
                 casper: {
                     logLevel: 'debug',
                     verbose: true,
@@ -267,11 +268,11 @@ module.exports = function(bucketExplorer , database) {
             //
             setTimeout(function(){
                 return fillVisiting();
-            } , 5000);
+            } , 1000);
        }
        
-       //
-       fillVisiting();
+      //
+      fillVisiting();
       
       //
       v_worker.status.on('done' , function(status){

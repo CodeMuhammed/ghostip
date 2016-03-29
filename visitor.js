@@ -268,7 +268,7 @@ module.exports = function(bucketExplorer , database) {
             //
             setTimeout(function(){
                 return fillVisiting();
-            } , 1000);
+            } , 10000);
        }
        
       //

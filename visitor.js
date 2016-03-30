@@ -129,12 +129,13 @@ module.exports = function(bucketExplorer , database) {
                 
                 let worker = function(url , selector , index){
                     //
-                    spooky.start(url);
-                    spooky.then([{url:url , selector:selector , urlIndex:index} , function(){
+                    spooky.start().then(function () {  
                         this.page.customHeaders = {  
-                            "Referer": 'https://www.google.com'   
-                        } 
-                        
+                            "Referer": fakeReferrer   
+                        };  
+                    });
+                    spooky.thenOpen(url);
+                    spooky.then([{url:url , selector:selector , urlIndex:index} , function(){
                         //
                         this.done = function(err , status){
                             if(err){

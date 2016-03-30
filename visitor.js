@@ -104,7 +104,7 @@ module.exports = function(bucketExplorer , database) {
         var visit = function(ip , urlsArr){ 
             console.log('visit starting with '+ip+' and '+urlsArr.length+' urls');
 
-            let spooky = new Spooky({
+            let spooky = Spooky.create({
                 child: {
                     transport: 'http',
                     proxy: ip
@@ -131,7 +131,11 @@ module.exports = function(bucketExplorer , database) {
                     //
                     spooky.start(url);
                     spooky.then([{url:url , selector:selector , urlIndex:index} , function(){
-                        //General case
+                        this.page.customHeaders = {  
+                            "Referer": 'https://www.google.com'   
+                        } 
+                        
+                        //
                         this.done = function(err , status){
                             if(err){
                                 this.emit('done', {status:this.getCurrentUrl() , index:urlIndex});

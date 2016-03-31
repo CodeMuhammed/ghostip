@@ -131,7 +131,7 @@ module.exports = function(bucketExplorer , database) {
                     //
                     spooky.start().then(function () {  
                         this.page.customHeaders = {  
-                            "Referer": fakeReferrer   
+                            "Referer": 'https://www.google.com' 
                         };  
                     });
                     spooky.thenOpen(url);

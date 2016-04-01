@@ -97,7 +97,7 @@ module.exports = function(bucketExplorer , database) {
     }
     
    
-    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     var V_WORKER = function(){
         var workerEvents = new EventEmitter;
         

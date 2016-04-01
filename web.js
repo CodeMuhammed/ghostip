@@ -14,7 +14,6 @@ app.use(cors({credentials: true, origin: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
 
-
 var database = require('./database')('restapi' , app);
 
 var port = process.env.PORT || 5004;
@@ -36,7 +35,7 @@ database.initColls(function(){
     visitor = require('./visitor')(bucketExplorer , database);
 	app.use('/api' , require('./api')(database , visitor));
 
-	function getBucketFn(){
+	(function getBucketFn(){
 		bucketExplorer.getBucket(function(bucketObj){
             if(bucketObj){
                 visitor.setBucket(bucketObj);
@@ -54,8 +53,7 @@ database.initColls(function(){
                } , 10000);
             }
 		});
-	};
-	getBucketFn()
+	})();
 
 	//=============================================================================
 	//configure express static

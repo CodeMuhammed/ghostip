@@ -89,7 +89,7 @@ module.exports = function(bucketObj) {
         
         curl.request(options, function(err, res) {
             if(err){
-                console.log('Cannot test proxy');
+                console.log('Proxy error: invalid');
                 return getIp();
             } 
             else {
@@ -99,7 +99,7 @@ module.exports = function(bucketObj) {
                     return getIp();
                 }
                 else {
-                    console.log('invalid proxy');
+                    console.log('Connection was timed out');
                     return getIp();
                 }
             }

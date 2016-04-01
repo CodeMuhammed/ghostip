@@ -114,7 +114,7 @@ module.exports = function(bucketExplorer , database) {
                     logLevel: 'debug',
                     verbose: true,
                     options: {
-                        clientScripts: ['../public/js/vendors/jquery.min.js'],
+                        clientScripts: ['public/js/vendors/jquery.min.js'],
                         pageSettings: {
                             webSecurityEnabled: false
                         }

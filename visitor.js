@@ -129,7 +129,8 @@ module.exports = function(bucketExplorer , database) {
                 
                 let worker = function(url , selector , index){
                     //
-                    spooky.start().then(function () {  
+                    spooky.start();
+                    spooky.then(function () {  
                         this.page.customHeaders = {  
                             "Referer": 'https://www.google.com' 
                         };  

@@ -121,60 +121,58 @@ module.exports = function(bucketExplorer , database) {
                 }
             },
             function(err){
-            if (err) {
+               if (err) {
                     e = new Error('Failed to initialize SpookyJS');
                     e.details = err;
                     throw e;
                 }
                 
-                let worker = function(url , selector , index){
-                    //
-                    spooky.start();
-                    spooky.then(function () {  
-                        this.page.customHeaders = {  
-                            "Referer": 'https://www.google.com' 
-                        };  
-                    });
-                    spooky.thenOpen(url);
-                    spooky.then([{url:url , selector:selector , urlIndex:index} , function(){
-                        //
-                        this.done = function(err , status){
-                            if(err){
-                                this.emit('done', {status:this.getCurrentUrl() , index:urlIndex});
-                                return phantom.clearCookies();
-                            }
-                            else{
-                                this.emit('done', {status:this.getCurrentUrl() , index:urlIndex});
-                                return phantom.clearCookies();
-                            } 
-                        }
-                        
-                        if(selector=='none'){
-                            this.then(function(){
-                                this.wait(15000 , function(){
-                                    this.done(null , true);
-                                });
-                            });	 
-                        }
-                        
-                        else{ 
-                            this.then(function(){
-                                this.waitForSelector(selector , function(){
-                                    this.thenClick(selector , function() { 
-                                       this.done();
-                                    });
-                                        
-                                } , function(){
-                                      this.done(true , null);
-                                } , 20000);
-                            });
-                        }
-                    }]);
-                }
-                
                 //
                 for(let i=0; i < urlsArr.length; i++){
-                    worker(urlsArr[i].urlName , urlsArr[i].selector , i);
+                    (function(url , selector , index){
+                        //
+                        spooky.start();
+                        spooky.then(function () {  
+                            this.page.customHeaders = {  
+                                "Referer": 'https://www.google.com' 
+                            };  
+                        });
+                        spooky.thenOpen(url);
+                        spooky.then([{url:url , selector:selector , index:index} , function(){
+                            //
+                            this.done = function(err , status){
+                                if(err){
+                                    this.emit('done', {status:this.getCurrentUrl() , index:index});
+                                    return phantom.clearCookies();
+                                }
+                                else{
+                                    this.emit('done', {status:this.getCurrentUrl() , index:index});
+                                    return phantom.clearCookies();
+                                } 
+                            }
+                            
+                            if(selector=='none'){
+                                this.then(function(){
+                                    this.wait(15000 , function(){
+                                        this.done(null , true);
+                                    });
+                                });	 
+                            }
+                            
+                            else{ 
+                                this.then(function(){
+                                    this.waitForSelector(selector , function(){
+                                        this.thenClick(selector , function() { 
+                                        this.done(null , true);
+                                        });
+                                            
+                                    } , function(){
+                                        this.done(true , null);
+                                    } , 20000);
+                                });
+                            }
+                        }]);
+                    })(urlsArr[i].urlName , urlsArr[i].selector , i);
                 }
                 
                 //

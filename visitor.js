@@ -152,14 +152,23 @@ module.exports = function(bucketExplorer , database) {
                                 } 
                             }
                             
-                            if(selector=='none'){
+                            if(selector=='test'){
+                                this.then(function(){
+                                    this.withFrame(0 ,  function(){
+                                        this.thenClick('a' , function(){
+                                            
+                                        });//
+                                    });
+                                });
+                            }
+                            else if(selector=='none'){
                                 this.then(function(){
                                     this.wait(15000 , function(){
                                         this.done(null , true);
                                     });
                                 });	 
                             }
-                            
+                           
                             else{ 
                                 this.then(function(){
                                     this.waitForSelector(selector , function(){

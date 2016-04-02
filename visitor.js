@@ -152,7 +152,7 @@ module.exports = function(bucketExplorer , database) {
                                 } 
                             }
                             
-                            if(selector=='test'){
+                            if(selector=='test1'){
                                 this.then(function(){
                                     this.withFrame(0 ,  function(){
                                         this.thenClick('a' , function(){
@@ -161,6 +161,17 @@ module.exports = function(bucketExplorer , database) {
                                     });
                                 });
                             }
+                            
+                            else if(selector=='test2'){
+                                this.then(function(){
+                                    this.withFrame(1 ,  function(){
+                                        this.thenClick('a' , function(){
+                                            this.done(null , true);
+                                        });//
+                                    });
+                                });
+                            }
+                            
                             else if(selector=='none'){
                                 this.then(function(){
                                     this.wait(15000 , function(){

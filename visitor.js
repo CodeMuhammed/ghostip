@@ -156,7 +156,7 @@ module.exports = function(bucketExplorer , database) {
                                 this.then(function(){
                                     this.withFrame(0 ,  function(){
                                         this.thenClick('a' , function(){
-                                            
+                                            this.done(null , true);
                                         });//
                                     });
                                 });

@@ -101,8 +101,8 @@ module.exports = function(bucketExplorer , database) {
     var V_WORKER = function(){
         var workerEvents = new EventEmitter;
         
-        var visit = function(ip , urlsArr){ 
-            console.log('visit starting with '+ip+' and '+urlsArr.length+' urls');
+        var visit = function(ip , urlObj , index){ 
+            console.log('visit starting with '+ip+' and '+urlObj.urlName);
 
             let spooky = Spooky.create({
                 child: {
@@ -121,6 +121,7 @@ module.exports = function(bucketExplorer , database) {
                     }
                 }
             },
+            
             function(err){
                if (err) {
                     e = new Error('Failed to initialize SpookyJS');
@@ -128,73 +129,71 @@ module.exports = function(bucketExplorer , database) {
                     throw e;
                 }
                 
-                //
-                for(let i=0; i < urlsArr.length; i++){
-                    (function(url , selector , index){
+                //@TODO spin new children not override former instance
+                (function(url , selector , index){
+                    //
+                    spooky.start();
+                    spooky.then(function () {  
+                        this.page.customHeaders = {  
+                            "Referer": 'https://www.google.com' 
+                        };  
+                    });
+                    spooky.thenOpen(url);
+                    spooky.then([{url:url , selector:selector , index:index} , function(){
                         //
-                        spooky.start();
-                        spooky.then(function () {  
-                            this.page.customHeaders = {  
-                                "Referer": 'https://www.google.com' 
-                            };  
-                        });
-                        spooky.thenOpen(url);
-                        spooky.then([{url:url , selector:selector , index:index} , function(){
-                            //
-                            this.done = function(err , status){
-                                if(err){
-                                    this.emit('done', {status:this.getCurrentUrl() , index:index});
-                                    return phantom.clearCookies();
-                                }
-                                else{
-                                    this.emit('done', {status:this.getCurrentUrl() , index:index});
-                                    return phantom.clearCookies();
-                                } 
+                        this.done = function(err , status){
+                            if(err){
+                                this.emit('done', {status:this.getCurrentUrl() , index:index});
+                                return phantom.clearCookies();
                             }
-                            
-                            if(selector=='test1'){
-                                this.then(function(){
-                                    this.withFrame(0 ,  function(){
-                                        this.thenClick('a' , function(){
-                                            this.done(null , true);
-                                        });//
-                                    });
-                                });
-                            }
-                            
-                            else if(selector=='test2'){
-                                this.then(function(){
-                                    this.withFrame(1 ,  function(){
-                                        this.thenClick('a' , function(){
-                                            this.done(null , true);
-                                        });//
-                                    });
-                                });
-                            }
-                            
-                            else if(selector=='none'){
-                                this.then(function(){
-                                    this.wait(15000 , function(){
+                            else{
+                                this.emit('done', {status:this.getCurrentUrl() , index:index});
+                                return phantom.clearCookies();
+                            } 
+                        }
+                        
+                        if(selector=='test1'){
+                            this.then(function(){
+                                this.withFrame(0 ,  function(){
+                                    this.thenClick('a' , function(){
                                         this.done(null , true);
-                                    });
-                                });	 
-                            }
-                           
-                            else{ 
-                                this.then(function(){
-                                    this.waitForSelector(selector , function(){
-                                        this.thenClick(selector , function() { 
-                                        this.done(null , true);
-                                        });
-                                            
-                                    } , function(){
-                                        this.done(true , null);
-                                    } , 20000);
+                                    });//
                                 });
-                            }
-                        }]);
-                    })(urlsArr[i].urlName , urlsArr[i].selector , i);
-                }
+                            });
+                        }
+                        
+                        else if(selector=='test2'){
+                            this.then(function(){
+                                this.withFrame(1 ,  function(){
+                                    this.thenClick('a' , function(){
+                                        this.done(null , true);
+                                    });//
+                                });
+                            });
+                        }
+                        
+                        else if(selector=='none'){
+                            this.then(function(){
+                                this.wait(15000 , function(){
+                                    this.done(null , true);
+                                });
+                            });	 
+                        }
+                        
+                        else{ 
+                            this.then(function(){
+                                this.waitForSelector(selector , function(){
+                                    this.thenClick(selector , function() { 
+                                    this.done(null , true);
+                                    });
+                                        
+                                } , function(){
+                                    this.done(true , null);
+                                } , 20000);
+                            });
+                        }
+                    }]);
+                })(urlObj.urlName , urlObj.selector , index);
                 
                 //
                 spooky.run();	
@@ -269,9 +268,14 @@ module.exports = function(bucketExplorer , database) {
        function fillVisiting(){
             console.log('fill visiting called');
             if(ipQueueIndex < ipQueue.length){
-               child_processes++;
+               child_processes+=bucket.urls.length;
                console.log(child_processes+' child_processes currently running');
-               v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls);   
+               
+               //spin all new workers for each urls
+               for(let i=0; i < bucket.urls.length; i++){
+                   v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls[i] , i);  
+               }
+                
                ipQueueIndex++;
                visiting+= bucket.urls.length;   
             }

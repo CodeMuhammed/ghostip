@@ -79,7 +79,7 @@ module.exports = function(bucketObj) {
 	var testIp = function(curlIp){
         var options = {
             url: 'https://google.com',
-            retries: 2,
+            retries: 1,
             headers: {
                 'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
             },

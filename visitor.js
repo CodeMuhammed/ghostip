@@ -152,27 +152,7 @@ module.exports = function(bucketExplorer , database) {
                             } 
                         }
                         
-                        if(selector=='test1'){
-                            this.then(function(){
-                                this.withFrame(0 ,  function(){
-                                    this.thenClick('a' , function(){
-                                        this.done(null , true);
-                                    });//
-                                });
-                            });
-                        }
-                        
-                        else if(selector=='test2'){
-                            this.then(function(){
-                                this.withFrame(1 ,  function(){
-                                    this.thenClick('a' , function(){
-                                        this.done(null , true);
-                                    });//
-                                });
-                            });
-                        }
-                        
-                        else if(selector=='none'){
+                       if(selector=='none'){
                             this.then(function(){
                                 this.wait(15000 , function(){
                                     this.done(null , true);
@@ -215,12 +195,12 @@ module.exports = function(bucketExplorer , database) {
                 workerEvents.emit('done' , status);
             });
             
-            //self destruct this instance in 15 minutes
+            //self destruct this instance in 10 minutes
             setTimeout(function(){
                 console.log('Instance destroyed');
                 spooky.destroy();
                 child_processes--;
-            } , 5*60000);
+            } , 10*60000);
         };
         
         return {
@@ -260,9 +240,6 @@ module.exports = function(bucketExplorer , database) {
     
     //
     function startVisitingDaemon(){
-       let visiting = 0;
-       let limit =  20;
-       
        let v_worker = V_WORKER();
        
        function fillVisiting(){
@@ -276,23 +253,16 @@ module.exports = function(bucketExplorer , database) {
                    v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls[i] , i);  
                }
                 
-               ipQueueIndex++;
-               visiting+= bucket.urls.length;   
+               ipQueueIndex++;  
             }
             else{
-                if(limit < visiting){
-                    console.log('Visiting urls have exceeded the limit');
-                    limit+=100;
-                }
-                else{
-                    console.log('Good ip shortage');
-                }    
+                console.log('Good ip shortage');
             }
             
             //
             setTimeout(function(){
                 return fillVisiting();
-            } , 10000);
+            } , 5000);
        }
        
       //
@@ -303,8 +273,6 @@ module.exports = function(bucketExplorer , database) {
             console.log(status);
             bucket.urls[status.index].statusText = status.status;
             bucket.urls[status.index].visited++;
-            visiting--;
-            limit--;
         });
     }
     

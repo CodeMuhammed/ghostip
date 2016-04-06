@@ -47,10 +47,10 @@ database.initColls(function(){
                 });
             }
             else{
-               console.log('No buckets available at the moment ----- retrying in 9secs');
+               console.log('No buckets available at the moment ----- retrying in 19secs');
                setTimeout(function(){
                	    getBucketFn();
-               } , 10000);
+               } , 20000);
             }
 		});
 	})();

@@ -17,7 +17,8 @@ module.exports = function(dbName , app){
 			MongoClient.connect(url , function(err , db){
 				if(err){
 					throw new Error('DB connection error here');
-				} else { 
+				} 
+                else { 
 					assert.equal(null ,err);
 					console.log('Connected correcctly to the database');
 					openedColls.Buckets = db.collection('Buckets');
@@ -54,7 +55,8 @@ module.exports = function(dbName , app){
 	           
 				}
 			});
-		} else {
+		} 
+        else {
 			return cb();
 		}
 		

@@ -1,3 +1,4 @@
+'use strict';
 /**This module searches for new ip addresses and tests them for validity**/
 //Main process tells you to stop searching
 //you return -1 for no tested ip found but search is still on
@@ -80,14 +81,15 @@ module.exports = function(bucketObj) {
 	//
 	(function testIp(){
         if(untestedIndex < untestedIps.length){
-           var options = {
+           let proxy = untestedIps[untestedIndex]
+           let options = {
                 url: 'https://google.com',
                 retries: 1,
                 headers: {
                     'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
                 },
                 timeout: 15,
-                proxy: untestedIps[untestedIndex]
+                proxy: proxy
             };
             untestedIndex++;
             curl.request(options, function(err, res) {
@@ -98,7 +100,7 @@ module.exports = function(bucketObj) {
                 else {
                     if(res){
                         console.log('test done');
-                        moduleEvents.emit('ip' , curlIp);
+                        moduleEvents.emit('ip' , proxy);
                         return testIp();
                     }
                     else {

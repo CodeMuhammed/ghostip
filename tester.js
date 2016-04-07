@@ -17,8 +17,10 @@ module.exports = function(bucketObj) {
     var moduleEvents = new EventEmitter;
 	
 	//
-	var STOP_SEARCH =false;
-
+    var untestedIps = [];
+    var untestedIndex = 0;
+    var _max_ip_count = 1000;
+    
 	//Alternatives to gimmeproxy are
     //http://proxy.tekbreak.com/
     //https://happy-proxy.com/en
@@ -39,75 +41,88 @@ module.exports = function(bucketObj) {
     //gip9 = 46-50
     //gip10 = 51-55
     
-	function getIp(){
-		if(!STOP_SEARCH){
-			 request.get('http://gimmeproxy.com/api/get/'+bucketObj._id+'/?timeout=7200' , function(err , response , body){
-				 if(err){
-					 getIp();
-				 } 
-				 else {
-	                 try {
-						 var raw = JSON.parse(body);
-                         if(raw.status == 429){
-                             console.log('Rate limit exceeded');
-                             setTimeout(function(){
-                                  return getIp();
-                             } ,1000)
-                         }
-                         else{
-                             //@TODO test ip
-                             testIp(raw.curl);
-                         }
-                         
-					 } 
-					 catch (err) {
-						   setTimeout(function(){
-						 	  getIp();
-						   } ,1000)
-					 }
-					 
-				 }
-			 });
-		}
-		else{
-			console.log('ip searching stopped');
-			return;
-		}
-	};
-
-	//
-	var testIp = function(curlIp){
-        var options = {
-            url: 'https://google.com',
-            retries: 1,
-            headers: {
-                'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
-            },
-            timeout: 15,
-            proxy: curlIp
-        };
-        
-        curl.request(options, function(err, res) {
+	(function getIp(){
+		 request.get('http://gimmeproxy.com/api/get/'+bucketObj._id+'/?timeout=10800' , function(err , response , body){
             if(err){
-                console.log('Proxy error: invalid');
-                return getIp();
+                getIp();
             } 
             else {
-                if(res){
-                    console.log('test done');
-                    moduleEvents.emit('ip' , curlIp);
-                    return getIp();
+                try {
+                    var raw = JSON.parse(body);
+                    if(raw.status == 429){
+                        console.log('Rate limit exceeded');
+                        setTimeout(function(){
+                            return getIp();
+                        } ,500)
+                    }
+                    else{
+                        untestedIps.push(raw.curl);
+                        if(untestedIps.length < _max_ip_count){
+                            return getIp();
+                        }
+                        else{
+                            console.log(_max_ip_count+' ips gotten');
+                            return;
+                        }
+                    }
+                    
+                } 
+                catch (err) {
+                    setTimeout(function(){
+                        getIp();
+                    } ,500)
                 }
-                else {
-                    console.log('Connection was timed out');
-                    return getIp();
-                }
+                
             }
-        }); 
-	}
+        });
+	})();
+
+	//
+	(function testIp(){
+        if(untestedIndex < untestedIps.length){
+           var options = {
+                url: 'https://google.com',
+                retries: 1,
+                headers: {
+                    'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
+                },
+                timeout: 15,
+                proxy: untestedIps[untestedIndex]
+            };
+            untestedIndex++;
+            curl.request(options, function(err, res) {
+                if(err){
+                    console.log('Proxy error: invalid');
+                    return testIp();
+                } 
+                else {
+                    if(res){
+                        console.log('test done');
+                        moduleEvents.emit('ip' , curlIp);
+                        return testIp();
+                    }
+                    else {
+                        console.log('Connection was timed out');
+                        return testIp();
+                    }
+                }
+            }); 
+        }
+        else{
+            if(untestedIndex == _max_ip_count ){
+               console.log('All tested');
+               return;
+            }
+            else{
+                console.log('No ip yet retrying in 29 secs');
+                setTimeout( function(){
+                    return testIp();
+                }, 30000);
+            } 
+        }
+        
+	})();
     
-    //Kick start the process
-    getIp();
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
    
 	return moduleEvents;	

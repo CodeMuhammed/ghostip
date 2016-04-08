@@ -12,15 +12,13 @@ module.exports = function(bucketObj) {
     var curl = require('curlrequest');
     
 	var LineByLineReader = require('line-by-line');
-    var tunnel = require('tunnel');
-    var https = require('https');
     var EventEmitter = require('events').EventEmitter;
     var moduleEvents = new EventEmitter;
 	
 	//
     var untestedIps = [];
     var untestedIndex = 0;
-    var _max_ip_count = 1000;
+    var _max_ip_count = 2000;
     
 	//Alternatives to gimmeproxy are
     //http://proxy.tekbreak.com/

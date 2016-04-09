@@ -20,7 +20,7 @@ module.exports = function(bucketObj) {
     var untestedIndex = 0;
     var _max_ip_count = 2000;
     
-	//Alternatives to gimmeproxy are
+	//Alternatives to gimmeproxy are//
     //http://proxy.tekbreak.com/
     //https://happy-proxy.com/en
     //https://incloak.com/proxy-list/

@@ -18,7 +18,7 @@ module.exports = function(bucketObj) {
 	//
     var untestedIps = [];
     var untestedIndex = 0;
-    var _max_ip_count = 2000;
+    var _max_ip_count = 3000;
     
 	//Alternatives to gimmeproxy are//
     //http://proxy.tekbreak.com/
@@ -41,7 +41,7 @@ module.exports = function(bucketObj) {
     //gip10 = 51-55
     
 	(function getIp(){
-		 request.get('http://gimmeproxy.com/api/get/'+bucketObj._id+'/?timeout=10800' , function(err , response , body){
+		 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
             if(err){
                 getIp();
             } 

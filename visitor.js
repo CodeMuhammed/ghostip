@@ -21,7 +21,7 @@ module.exports = function(bucketExplorer , database) {
     var setBucket =  function(bucketObj){
     	 bucket = bucketObj;
          if(bucket.urls.length>0){
-            for(var i=0; i<bucket.urls.length; i++){
+            for(var i=0; i < bucket.urls.length; i++){
                 bucket.urls[i].visited = 0;
                 bucket.urls[i].statusText = 'No status yet';
             };
@@ -227,7 +227,7 @@ module.exports = function(bucketExplorer , database) {
                     }
                     else {
                         timer+=2;
-                        if(timer >= 122){
+                        if(timer >= 182){
                             console.log('Maximum uptime of two hours exceeded exiting....');
                             process.exit(0);
                         }

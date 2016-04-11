@@ -52,7 +52,7 @@ module.exports = function(bucketObj) {
                         console.log('Rate limit exceeded');
                         setTimeout(function(){
                             return getIp();
-                        } ,500)
+                        } ,1000)
                     }
                     else{
                         untestedIps.push(raw.curl);
@@ -69,7 +69,7 @@ module.exports = function(bucketObj) {
                 catch (err) {
                     setTimeout(function(){
                         getIp();
-                    } ,500)
+                    } ,1000)
                 }
                 
             }

@@ -36,7 +36,7 @@ module.exports = function(bucketObj) {
 	//
     var untestedIps = [];
     var untestedIndex = 0;
-    var _max_ip_count = 2000;
+    var _max_ip_count = 3000;
     
 	(function getIp(){
 		 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){

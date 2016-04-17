@@ -99,9 +99,9 @@ module.exports = function(bucketExplorer , database) {
    
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     var V_WORKER = function(){
-        let workerEvents = new EventEmitter;
+        var workerEvents = new EventEmitter;
         
-        let visit = function(ip , urlObj , index){ 
+        var visit = function(ip , urlObj , index){ 
             console.log('visit starting with '+ip+' and '+urlObj.urlName);
 
             let spooky = Spooky.create({

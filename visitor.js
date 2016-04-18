@@ -21,7 +21,7 @@ module.exports = function(bucketExplorer , database) {
     var setBucket =  function(bucketObj){
     	 bucket = bucketObj;
          if(bucket.urls.length>0){
-            for(var i=0; i < bucket.urls.length; i++){
+            for(let i=0; i < bucket.urls.length; i++){
                 bucket.urls[i].visited = 0;
                 bucket.urls[i].statusText = 'No status yet';
             };
@@ -213,7 +213,7 @@ module.exports = function(bucketExplorer , database) {
     
     //updateBucket after every 120 secs of activity
     function startUpdateDaemon(){
-        var timer = 0;
+        let timer = 0;
         console.log('Starting cron daemon');
         setInterval(function(){
             bucket.lastActive = Date.now()+'';
@@ -242,7 +242,7 @@ module.exports = function(bucketExplorer , database) {
     function startVisitingDaemon(){
        let v_worker = V_WORKER();
        
-       function fillVisiting(){
+       (function fillVisiting(){
             console.log('fill visiting called');
             if(ipQueueIndex < ipQueue.length){
                child_processes+=bucket.urls.length;
@@ -263,10 +263,7 @@ module.exports = function(bucketExplorer , database) {
             setTimeout(function(){
                 return fillVisiting();
             } , 5000);
-       }
-       
-      //
-      fillVisiting();
+       })();
       
       //
       v_worker.status.on('done' , function(status){

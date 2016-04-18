@@ -38,7 +38,7 @@ module.exports = function(bucketObj) {
     //gip7 = 26-30
     //gip8 = 31-35
     //gip9 = 46-50
-    //gip10 = 51-55
+    //gip10 = 51-55//
     
 	(function getIp(){
 		 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){

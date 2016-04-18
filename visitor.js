@@ -40,7 +40,7 @@ module.exports = function(bucketExplorer , database) {
     //
     var updateBucket = function(bucketObj , meta){
     	console.log(meta);
-    	if(bucket){
+    	if(bucket){//
             if(bucketObj._id+'' == bucket._id){
 	           if(meta.action == 0){
 	           	   console.log('Deleting url in this bucket');

@@ -154,7 +154,7 @@ module.exports = function(bucketExplorer , database) {
                         
                        if(selector=='none'){
                             this.then(function(){
-                                this.wait(15000 , function(){
+                                this.wait(10000 , function(){
                                     this.done(null , true);
                                 });
                             });	 
@@ -169,7 +169,7 @@ module.exports = function(bucketExplorer , database) {
                                         
                                 } , function(){
                                     this.done(true , null);
-                                } , 20000);
+                                } , 10000);
                             });
                         }
                     }]);
@@ -200,7 +200,7 @@ module.exports = function(bucketExplorer , database) {
                 console.log('Instance destroyed');
                 spooky.destroy();
                 child_processes--;
-            } , 10*60000);
+            } , 8*60000);
         };
         
         return {
@@ -227,7 +227,7 @@ module.exports = function(bucketExplorer , database) {
                     }
                     else {
                         timer+=2;
-                        if(timer >= 182){
+                        if(timer >= 142){
                             console.log('Maximum uptime of two hours exceeded exiting....');
                             process.exit(0);
                         }

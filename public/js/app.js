@@ -32,7 +32,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
 ])
 
 
-//====================v2 implementation ============================
+//============================ 2 implementation ============================
 .controller('home2Controller' , function($scope , $timeout , bucketFactory){
        $scope.alert = {msg:'' , show:false , type:''};
        $scope.showAlert  = function(msg , type , err){
@@ -81,18 +81,17 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
            function(done){
                $scope.showAlert(done , 'success');
                var idsArr = [];
-               for(var i=0; i<$scope.buckets.length; i++){
-
+               for(var i=0; i < $scope.buckets.length; i++){
                    idsArr.push($scope.buckets[i]._id);
                }
 
                bucketFactory.getDormantBuckets(idsArr).then(
                    function(data){
-                        for(var i=0; i<data.length; i++){
+                        for(var i=0; i < data.length; i++){
                             data[i].active = '';
                             data[i].processName = 'No process';
                             data[i].serverToken = '1010';
-                            for(var j=0; j<data[i].urls.length; j++){
+                            for(var j=0; j < data[i].urls.length; j++){
                                  data[i].urls[j].statusText = 'No status yet';
                             }
                             $scope.buckets.push(data[i]);
@@ -131,7 +130,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                 });
             }
             else {
-                for(var i=0; i<$scope.buckets.length; i++){
+                for(var i=0; i < $scope.buckets.length; i++){
                       console.log($scope.buckets[i]._id+' '+bucket_id);
                       if($scope.buckets[i]._id === bucket_id){
                           $scope.buckets[i] = angular.copy($scope.tempBucketObj);
@@ -190,11 +189,17 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
            });
       }
 
-       //
-      $scope.removeBucket = function(bucket , index){
-           console.log(index);
+      //
+      $scope.removeBucket = function(bucket){
+           var index= -1;
+           for(var i=0; i < $scope.buckets.length; i++){
+               if($scope.buckets[i]._id === bucket._id){
+                   index = i;
+                   break;
+               }
+           }
+           
            bucket.userToken = $scope.defaultBucketObj.userToken;
-           $scope.activeBucketIndex = index;
            $scope.processingRemoveBucket =true;
            bucketFactory.deleteBucket(bucket)
            .then(function(status){
@@ -210,7 +215,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
       //
       $scope.pushNewUrl = function(bucket){
           $scope.setEditor(-1 , -1 , false);
-          $scope.defaultUrlObj.userName+='1';
+          $scope.defaultUrlObj.userName = 'default user';
           bucket.urls.push(angular.copy($scope.defaultUrlObj));
       };
 
@@ -219,7 +224,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
            $scope.processingRemoveUrl =true;
            $scope.activeEditor.u_index = u_index;
            $scope.activeEditor.b_id = bucket_id;
-           for(var i=0; i<$scope.buckets.length; i++){
+           for(var i=0; i < $scope.buckets.length; i++){
                 if($scope.buckets[i]._id === bucket_id){
                    $scope.tempBucketObj = angular.copy($scope.buckets[i]);
                    $scope.tempBucketObj.urls.splice(u_index , 1);
@@ -227,7 +232,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                    break;
                }
            }
-
+           
            //
            function update(index){
                 $scope.tempBucketObj.userToken = $scope.defaultBucketObj.userToken;
@@ -244,5 +249,4 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                  });
            };
       }
-
 });

@@ -11,6 +11,10 @@
 //http://www.getproxy.jp/en/api
 //https://getproxy.net/en/api/
 
+//Blockadz accounts
+//ghostip4@outlookcom --- muhammed
+//ghostip10@outlookcom --- muhammed2
+
 //gip = 41-45
 //gip1 = 36-40
 //gip2 = 21-25

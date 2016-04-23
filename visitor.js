@@ -195,7 +195,7 @@ module.exports = function(bucketExplorer , database) {
                 workerEvents.emit('done' , status);
             });
             
-            //self destruct this instance in 10 minutes
+            //self destruct this instance in 8 minutes
             setTimeout(function(){
                 console.log('Instance destroyed');
                 spooky.destroy();

@@ -55,7 +55,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
          userName:'Default user1',
          accountEmail:'example@gmail.com',
          serviceName:'service',
-         urlName:'http://fg20.herokuapp.com',
+         urlName:'http://ghostip10.herokuapp.com',
          selector:'none',
          dateCreated:Date.now(),
          visited:'0',

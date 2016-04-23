@@ -6,19 +6,20 @@
 	 <h1 style="text-align:left; font-size:4em; color:#ccc"> paper-faucet<br><span style="text-align:left; font-size:2em; color:#ccc">Boost ROI.</span></h1>
 </div>
 
-<div class="col-sm-6 col-sm-offset-2 input-group" style="padding:0; margin-bottom:2em; border:5px solid #ccc">
-	  <input class="form-control input-tag" type="text" list="tags" placeholder="Enter bucket name here" ng-model="defaultBucketObj.bucketName" style="border-radius:0;width:60%; height:4em" >
-	  <input class="form-control input-tag" type="password"  placeholder="Your token" ng-model="defaultBucketObj.userToken" style="border-radius:0;width:40%; height:4em" >
-	  
-	  <span class="input-group-addon" style="background-color:#fff; padding-left:1em; padding-right:1em; border-radius:0;height:4em">
-	  <button class="btn btn-success" ng-click="createNewBucket()" ng-disabled="processingNewBucket">
-	  	  <i class="icon fa fa-plus" ng-hide="processingNewBucket"></i>
-	  	  <i class="icon fa fa-spinner fa-spin" ng-show="processingNewBucket"></i>
-	  	  Add Bucket 
-	  </button>
-	  </span>
-</div>
+
 <div class="col-sm-6 col-sm-offset-2">
+    <div class="col-xs-12 input-group" style="padding:0; margin-bottom:2em; border:5px solid #ccc">
+        <input class="form-control input-tag" type="text" list="tags" placeholder="Enter bucket name here" ng-model="defaultBucketObj.bucketName" style="border-radius:0;width:60%; height:4em" >
+        <input class="form-control input-tag" type="password"  placeholder="Your token" ng-model="defaultBucketObj.userToken" style="border-radius:0;width:40%; height:4em" >
+        
+        <span class="input-group-addon" style="background-color:#fff; padding-left:1em; padding-right:1em; border-radius:0;height:4em">
+        <button class="btn btn-success" ng-click="createNewBucket()" ng-disabled="processingNewBucket">
+            <i class="icon fa fa-plus" ng-hide="processingNewBucket"></i>
+            <i class="icon fa fa-spinner fa-spin" ng-show="processingNewBucket"></i>
+            Add Bucket 
+        </button>
+        </span>
+    </div>
     <div class="col-xs-12 style="padding:0; margin-bottom:2em" ng-repeat="bucket in buckets | orderBy:'bucketName'">
             <div class="col-xs-12" style="border:1px solid {{bucket.active?'#5cb85c':'#f0ad4e'}}; min-height:4em; padding:0">
                 <div class="col-xs-12" style="padding:.3em .3em; background-color:{{bucket.active?'#5cb85c':'#f0ad4e'}}">

@@ -18,81 +18,82 @@
 	  </button>
 	  </span>
 </div>
-
- <div class="col-sm-6 col-sm-offset-2" style="padding:0; margin-bottom:2em" ng-repeat="bucket in buckets | orderBy:'bucketName'">
-        <div class="col-xs-12" style="border:1px solid {{bucket.active?'#5cb85c':'#f0ad4e'}}; min-height:4em; padding:0">
-            <div class="col-xs-12" style="padding:.3em .3em; background-color:{{bucket.active?'#5cb85c':'#f0ad4e'}}">
-                <span ng-hide="processingRemoveBucket && $index==activeBucketIndex">
-                    <i class="icon fa fa-caret-{{$index==visibleBucketIndex?'down':'up'}}" style="color:#fff; font-size:1.5em; margin-right:.3em" ng-click="setBucketId(bucket._id)"></i>
-                    <i class="icon fa fa-trash" style="color:#fff; font-size:1.5em; margin-right:.3em" ng-click="removeBucket(bucket)"></i>
-                    <i class="icon fa fa-plus" style="color:#fff; font-size:1.5em" ng-click="pushNewUrl(bucket)"></i>
-                </span>
-                <span ng-show="processingRemoveBucket && $index==activeBucketIndex">
-                    <i class="icon fa fa-spinner fa-spin" style="font-size:1.5em; color:#fff"></i>
-                </span>
-            
-                <span style="color:#fff; margin-right:.4em;" class="pull-right"><b>created: {{bucket.dateCreated | date:'shortDate'}} | last-modified: {{bucket.lastModified | date:'shortDate'}}</b> </span>
-            </div>
-            <div style="padding:.3em .3em">
-                <b>{{bucket.bucketName}} |</b>
-                <b>{{bucket.urls.length}} urls added |</b>
-                <b>{{bucket.processName}} |</b>
-                <b>Last-active: {{bucket.lastActive | date:'shortTime'}} |</b>
-                <b>{{bucket.serverToken}}</b> | 
-                <b>{{bucket._id}}</b>
-            </div>
-        </div>
-
-        <div class="col-xs-12" style="padding:0" ng-show="bucket._id == visibleBucketId">
-            
-            <div class="col-xs-12" style="min-height:15em; border:0; border-left:1px solid #ccc; width:95%; margin-left:5%;padding:0" ng-repeat="url in bucket.urls | orderBy:'-dateCreated'" >
-                <div class="col-xs-1" style="border:1px solid #ccc; border-left:none;border-right:none; margin-top:7em;border-radius:none">
-                    <span ng-hide="activeEditor.e && (activeEditor.b_id == bucket._id && $index == activeEditor.u_index)" >
-                        <span ng-hide="processingRemoveUrl && $index == activeEditor.u_index">
-                            <i class="icon fa fa-trash" style="color:#ccc; font-size:1.5em; margin-right:.3em" ng-click="removeUrl(bucket._id , $index)"></i>
-                            <i class="icon fa fa-edit" style="color:#ccc; font-size:1.5em" ng-click="setEditor(bucket._id , $index , true)"></i>
-                        </span>
-                        <i ng-show="processingRemoveUrl && $index == activeEditor.u_index" style="color:#ccc; font-size:1.5em; margin-right:.3em" class="icon fa fa-spinner fa-spin"></i>
-                        
+<div class="col-sm-6 col-sm-offset-2">
+    <div class="col-xs-12 style="padding:0; margin-bottom:2em" ng-repeat="bucket in buckets | orderBy:'bucketName'">
+            <div class="col-xs-12" style="border:1px solid {{bucket.active?'#5cb85c':'#f0ad4e'}}; min-height:4em; padding:0">
+                <div class="col-xs-12" style="padding:.3em .3em; background-color:{{bucket.active?'#5cb85c':'#f0ad4e'}}">
+                    <span ng-hide="processingRemoveBucket && $index==activeBucketIndex">
+                        <i class="icon fa fa-caret-{{$index==visibleBucketIndex?'down':'up'}}" style="color:#fff; font-size:1.5em; margin-right:.3em" ng-click="setBucketId(bucket._id)"></i>
+                        <i class="icon fa fa-trash" style="color:#fff; font-size:1.5em; margin-right:.3em" ng-click="removeBucket(bucket)"></i>
+                        <i class="icon fa fa-plus" style="color:#fff; font-size:1.5em" ng-click="pushNewUrl(bucket)"></i>
                     </span>
-                    <span ng-show="activeEditor.e  && (activeEditor.b_id == bucket._id &&activeEditor.u_index==$index)">
-                        <span ng-hide="processingUpdateBucket  && $index == activeEditor.u_index">
-                            <i class="icon fa fa-save" style="color:#ccc; font-size:1.5em; margin-right:.3em" ng-click="updateBucket(bucket , $index)"></i>
-                            <i class="icon fa fa-times" style="color:#ccc; font-size:1.5em" ng-click="setEditor(bucket._id , -1 , false)"></i>
-                        </span>
-                        <i ng-show="processingUpdateBucket  && $index == activeEditor.u_index" style="color:#ccc; font-size:1.5em; margin-right:.3em" class="icon fa fa-spinner fa-spin"></i>
-                        
+                    <span ng-show="processingRemoveBucket && $index==activeBucketIndex">
+                        <i class="icon fa fa-spinner fa-spin" style="font-size:1.5em; color:#fff"></i>
                     </span>
-                    
+                
+                    <span style="color:#fff; margin-right:.4em;" class="pull-right"><b>created: {{bucket.dateCreated | date:'shortDate'}} | last-modified: {{bucket.lastModified | date:'shortDate'}}</b> </span>
                 </div>
-                <div class="col-xs-11" style="border-left:1px solid #ccc; min-height:12em; margin-top:1.5em; padding:.3em .3em"  >
-                <div class="col-xs-12" ng-hide="activeEditor.e && (activeEditor.b_id == bucket._id && $index == activeEditor.u_index)"> 
-                        <b style="margin-bottom:.2em">{{url.userName}} on {{url.accountEmail}} </b><br>
-                        <b style="margin-bottom:.2em">Url Name :</b>------------------ {{url.urlName}}<br>
-                        <b style="margin-bottom:.2em">Date added :</b>--------------- {{url.dateCreated | date:'fullDate'}} | {{url.dateCreated | date:'shortTime'}}<br>
-                        <b style="margin-bottom:.2em">Visited :</b>---------------------- {{url.visited}} times<br>
-                        <b style="margin-bottom:.2em">Status Text :</b>---------------- {{url.statusText}}<br>	
-                        <b style="margin-bottom:.2em">Service Name :</b>------------ {{url.serviceName}}<br>
-                        <b>Selector :</b>-------------------- {{url.selector}}<br>
+                <div style="padding:.3em .3em">
+                    <b>{{bucket.bucketName}} |</b>
+                    <b>{{bucket.urls.length}} urls added |</b>
+                    <b>{{bucket.processName}} |</b>
+                    <b>Last-active: {{bucket.lastActive | date:'shortTime'}} |</b>
+                    <b>{{bucket.serverToken}}</b> | 
+                    <b>{{bucket._id}}</b>
                 </div>
+            </div>
 
-                    <div class="col-xs-12" style="padding:0; margin-top:2em" ng-show="activeEditor.e && (activeEditor.b_id == bucket._id && $index == activeEditor.u_index)" >
-                        <div class="col-sm-5"> 
-                            <b ><input type="text" class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.userName"></b><br>
-                            <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.accountEmail" ng-model="url.userName"></b><br>
-                            <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.urlName" ng-model="url.userName"></b><br>
-                        </div>
-                        <div class="col-sm-5"> 
-                            <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.selector"></b><br>
-                            <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.serviceName"></b><br>
-                        </div>
+            <div class="col-xs-12" style="padding:0" ng-show="bucket._id == visibleBucketId">
+                
+                <div class="col-xs-12" style="min-height:15em; border:0; border-left:1px solid #ccc; width:95%; margin-left:5%;padding:0" ng-repeat="url in bucket.urls | orderBy:'-dateCreated'" >
+                    <div class="col-xs-1" style="border:1px solid #ccc; border-left:none;border-right:none; margin-top:7em;border-radius:none">
+                        <span ng-hide="activeEditor.e && (activeEditor.b_id == bucket._id && $index == activeEditor.u_index)" >
+                            <span ng-hide="processingRemoveUrl && $index == activeEditor.u_index">
+                                <i class="icon fa fa-trash" style="color:#ccc; font-size:1.5em; margin-right:.3em" ng-click="removeUrl(bucket._id , $index)"></i>
+                                <i class="icon fa fa-edit" style="color:#ccc; font-size:1.5em" ng-click="setEditor(bucket._id , $index , true)"></i>
+                            </span>
+                            <i ng-show="processingRemoveUrl && $index == activeEditor.u_index" style="color:#ccc; font-size:1.5em; margin-right:.3em" class="icon fa fa-spinner fa-spin"></i>
+                            
+                        </span>
+                        <span ng-show="activeEditor.e  && (activeEditor.b_id == bucket._id &&activeEditor.u_index==$index)">
+                            <span ng-hide="processingUpdateBucket  && $index == activeEditor.u_index">
+                                <i class="icon fa fa-save" style="color:#ccc; font-size:1.5em; margin-right:.3em" ng-click="updateBucket(bucket , $index)"></i>
+                                <i class="icon fa fa-times" style="color:#ccc; font-size:1.5em" ng-click="setEditor(bucket._id , -1 , false)"></i>
+                            </span>
+                            <i ng-show="processingUpdateBucket  && $index == activeEditor.u_index" style="color:#ccc; font-size:1.5em; margin-right:.3em" class="icon fa fa-spinner fa-spin"></i>
+                            
+                        </span>
+                        
                     </div>
-                    
-                </div>
+                    <div class="col-xs-11" style="border-left:1px solid #ccc; min-height:12em; margin-top:1.5em; padding:.3em .3em"  >
+                    <div class="col-xs-12" ng-hide="activeEditor.e && (activeEditor.b_id == bucket._id && $index == activeEditor.u_index)"> 
+                            <b style="margin-bottom:.2em">{{url.userName}} on {{url.accountEmail}} </b><br>
+                            <b style="margin-bottom:.2em">Url Name :</b>------------------ {{url.urlName}}<br>
+                            <b style="margin-bottom:.2em">Date added :</b>--------------- {{url.dateCreated | date:'fullDate'}} | {{url.dateCreated | date:'shortTime'}}<br>
+                            <b style="margin-bottom:.2em">Visited :</b>---------------------- {{url.visited}} times<br>
+                            <b style="margin-bottom:.2em">Status Text :</b>---------------- {{url.statusText}}<br>	
+                            <b style="margin-bottom:.2em">Service Name :</b>------------ {{url.serviceName}}<br>
+                            <b>Selector :</b>-------------------- {{url.selector}}<br>
+                    </div>
 
+                        <div class="col-xs-12" style="padding:0; margin-top:2em" ng-show="activeEditor.e && (activeEditor.b_id == bucket._id && $index == activeEditor.u_index)" >
+                            <div class="col-sm-5"> 
+                                <b ><input type="text" class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.userName"></b><br>
+                                <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.accountEmail" ng-model="url.userName"></b><br>
+                                <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.urlName" ng-model="url.userName"></b><br>
+                            </div>
+                            <div class="col-sm-5"> 
+                                <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.selector"></b><br>
+                                <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.serviceName"></b><br>
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
             </div>
         </div>
-    </div>
+    <div>
     <div class="col-sm-3">
         <h4>Advertisement</h4>
         <iframe scrolling="no" src="//blockadz.com/ads/show/show.php?a=ZLW33E50T0XFS&b=7V0KT6LU1UPYL" style="overflow:hidden;width:300px;height:250px;" frameborder="0"></iframe>

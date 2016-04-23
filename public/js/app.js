@@ -75,7 +75,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
            urls:[$scope.defaultUrlObj]
        };
       
-      //
+      //''
       $scope.buckets = [];
       bucketFactory.getActiveBucketsAsync().then(
            function(done){

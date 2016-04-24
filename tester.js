@@ -27,6 +27,9 @@
 //gip9 = 46-50
 //gip10 = 51-55
 
+//visit 8.3H 20S 1500I         ***  
+//Q : will the process live for straight eight hours without crashing?
+
 module.exports = function(bucketObj) {
 	console.log('Search and test started');
 
@@ -40,7 +43,7 @@ module.exports = function(bucketObj) {
 	//
     var untestedIps = [];
     var untestedIndex = 0;
-    var _max_ip_count = 3000;
+    var _max_ip_count = 1500;
     
 	(function getIp(){
 		 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){

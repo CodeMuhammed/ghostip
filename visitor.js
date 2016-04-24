@@ -228,7 +228,7 @@ module.exports = function(bucketExplorer , database) {
                     }
                     else {
                         timer+=2;
-                        if(timer >= 142){
+                        if(timer >= 500){
                             console.log('Maximum uptime of two hours exceeded exiting....');
                             process.exit(0);
                         }
@@ -263,7 +263,7 @@ module.exports = function(bucketExplorer , database) {
             //
             setTimeout(function(){
                 return fillVisiting();
-            } , 10000);
+            } , 20000);
        })();
       
       //

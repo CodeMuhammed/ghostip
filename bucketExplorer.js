@@ -27,131 +27,86 @@ module.exports = function(database){
     //
     var getBucket = function(cb){
          //
-         function checkLock(){
-               Explorer.find({}).toArray(function(err , results){
+         (function checkLockAndModify(){
+               Explorer.findAndModify({locked:false} , {/**/} , {"$set": {accessingDomain:token , locked:true}} , {/**/} , function(err , result){
+                  console.log(result);
                   if(err){
                      throw new Error('DB connection error explorer check locked');
                   }
-                  else if(!results[0]){
-                      throw new Error('No Explorer Object found');
+                  else if(!result.value){
+                        Explorer.findOne({} , function(err , result){
+                            if(err){
+                                throw new Error('DB connection error explorer findOne 1');
+                            }
+                            else{
+                                if(!result){
+                                    throw new Error('DB connection error explorer findOne 2');
+                                }
+                                else{
+                                    max_tries++;
+                                    console.log('DB locked by '+result.accessingDomain);
+                                    if(accessingDomains.indexOf(result.accessingDomain) < 0){
+                                        accessingDomains.push(result.accessingDomain);
+                                    }
+                                    
+                                    if(max_tries >= 5){
+                                        console.log('Database is jammed trying to unlock');
+                                        Explorer.update({}, {
+                                            "$set": {
+                                                accessingDomain: '',
+                                                locked:false
+                                            }
+                                        },
+                                        function(err , result){
+                                            if(err){
+                                                throw new Error('DB connection error explorer Jammed lock');
+                                            }
+                                            else {
+                                                console.log('Database is unjammed continuing .....');  
+                                                //
+                                                setTimeout(function(){
+                                                    accessingDomains = [];
+                                                    max_tries = 0;
+                                                    return checkLockAndModify();
+                                                } , 5000);    
+                                            }
+                                        });
+                                    }
+                                    else{
+                                        console.log('Database is locked by '+result.accessingDomain);
+                                        //
+                                        setTimeout(function(){
+                                            return checkLockAndModify();
+                                        } , 5000);
+                                    }  
+                                }
+                            }
+                        });
                   }
                   else {
-                       if(results[0].locked){
-                           console.log('DB locked by '+results[0].accessingDomain);
-                           if(accessingDomains.indexOf(results[0].accessingDomain) < 0){
-                               accessingDomains.push(results[0].accessingDomain);
-                           }
-                           max_tries++;
-                           if(max_tries >= 5){
-                               if(accessingDomains.length > 1){
-                                   console.log('Database is not in a locked state.. retrying');
-                                   accessingDomains = [];
-                                   max_tries = 0;
-                                   return checkLock();
-                               }
-                               else{
-                                   console.log('Database is Jammed.. Trying to unlock...');
-                                   Explorer.update({}, {
-                                        "$set": {
-                                            accessingDomain: '',
-                                            locked:false
-                                        }
-                                    },
-                                    function(err , result){
-                                        if(err){
-                                            throw new Error('DB connection error explorer Jammed lock');
-                                        }
-                                        else {
-                                            console.log('Database is unjammed continuing .....');  
-                                            //
-                                            setTimeout(function(){
-                                                accessingDomains = [];
-                                                max_tries = 0;
-                                                return checkLock();
-                                            } , 5000);    
-                                        }
-                                    });
-                               }
-                           }
-                           else{
-                               //
-                               setTimeout(function(){
-                                   return checkLock();
-                               } , 5000);
-                           }
-                       }
-                       else{
-                          console.log('Database lock is free No accessing domain currently...');
-                          lockAccessToBuckets();  
-                       }
+                      console.log('Database successfully locked');
+                      getAnyBucket();
                   }
              });
+         })();
 
-         };
-         checkLock();
-
-         //
-         function lockAccessToBuckets(){
-             console.log('Locking access to urls...');
-             Explorer.update(
-                {},
-                {
-                   "$set": {
-                       accessingDomain:token,
-                       locked:true
-                   }
-                },
-                function(err , result){
-                    if(err){
-                        stats=err;
-                        throw new Error('DB connection error explorer locking error');
-                    }
-                    else {
-                        console.log('process successfully locked database');
-                        setTimeout(function(){
-                           authenticateAccess();
-                        } , 5000);
-                    }
-                }
-             );
-         }
 
          //
-         function authenticateAccess(){
-           console.log('Authenticating access');
-           Explorer.find({locked: true , accessingDomain:token}).toArray(function(err , results){
-                if(err){
-                   throw new Error('DB connection error explorer authenticating');
-                }
-                else if(results[0] == undefined){
-                    //
-                    console.log('Unable to authenticate checking lock again in 29secs');
-                    checkLock();
-                }
-                else {
-                   console.log('Authentication completed...');
-                   getAnyUrl(); 
-                }
-           });
-         } 
-        
-         //
-         function getAnyUrl(){ 
+         function getAnyBucket(){ 
             console.log('getting url');
            
-            Buckets.find(  
-                 {"lastActive":{"$lte": (Date.now() - 60000*6)+''}}  
-            ).toArray(function(err , results){//get url that have not been updated in the past 4mins
-                  if(err){ 
-                     throw new Error('DB connection error explorer getting any urls');
-                  }
-                  else if(results[0] == undefined){
-                      releaseLock(results[0]);
-                  }
-                  else {     
-                      releaseLock(results[0]);
-                  } 
-             });
+            Buckets.findOne({"lastActive":{"$lte": (Date.now() - 60000*6)+''}},
+                function(err , result){//get bucket that have not been updated in the past 6mins
+                    if(err){ 
+                        throw new Error('DB connection error explorer getting any urls');
+                    }
+                    else if(!result){
+                        releaseLock(undefined);
+                    }
+                    else {     
+                        releaseLock(result);
+                    } 
+                });
          }
 
          //update url object before updating explorer object....THATS THE SOLUTION      

@@ -7,9 +7,8 @@ var methodOverride = require('method-override');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session'); 
-    
-//cors  
 var cors  = require('cors');
+
 app.use(cors({credentials: true, origin: true}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));

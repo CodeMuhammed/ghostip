@@ -263,7 +263,7 @@ module.exports = function(bucketExplorer , database) {
             //
             setTimeout(function(){
                 return fillVisiting();
-            } , 20000);
+            } , 10000);
        })();
       
       //

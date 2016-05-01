@@ -1,7 +1,6 @@
 'use strict';
 //This module searches for new ip addresses and tests them for validity
-//you emit a message to main process whn an ip is found
-//Exports important functions to calling program
+//you emit a message to main process when an ip is found
 
 //Alternatives to gimmeproxy are//
 //http://proxy.tekbreak.com/
@@ -27,8 +26,7 @@
 //gip9 = 46-50
 //gip10 = 51-55
 
-//visit 8.3H 20S 1500I         ***  
-//Q : will the process live for straight eight hours without crashing?
+//visit 3H 10S         ***
 
 module.exports = function(bucketObj) {
 	console.log('Search and test started');

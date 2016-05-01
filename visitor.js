@@ -228,8 +228,8 @@ module.exports = function(bucketExplorer , database) {
                     }
                     else {
                         timer+=2;
-                        if(timer >= 500){
-                            console.log('Maximum uptime of two hours exceeded exiting....');
+                        if(timer >= 180){
+                            console.log('Maximum uptime of three hours exceeded exiting....');
                             process.exit(0);
                         }
                         console.log('bucket updated in cron job');

@@ -261,9 +261,9 @@ module.exports = function(bucketExplorer , database) {
             }
 
             //
-            /*setTimeout(function(){
+            setTimeout(function(){
                 return fillVisiting();
-            } , 10000);*/
+            } , 10000);
        })();
 
       //
@@ -271,7 +271,6 @@ module.exports = function(bucketExplorer , database) {
             console.log(status);
             bucket.urls[status.index].statusText = status.status;
             bucket.urls[status.index].visited++;
-            fillVisiting();
         });
     }
 

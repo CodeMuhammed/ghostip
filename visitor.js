@@ -228,10 +228,6 @@ module.exports = function(bucketExplorer , database) {
                     }
                     else {
                         timer+=2;
-                        if(timer >= 180){
-                            console.log('Maximum uptime of three hours exceeded exiting....');
-                            process.exit(0);
-                        }
                         console.log('bucket updated in cron job');
                     }
                 }
@@ -245,7 +241,7 @@ module.exports = function(bucketExplorer , database) {
 
        (function fillVisiting(){
             console.log('fill visiting called');
-            if(ipQueueIndex < ipQueue.length){
+            if(ipQueueIndex < ipQueue.length && child_processes<=20){
                child_processes+=bucket.urls.length;
                console.log(child_processes+' child_processes currently running');
 

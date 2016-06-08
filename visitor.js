@@ -8,15 +8,15 @@ module.exports = function(bucketExplorer , database) {
 	var Spooky = require('spooky');
     var EventEmitter = require('events').EventEmitter;
     var domain = require('domain');
-    
+
 	var bucket;
     var ipQueue = [];
     var ipQueueIndex = 0;
     var child_processes = 0;
-    
+
     //
     var Buckets = database.model('Buckets');
-    
+
     //
     var setBucket =  function(bucketObj){
     	 bucket = bucketObj;
@@ -26,7 +26,7 @@ module.exports = function(bucketExplorer , database) {
                 bucket.urls[i].statusText = 'No status yet';
             };
          }
-         
+
     	 console.log(bucket);
     	 console.log('bucket set in visitor');
          startUpdateDaemon();
@@ -36,7 +36,7 @@ module.exports = function(bucketExplorer , database) {
     var getBucket = function(){
     	return bucket;
     };
-    
+
     //
     var updateBucket = function(bucketObj , meta){
     	console.log(meta);
@@ -60,7 +60,7 @@ module.exports = function(bucketExplorer , database) {
     		 console.log('Bucket empty here');
     	}
     }
-    
+
     //
     var notifyDelete = function(_id){
          console.log('Bucket with'+ _id +'deleted');
@@ -74,14 +74,14 @@ module.exports = function(bucketExplorer , database) {
              else{
                  console.log('Not this one 1..');
              }
-            
+
          }
          else{
             console.log('Not this one..');
          }
     }
-    
-      
+
+
     //
     var visitWith = function(ip){
         console.log('Adding %s to queue' , ip);
@@ -91,18 +91,18 @@ module.exports = function(bucketExplorer , database) {
         else{
             console.log('ip alredy used or currently in use');
         }
-        
+
         if(ipQueue.length == 1){
             startVisitingDaemon();
         }
     }
-    
-   
+
+
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     var V_WORKER = function(){
         var workerEvents = new EventEmitter;
-        
-        var visit = function(ip , urlObj , index){ 
+
+        var visit = function(ip , urlObj , index){
             console.log('visit starting with '+ip+' and '+urlObj.urlName);
 
             let spooky = Spooky.create({
@@ -110,7 +110,7 @@ module.exports = function(bucketExplorer , database) {
                     transport: 'http',
                     proxy: ip
                 },
-                
+
                 casper: {
                     logLevel: 'debug',
                     verbose: true,
@@ -122,22 +122,22 @@ module.exports = function(bucketExplorer , database) {
                     }
                 }
             },
-            
+
             function(err){
                if (err) {
                     e = new Error('Failed to initialize SpookyJS');
                     e.details = err;
                     throw e;
                 }
-                
+
                 //@TODO spin new children not override former instance
                 (function(url , selector , index){
                     //
                     spooky.start();
-                    spooky.then(function () {  
-                        this.page.customHeaders = {  
-                            "Referer": 'http://www.palingram.com' 
-                        };  
+                    spooky.then(function () {
+                        this.page.customHeaders = {
+                            "Referer": 'http://www.palingram.com'
+                        };
                     });
                     spooky.thenOpen(url);
                     spooky.then([{url:url , selector:selector , index:index} , function(){
@@ -150,24 +150,24 @@ module.exports = function(bucketExplorer , database) {
                             else{
                                 this.emit('done', {status:this.getCurrentUrl() , index:index});
                                 return phantom.clearCookies();
-                            } 
+                            }
                         }
-                        
+
                        if(selector=='none'){
                             this.then(function(){
                                 this.wait(10000 , function(){
                                     this.done(null , true);
                                 });
-                            });	 
+                            });
                         }
-                        
-                        else{ 
+
+                        else{
                             this.then(function(){
                                 this.waitForSelector(selector , function(){
-                                    this.thenClick(selector , function() { 
+                                    this.thenClick(selector , function() {
                                     this.done(null , true);
                                     });
-                                        
+
                                 } , function(){
                                     this.done(true , null);
                                 } , 10000);
@@ -175,19 +175,19 @@ module.exports = function(bucketExplorer , database) {
                         }
                     }]);
                 })(urlObj.urlName , urlObj.selector , index);
-                
+
                 //
-                spooky.run();	
+                spooky.run();
             });
-            
+
             //
             spooky.on('console', function (line) {
                 console.log(line);
             });
-            
+
             //
             spooky.on('error', function (e, stack) {
-                console.error(stack||e);      
+                console.error(stack||e);
                 workerEvents.emit('done' , {status:stack?stack:e , index:0});
             });
 
@@ -195,7 +195,7 @@ module.exports = function(bucketExplorer , database) {
             spooky.on('done', function (status) {
                 workerEvents.emit('done' , status);
             });
-            
+
             //self destruct this instance in 8 minutes
             setTimeout(function(){
                 console.log('Instance destroyed');
@@ -203,15 +203,15 @@ module.exports = function(bucketExplorer , database) {
                 child_processes--;
             } , 8*60000);
         };
-        
+
         return {
             visit:visit,
-            status:workerEvents 
+            status:workerEvents
         }
     }
     //++++++++++++++++++++++++++++++++END++++++++++++++++++++++++++++++++++++++++++
-    
-    
+
+
     //updateBucket after every 120 secs of activity
     function startUpdateDaemon(){
         let timer = 0;
@@ -233,47 +233,48 @@ module.exports = function(bucketExplorer , database) {
                             process.exit(0);
                         }
                         console.log('bucket updated in cron job');
-                    }  
+                    }
                 }
           );
         } , 120000);
     }
-    
+
     //
     function startVisitingDaemon(){
        let v_worker = V_WORKER();
-       
+
        (function fillVisiting(){
             console.log('fill visiting called');
             if(ipQueueIndex < ipQueue.length){
                child_processes+=bucket.urls.length;
                console.log(child_processes+' child_processes currently running');
-               
+
                //spin all new workers for each urls
                for(let i=0; i < bucket.urls.length; i++){
-                   v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls[i] , i);  
+                   v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls[i] , i);
                }
-                
-               ipQueueIndex++;  
+
+               ipQueueIndex++;
             }
             else{
                 console.log('Good ip shortage');
             }
-            
+
             //
-            setTimeout(function(){
+            /*setTimeout(function(){
                 return fillVisiting();
-            } , 10000);
+            } , 10000);*/
        })();
-      
+
       //
       v_worker.status.on('done' , function(status){
             console.log(status);
             bucket.urls[status.index].statusText = status.status;
             bucket.urls[status.index].visited++;
+            fillVisiting();
         });
     }
-    
+
 	return {
 	    visitWith:visitWith,
 	    getBucket:getBucket,

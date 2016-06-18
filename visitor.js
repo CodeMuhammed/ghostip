@@ -136,7 +136,7 @@ module.exports = function(bucketExplorer , database) {
                     spooky.start();
                     spooky.then(function () {
                         this.page.customHeaders = {
-                            "Referer": 'http://www.palingram.com'
+                            "Referer": 'http://www.minicards.xyz'
                         };
                     });
                     spooky.thenOpen(url);

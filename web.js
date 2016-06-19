@@ -2,11 +2,11 @@
 
 var express = require('express');
 var path = require('path');
-var app = express();  
-var methodOverride = require('method-override');  
+var app = express();
+var methodOverride = require('method-override');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var session = require('express-session'); 
+var session = require('express-session');
 var cors  = require('cors');
 
 app.use(cors({credentials: true, origin: true}));
@@ -25,13 +25,13 @@ var visitedIps = [];
 var bucketExplorer;
 var tester;
 var visitor;
-
+var agent = require('./agent');
 
 //init database get the urls specific to this session then run testers
 database.initColls(function(){
-	
+
 	bucketExplorer  = require('./bucketExplorer')(database);
-    visitor = require('./visitor')(bucketExplorer , database);
+  visitor = require('./visitor')(agent , database);
 	app.use('/api' , require('./api')(database , visitor));
 
 	(function getBucketFn(){
@@ -62,5 +62,5 @@ database.initColls(function(){
 	app.listen(port, function() {
 	    console.log("Listening on " + port);
 	});
-	 
+
 });

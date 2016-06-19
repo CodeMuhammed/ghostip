@@ -2,17 +2,18 @@
 */
 'use strict';
 
-module.exports = function(bucketExplorer , database) {
+module.exports = function(agent , database) {
+  console.log(agent.getAgent())
 	//
-    var ObjectId = require('mongodb').ObjectId;
+  var ObjectId = require('mongodb').ObjectId;
 	var Spooky = require('spooky');
-    var EventEmitter = require('events').EventEmitter;
-    var domain = require('domain');
+  var EventEmitter = require('events').EventEmitter;
+  var domain = require('domain');
 
 	var bucket;
-    var ipQueue = [];
-    var ipQueueIndex = 0;
-    var child_processes = 0;
+  var ipQueue = [];
+  var ipQueueIndex = 0;
+  var child_processes = 0;
 
     //
     var Buckets = database.model('Buckets');
@@ -130,11 +131,12 @@ module.exports = function(bucketExplorer , database) {
                     throw e;
                 }
 
-                //@TODO spin new children not override former instance
-                (function(url , selector , index){
+                //
+                (function(url , selector , index , userAgent){
                     //
                     spooky.start();
                     spooky.then(function () {
+                        this.userAgent(userAgent);
                         this.page.customHeaders = {
                             "Referer": 'http://www.minicards.xyz'
                         };
@@ -165,7 +167,7 @@ module.exports = function(bucketExplorer , database) {
                             this.then(function(){
                                 this.waitForSelector(selector , function(){
                                     this.thenClick(selector , function() {
-                                    this.done(null , true);
+                                        this.done(null , true);
                                     });
 
                                 } , function(){
@@ -174,7 +176,7 @@ module.exports = function(bucketExplorer , database) {
                             });
                         }
                     }]);
-                })(urlObj.urlName , urlObj.selector , index);
+                })(urlObj.urlName , urlObj.selector , index , agent.getAgent());
 
                 //
                 spooky.run();
@@ -279,6 +281,6 @@ module.exports = function(bucketExplorer , database) {
 	    getBucket:getBucket,
 	    setBucket:setBucket,
 	    updateBucket:updateBucket,
-        notifyDelete:notifyDelete
+      notifyDelete:notifyDelete
 	}
 };

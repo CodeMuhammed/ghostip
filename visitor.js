@@ -118,7 +118,8 @@ module.exports = function(agent , database) {
                     options: {
                         clientScripts: ['public/js/vendors/jquery.min.js'],
                         pageSettings: {
-                            webSecurityEnabled: false
+                            webSecurityEnabled: false,
+                            userAgent:userAgent
                         }
                     }
                 }
@@ -137,7 +138,6 @@ module.exports = function(agent , database) {
                     console.log(userAgent);
                     spooky.start();
                     spooky.then(function () {
-                        this.userAgent(userAgent);
                         this.page.customHeaders = {
                             "Referer": 'http://www.minicards.xyz'
                         };

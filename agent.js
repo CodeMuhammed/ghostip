@@ -31,7 +31,7 @@ function getAgent(){
 
 	if(agentloaded ){
 		currentAgent++;
-		return (currentAgent-1) % lines.length;
+		return lines[(currentAgent-1) % lines.length];
 	}
 	else{
 		return 'Mozilla/5.0 (Linux; Android 4.0.4; i-mobile IQ 5A Build/IMM76D) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.111 Mobile Safari/537.36';

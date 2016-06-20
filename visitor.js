@@ -103,7 +103,7 @@ module.exports = function(agent , database) {
     var V_WORKER = function(){
         var workerEvents = new EventEmitter;
 
-        var visit = function(ip , urlObj , index){
+        var visit = function(ip , urlObj , index , userAgent){
             console.log('visit starting with '+ip+' and '+urlObj.urlName);
 
             let spooky = Spooky.create({
@@ -132,8 +132,9 @@ module.exports = function(agent , database) {
                 }
 
                 //
-                (function(url , selector , index , userAgent){
+                (function(url , selector , index){
                     //
+                    console.log(userAgent);
                     spooky.start();
                     spooky.then(function () {
                         this.userAgent(userAgent);
@@ -176,7 +177,7 @@ module.exports = function(agent , database) {
                             });
                         }
                     }]);
-                })(urlObj.urlName , urlObj.selector , index , agent.getAgent());
+                })(urlObj.urlName , urlObj.selector , index);
 
                 //
                 spooky.run();
@@ -253,7 +254,7 @@ module.exports = function(agent , database) {
 
                //spin all new workers for each urls
                for(let i=0; i < bucket.urls.length; i++){
-                   v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls[i] , i);
+                   v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls[i] , i , agent.getAgent());
                }
 
                ipQueueIndex++;

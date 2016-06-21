@@ -254,7 +254,7 @@ module.exports = function(agent , database) {
 
                //spin all new workers for each urls
                for(let i=0; i < bucket.urls.length; i++){
-                   v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls[i].trim() , i , agent.getAgent());
+                   v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls[i] , i , agent.getAgent());
                }
 
                ipQueueIndex++;

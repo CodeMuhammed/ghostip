@@ -231,7 +231,7 @@ module.exports = function(agent , database) {
                     }
                     else {
                         timer+=2;
-                        if(timer >= 120){
+                        if(timer >= 180){
                             console.log('Maximum uptime of three hours exceeded exiting....');
                             process.exit(0);
                         }

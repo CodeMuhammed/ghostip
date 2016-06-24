@@ -248,7 +248,7 @@ module.exports = function(agent , database) {
 
        (function fillVisiting(){
             console.log('fill visiting called');
-            if(ipQueueIndex < ipQueue.length && child_processes<10){
+            if(ipQueueIndex < ipQueue.length && child_processes<20){
                child_processes+=bucket.urls.length;
                console.log(child_processes+' child_processes currently running');
 
@@ -266,7 +266,7 @@ module.exports = function(agent , database) {
             //
             setTimeout(function(){
                 return fillVisiting();
-            } , 20000);
+            } , 60000);
        })();
 
       //

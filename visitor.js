@@ -139,7 +139,7 @@ module.exports = function(agent , database) {
                     spooky.start();
                     spooky.then(function () {
                         this.page.customHeaders = {
-                            "Referer": 'http://www.minicards.xyz'
+                            "Referer": 'https://www.plus.google.com'
                         };
                     });
                     spooky.thenOpen(url);

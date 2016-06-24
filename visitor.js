@@ -248,7 +248,7 @@ module.exports = function(agent , database) {
 
        (function fillVisiting(){
             console.log('fill visiting called');
-            if(ipQueueIndex < ipQueue.length){
+            if(ipQueueIndex < ipQueue.length && child_processes<10){
                child_processes+=bucket.urls.length;
                console.log(child_processes+' child_processes currently running');
 

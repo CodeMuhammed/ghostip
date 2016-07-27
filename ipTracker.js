@@ -6,22 +6,22 @@ var MongoClient  = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
 
 module.exports = function(database){
-
+   //
+   var IpTrackers = database.model('IpTrackers');
    //
    var trackObj = {
-      url: 'Name of service',
+      url: '@url',
       ipsVisited: [], //Array of ips used in the duratiion before reset time is reached // Usually 24hrs
       lastReset: '' //The last time the ips was reset usually every 24hours
    };
 
    //HINT: use find and update.
     var isUsable = function(ip , urlObj , callback){
-        if(!urlObj.ensureUniqueIp){
-             callback(true , ip);
+        if(urlObj.ensureUniqueIp){
+             //@TODO when unique ip is require do the database dance
         }
         else{
-           //@TODO when unique ip is require do the database dance
-           callback(true , ip); // return defult for now
+           callback(null , ip);
         }
     }
 

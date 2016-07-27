@@ -254,20 +254,28 @@ module.exports = function(agent , database , ipTracker) {
                console.log(child_processes+' child_processes currently running');
 
                //spin all new workers for each urls
-               for(let i=0; i < bucket.urls.length; i++){
-                   v_worker.visit(ipQueue[ipQueueIndex] , bucket.urls[i] , i , agent.getAgent());
-               }
-
-               ipQueueIndex++;
+               (function validateUnique(urlIndex){
+                    if(urlIndex<0){
+                        setTimeout(function(){
+                             ipQueueIndex++;
+                             return fillVisiting();
+                        } , 15000);
+                    }
+                    else{
+                       ipTracker.isUsable(ipQueue[ipQueueIndex] , bucket.urls[urlIndex] , function(err , ip){
+                           if(ip){
+                               v_worker.visit(ip , bucket.urls[urlIndex] , urlIndex , agent.getAgent());
+                           }
+                           return validateUnique(--urlIndex);
+                       });
+                    }
+               })(bucket.urls.length-1);
             }
+
             else{
                 console.log('Good ip shortage');
             }
 
-            //
-            setTimeout(function(){
-                return fillVisiting();
-            } , 40000);
        })();
 
       //
@@ -275,14 +283,14 @@ module.exports = function(agent , database , ipTracker) {
             console.log(status);
             bucket.urls[status.index].statusText = status.status;
             bucket.urls[status.index].visited++;
-        });
+      });
     }
 
-	return {
-	    visitWith:visitWith,
-	    getBucket:getBucket,
-	    setBucket:setBucket,
-	    updateBucket:updateBucket,
-      notifyDelete:notifyDelete
-	}
+	  return {
+	     visitWith:visitWith,
+	     getBucket:getBucket,
+	     setBucket:setBucket,
+	     updateBucket:updateBucket,
+       notifyDelete:notifyDelete
+	  }
 };

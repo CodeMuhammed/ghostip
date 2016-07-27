@@ -1,17 +1,17 @@
 angular.module('customFactory' , [])
- 
+
 //======================================================FACTORY STARTS HERE
 .factory('bucketFactory' , function($q , $http , $location , $timeout){
        //
        var domains = [
           'localhost:5004',
-          'ghostip1.herokuapp.com', 
+          'ghostip1.herokuapp.com',
           'ghostip2.herokuapp.com',
           'ghostip3.herokuapp.com',
           'ghostip4.herokuapp.com',
           'ghostip5.herokuapp.com',
           'ghostip6.herokuapp.com',
-          'ghostip7.herokuapp.com', 
+          'ghostip7.herokuapp.com',
           'ghostip8.herokuapp.com',
           'ghostip9.herokuapp.com',
           'ghostip10.herokuapp.com',
@@ -89,7 +89,7 @@ angular.module('customFactory' , [])
                   promise.resolve('All active Buckets gotten');
                   return;
                 }
-                
+
             };
             getBucket(domains[index]);
 
@@ -162,7 +162,7 @@ angular.module('customFactory' , [])
 
            return promise.promise;
        }
-       
+
        return {
            getActiveBucketsAsync:getActiveBucketsAsync,
            getDormantBuckets:getDormantBuckets,

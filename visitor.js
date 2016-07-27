@@ -2,7 +2,7 @@
 */
 'use strict';
 
-module.exports = function(agent , database) {
+module.exports = function(agent , database , ipTracker) {
   console.log(agent.getAgent())
 	//
   var ObjectId = require('mongodb').ObjectId;
@@ -246,6 +246,7 @@ module.exports = function(agent , database) {
     function startVisitingDaemon(){
        let v_worker = V_WORKER();
 
+       //@TODO rewrite this function
        (function fillVisiting(){
             console.log('fill visiting called');
             if(ipQueueIndex < ipQueue.length && child_processes<20){
@@ -266,7 +267,7 @@ module.exports = function(agent , database) {
             //
             setTimeout(function(){
                 return fillVisiting();
-            } , 60000);
+            } , 40000);
        })();
 
       //

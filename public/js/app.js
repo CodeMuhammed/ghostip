@@ -6,24 +6,24 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
     function($stateProvider , $urlRouterProvider  , $locationProvider){
           //enabling HTML5 mode
           $locationProvider.html5Mode(false).hashPrefix('!');
-        
+
            $stateProvider
-             
+
              .state('new' , {
                  url : '/v2_home',
                  templateUrl : 'views/in.home2.tpl.html',
                  controller : 'home2Controller',
                  data :{}
-                 
+
              });
-            
+
              $urlRouterProvider.otherwise('v2_home');
         }
 ])
 
 // cors configurations to enable consuming the rest api
 .config([
-    '$httpProvider' , 
+    '$httpProvider' ,
     function($httpProvider){
        $httpProvider.defaults.useXDomain = true;
        $httpProvider.defaults.withCredentials = true;
@@ -59,7 +59,8 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
          selector:'none',
          dateCreated:Date.now(),
          visited:'0',
-         statusText:'No status yet'
+         statusText:'No status yet',
+         ensureUniqueIp:false
        };
 
        $scope.tempBucketObj = {};
@@ -74,7 +75,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
            userToken:'',
            urls:[$scope.defaultUrlObj]
        };
-      
+
       //''
       $scope.buckets = [];
       bucketFactory.getActiveBucketsAsync().then(
@@ -119,7 +120,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
 
       //
       $scope.setEditor = function(bucket_id , url_index , status){
-    
+
             //if editor mode is on, store the bucketObj in the tempBucket
             if(status){
                 angular.forEach($scope.buckets , function(bucket){
@@ -140,7 +141,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                      }
 
                 }
-                
+
             }
 
            //
@@ -157,7 +158,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
       $scope.setBucketId = function(b_id){
           $scope.visibleBucketId  =b_id;
       }
-      
+
 
       //
       $scope.createNewBucket = function(){
@@ -198,7 +199,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                    break;
                }
            }
-           
+
            bucket.userToken = $scope.defaultBucketObj.userToken;
            $scope.processingRemoveBucket =true;
            bucketFactory.deleteBucket(bucket)
@@ -232,7 +233,7 @@ angular.module('paperfaucet' , ['ui.router' ,'mgcrea.ngStrap' , 'customFactory']
                    break;
                }
            }
-           
+
            //
            function update(index){
                 $scope.tempBucketObj.userToken = $scope.defaultBucketObj.userToken;

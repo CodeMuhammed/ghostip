@@ -87,6 +87,12 @@
                             <div class="col-sm-5">
                                 <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.selector"></b><br>
                                 <b ><input class="form-control" style="margin-bottom:.2em; width:80%" ng-model="url.serviceName"></b><br>
+																<div class="checkbox">
+											              <label style="width:100%">
+											                 <input name="ensureUniqueIp" type="checkbox" ng-model="url.ensureUniqueIp">
+											                 Ensure unique ip for this url......{{url.ensureUniqueIp}}
+											               </label>
+											           </div>
                             </div>
                         </div>
 
@@ -97,4 +103,3 @@
         </div>
 
     </div>
-  

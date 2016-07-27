@@ -31,7 +31,8 @@ var agent = require('./agent');
 database.initColls(function(){
 
 	bucketExplorer  = require('./bucketExplorer')(database);
-  visitor = require('./visitor')(agent , database);
+	ipTracker = require('./ipTracker')(database);
+  visitor = require('./visitor')(agent , database , ipTracker);
 	app.use('/api' , require('./api')(database , visitor));
 
 	(function getBucketFn(){

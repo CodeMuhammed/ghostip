@@ -12,7 +12,6 @@ module.exports = function(agent , database , ipTracker) {
 
 	var bucket;
   var ipQueue = [];
-  var ipQueueIndex = 0;
   var child_processes = 0;
 
     //
@@ -247,22 +246,21 @@ module.exports = function(agent , database , ipTracker) {
        let v_worker = V_WORKER();
 
        //@TODO rewrite this function
-       (function fillVisiting(){
-            console.log('fill visiting called');
-            if(ipQueueIndex < ipQueue.length && child_processes<20){
+       (function fillVisiting(currentIp){
+            if(currentIp < ipQueue.length && child_processes<20){
                child_processes+=bucket.urls.length;
-               console.log(child_processes+' child_processes currently running');
+               console.log(child_processes+' child processes currently running');
 
                //spin all new workers for each urls
                (function validateUnique(urlIndex){
                     if(urlIndex<0){
+                        console.log('ip round complete.. starting next round in 15 secs');
                         setTimeout(function(){
-                             ipQueueIndex++;
-                             return fillVisiting();
+                             return fillVisiting(++currentIp);
                         } , 15000);
                     }
                     else{
-                       ipTracker.isUsable(ipQueue[ipQueueIndex] , bucket.urls[urlIndex] , function(err , ip){
+                       ipTracker.isUsable(ipQueue[currentIp] , bucket.urls[urlIndex] , function(err , ip){
                            if(ip){
                                v_worker.visit(ip , bucket.urls[urlIndex] , urlIndex , agent.getAgent());
                            }
@@ -271,12 +269,13 @@ module.exports = function(agent , database , ipTracker) {
                     }
                })(bucket.urls.length-1);
             }
-
             else{
-                console.log('Good ip shortage');
+                console.log('Good ip shortage trying again in 15 secs');
+                setTimeout(function(){
+                     return fillVisiting(currentIp);
+                } , 15000);
             }
-
-       })();
+       })(0);
 
       //
       v_worker.status.on('done' , function(status){

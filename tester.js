@@ -29,25 +29,25 @@
 //visit 3H 10S         ***
 
 module.exports = function(bucketObj) {
-	console.log('Search and test started');
+	  console.log('Ip Search and test started');
 
-	var request = require('request');
+	  var request = require('request');
     var curl = require('curlrequest');
-    
-	var LineByLineReader = require('line-by-line');
+
+ 	  var LineByLineReader = require('line-by-line');
     var EventEmitter = require('events').EventEmitter;
     var moduleEvents = new EventEmitter;
-	
-	//
+
+ 	  //
     var untestedIps = [];
     var untestedIndex = 0;
     var _max_ip_count = 1500;
-    
+
 	(function getIp(){
 		 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
             if(err){
                 getIp();
-            } 
+            }
             else {
                 try {
                     var raw = JSON.parse(body);
@@ -67,14 +67,14 @@ module.exports = function(bucketObj) {
                             return;
                         }
                     }
-                    
-                } 
+
+                }
                 catch (err) {
                     setTimeout(function(){
                         getIp();
                     } ,3000)
                 }
-                
+
             }
         });
 	})();
@@ -97,7 +97,7 @@ module.exports = function(bucketObj) {
                 if(err){
                     console.log('Proxy error: invalid');
                     return testIp();
-                } 
+                }
                 else {
                     if(res){
                         console.log('test done');
@@ -109,7 +109,7 @@ module.exports = function(bucketObj) {
                         return testIp();
                     }
                 }
-            }); 
+            });
         }
         else{
             if(untestedIndex == _max_ip_count ){
@@ -121,12 +121,12 @@ module.exports = function(bucketObj) {
                 setTimeout( function(){
                     return testIp();
                 }, 30000);
-            } 
+            }
         }
-        
+
 	})();
-    
+
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
-   
-	return moduleEvents;	
+
+	return moduleEvents;
 };

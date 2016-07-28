@@ -29,7 +29,6 @@ module.exports = function(agent , database , ipTracker) {
 
     	 console.log(bucket);
     	 console.log('bucket set in visitor');
-         startUpdateDaemon();
     };
 
     //
@@ -83,7 +82,7 @@ module.exports = function(agent , database , ipTracker) {
 
 
     //
-    var visitWith = function(ip){
+    function visitWith(ip){
         console.log('Adding %s to queue' , ip);
         if(ipQueue.indexOf(ip)<0){
             ipQueue.push(ip);
@@ -93,16 +92,16 @@ module.exports = function(agent , database , ipTracker) {
         }
 
         if(ipQueue.length == 1){
+            startUpdateDaemon();
             startVisitingDaemon();
         }
     }
 
-
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    var V_WORKER = function(){
-        var workerEvents = new EventEmitter;
+    function V_WORKER(){
+        let workerEvents = new EventEmitter;
 
-        var visit = function(ip , urlObj , index , userAgent){
+        let visit = function(ip , urlObj , index , userAgent){
             console.log('visit starting with '+ip+' and '+urlObj.urlName);
 
             let spooky = Spooky.create({
@@ -213,34 +212,6 @@ module.exports = function(agent , database , ipTracker) {
     }
     //++++++++++++++++++++++++++++++++END++++++++++++++++++++++++++++++++++++++++++
 
-
-    //updateBucket after every 120 secs of activity
-    function startUpdateDaemon(){
-        let timer = 0;
-        console.log('Starting cron daemon');
-        setInterval(function(){
-            bucket.lastActive = Date.now()+'';
-            Buckets.update(
-                {_id : ObjectId(bucket._id)},
-                bucket,
-                function(err , result){
-                    if(err){
-                        console.log(err);
-                        res.status(500).send('Database error during cron update in visitor');
-                    }
-                    else {
-                        timer+=2;
-                        if(timer >= 180){
-                            console.log('Maximum uptime of three hours exceeded exiting....');
-                            process.exit(0);
-                        }
-                        console.log('bucket updated in cron job');
-                    }
-                }
-          );
-        } , 120000);
-    }
-
     //
     function startVisitingDaemon(){
        let v_worker = V_WORKER();
@@ -283,6 +254,33 @@ module.exports = function(agent , database , ipTracker) {
             bucket.urls[status.index].statusText = status.status;
             bucket.urls[status.index].visited++;
       });
+    }
+
+    //updateBucket after every 120 secs of activity
+    function startUpdateDaemon(){
+        let timer = 0;
+        console.log('Starting cron daemon');
+        setInterval(function(){
+            bucket.lastActive = Date.now()+'';
+            Buckets.update(
+                {_id : ObjectId(bucket._id)},
+                bucket,
+                function(err , result){
+                    if(err){
+                        console.log(err);
+                        res.status(500).send('Database error during cron update in visitor');
+                    }
+                    else {
+                        timer+=2;
+                        if(timer >= 180){
+                            console.log('Maximum uptime of three hours exceeded exiting....');
+                            process.exit(0);
+                        }
+                        console.log('bucket updated in cron job');
+                    }
+                }
+          );
+        } , 120000);
     }
 
 	  return {

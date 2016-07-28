@@ -19,7 +19,6 @@ module.exports = function(database){
                       throw new Error('DB connection error IpTrackers');
                  }
                  else if(!result){ // when there is no document bearing the description create one
-
                      //Default track object
                      let trackObj = {
                         url: urlObj.urlName,
@@ -29,7 +28,6 @@ module.exports = function(database){
 
                      //
                      IpTrackers.insertOne(trackObj , function(err , stats){
-                         //
                          if(err){
                              throw new Error('DB connection error IpTrackers 1');
                          }
@@ -39,27 +37,27 @@ module.exports = function(database){
                      });
                  }
                  else{ //The document tracking this urlObj has been created before
-                     //
                      if(result.ipsVisited.indexOf(ip) >= 0){ // ip already used, then check and update last reset
                          let hours = (Date.now() - result.lastReset)/(1000*3600);
+                         console.log(hours , 'hours');
                          if(hours >= 24){
                              IpTrackers.update({url:urlObj.urlName} , {"set":{ipsVisited:[] , lastReset: Date.now()}} , function(err , stats){
-                                 //
                                  if(err){
                                      throw new Error('DB connection error IpTrackers 2');
                                  }
                                  else{
-                                     return callback('ip used' , null);
+                                     console.log('IP reset');
+                                     return callback(null , ip);
                                  }
                              });
                          }
                          else{
+                            console.log('IP used less than 24hours ago');
                             return callback('ip used' , null);
                          }
                      }
                      else{ //ip not used before update ip to the list
                          IpTrackers.update({url:urlObj.urlName} , {"$addToSet":{ipsVisited:ip}} , function(err , stats){
-                             //
                              if(err){
                                  throw new Error('DB connection error IpTrackers 3');
                              }
@@ -73,7 +71,7 @@ module.exports = function(database){
         }
         else{
            console.log('Tracking not required for this url');
-           return callback(null , ip);
+           return callback(null , ip);//
         }
     }
 

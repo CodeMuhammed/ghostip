@@ -228,7 +228,7 @@ module.exports = function(agent , database , ipTracker) {
                         console.log('ip round complete.. starting next round in 15 secs');
                         setTimeout(function(){
                              return fillVisiting(++currentIp);
-                        } , 15000);
+                        } , 10000);
                     }
                     else{
                        ipTracker.isUsable(ipQueue[currentIp] , bucket.urls[urlIndex] , function(err , ip){
@@ -244,7 +244,7 @@ module.exports = function(agent , database , ipTracker) {
                 console.log('Good ip shortage trying again in 15 secs');
                 setTimeout(function(){
                      return fillVisiting(currentIp);
-                } , 15000);
+                } , 10000);
             }
        })(0);
 

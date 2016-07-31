@@ -55,7 +55,7 @@ module.exports = function(bucketObj) {
                         console.log('Rate limit exceeded');
                         setTimeout(function(){
                             return getIp();
-                        } ,3000)
+                        } ,1000)
                     }
                     else{
                         if(untestedIps.length < _max_ip_count){
@@ -72,7 +72,7 @@ module.exports = function(bucketObj) {
                 catch (err) {
                     setTimeout(function(){
                         getIp();
-                    } ,3000)
+                    } ,1000)
                 }
 
             }

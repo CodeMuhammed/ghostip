@@ -99,15 +99,15 @@ module.exports = function(bucketObj) {
                     return testIp();
                 }
                 else {
-                    if(res){
+                    if(true){
                         console.log('test done');
                         moduleEvents.emit('ip' , proxy);
                         return testIp();
                     }
-                    else {
+                    /*else {
                         console.log('Connection was timed out');
                         return testIp();
-                    }
+                    }*/
                 }
             });
         }

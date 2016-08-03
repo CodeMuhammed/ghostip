@@ -74,7 +74,6 @@ module.exports = function(bucketObj) {
                         getIp();
                     } ,1000)
                 }
-
             }
         });
 	})();
@@ -84,12 +83,12 @@ module.exports = function(bucketObj) {
         if(untestedIndex < untestedIps.length){
            let proxy = untestedIps[untestedIndex]
            let options = {
-                url: 'https://google.com',
-                retries: 1,
+                url: 'http://google.com',
+                retries: 2,
                 headers: {
                     'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
                 },
-                timeout: 10,
+                timeout: 18,
                 proxy: proxy
             };
             untestedIndex++;

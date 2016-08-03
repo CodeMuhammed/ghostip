@@ -1,39 +1,35 @@
-/* This module uses a give ip to visit the whole urls in the bucket assigned to it
-*/
+// This module uses a give ip to visit the whole urls in the bucket assigned to it
 'use strict';
 
 module.exports = function(agent , database , ipTracker) {
-  console.log(agent.getAgent())
-	//
-  var ObjectId = require('mongodb').ObjectId;
-	var Spooky = require('spooky');
-  var EventEmitter = require('events').EventEmitter;
-  var domain = require('domain');
+  	//
+    var ObjectId = require('mongodb').ObjectId;
+  	var Spooky = require('spooky');
+    var EventEmitter = require('events').EventEmitter;
+    var domain = require('domain');
 
-	var bucket;
-  var ipQueue = [];
-  var child_processes = 0;
+  	var bucket;
+    var ipQueue = [];
+    var child_processes = 0;
 
     //
     var Buckets = database.model('Buckets');
 
     //
     var setBucket =  function(bucketObj){
-    	 bucket = bucketObj;
+    	   bucket = bucketObj;
          if(bucket.urls.length>0){
             for(let i=0; i < bucket.urls.length; i++){
                 bucket.urls[i].visited = 0;
                 bucket.urls[i].statusText = 'No status yet';
             };
          }
-
-    	 console.log(bucket);
-    	 console.log('bucket set in visitor');
+    	   console.log('bucket set in visitor');
     };
 
     //
     var getBucket = function(){
-    	return bucket;
+    	 return bucket;
     };
 
     //
@@ -73,27 +69,18 @@ module.exports = function(agent , database , ipTracker) {
              else{
                  console.log('Not this one 1..');
              }
-
-         }
-         else{
-            console.log('Not this one..');
          }
     }
-
 
     //
     function visitWith(ip){
         console.log('Adding %s to queue' , ip);
         if(ipQueue.indexOf(ip)<0){
             ipQueue.push(ip);
-        }
-        else{
-            console.log('ip alredy used or currently in use');
-        }
-
-        if(ipQueue.length == 1){
-            startUpdateDaemon();
-            startVisitingDaemon();
+            if(ipQueue.length == 1){
+                startUpdateDaemon();
+                startVisitingDaemon();
+            }
         }
     }
 
@@ -116,7 +103,7 @@ module.exports = function(agent , database , ipTracker) {
                     options: {
                         clientScripts: ['public/js/vendors/jquery.min.js'],
                         pageSettings: {
-                            webSecurityEnabled: false,
+                            //webSecurityEnabled: false,
                             userAgent:userAgent
                         }
                     }
@@ -137,7 +124,7 @@ module.exports = function(agent , database , ipTracker) {
                     spooky.start();
                     spooky.then(function () {
                         this.page.customHeaders = {
-                            "Referer": 'https://www.plus.google.com'
+                            "Referer": 'https://taskcoin-demo.herokupp.com'
                         };
                     });
                     spooky.thenOpen(url);
@@ -157,7 +144,7 @@ module.exports = function(agent , database , ipTracker) {
                        if(selector=='none'){
                             this.then(function(){
                                 this.wait(10000 , function(){
-                                    this.done(null , true);
+                                    return this.done(null , true);
                                 });
                             });
                         }
@@ -166,11 +153,11 @@ module.exports = function(agent , database , ipTracker) {
                             this.then(function(){
                                 this.waitForSelector(selector , function(){
                                     this.thenClick(selector , function() {
-                                        this.done(null , true);
+                                        return this.done(null , true);
                                     });
 
                                 } , function(){
-                                    this.done(true , null);
+                                    return this.done(true , null);
                                 } , 10000);
                             });
                         }
@@ -202,6 +189,7 @@ module.exports = function(agent , database , ipTracker) {
                 console.log('Instance destroyed');
                 spooky.destroy();
                 child_processes--;
+                return;
             } , 8*60000);
         };
 
@@ -225,7 +213,7 @@ module.exports = function(agent , database , ipTracker) {
                //spin all new workers for each urls
                (function validateUnique(urlIndex){
                     if(urlIndex<0){
-                        console.log('ip round complete.. starting next round in 15 secs');
+                        console.log('ip round complete.. starting next round in 10 secs');
                         setTimeout(function(){
                              return fillVisiting(++currentIp);
                         } , 10000);

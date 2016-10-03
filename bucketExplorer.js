@@ -63,7 +63,7 @@ module.exports = function(database){
                                             }
                                             else {
                                                 console.log('Database is unjammed continuing .....');  
-                                                //
+                                                ////
                                                 setTimeout(function(){
                                                     accessingDomains = [];
                                                     max_tries = 0;

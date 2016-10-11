@@ -85,7 +85,7 @@ module.exports = function(database){
                   }
                   else {
                       console.log('Database successfully locked');
-                      getAnyBucket();
+                      //getAnyBucket();
                   }
              });
          })();

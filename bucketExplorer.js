@@ -85,7 +85,7 @@ module.exports = function(database){
                   }
                   else {
                       console.log('Database successfully locked');
-                      //getAnyBucket();
+                      getAnyBucket();
                   }
              });
          })();
@@ -101,7 +101,7 @@ module.exports = function(database){
                         throw new Error('DB connection error explorer getting any urls');
                     }
                     else if(!result){
-                        releaseLock(undefined);
+                        releaseLock();
                     }
                     else {     
                         releaseLock(result);

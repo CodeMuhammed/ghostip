@@ -40,7 +40,7 @@ module.exports = function(database){
                      if(result.ipsVisited.indexOf(ip) >= 0){ // ip already used, then check and update last reset
                          let hours = (Date.now() - result.lastReset)/(1000*3600);
                          console.log(hours , 'hours');
-                         if(hours >=3){
+                         if(hours >=12){
                              IpTrackers.update({url:urlObj.urlName} , {"set":{ipsVisited:[] , lastReset: Date.now()}} , function(err , stats){
                                  if(err){
                                      throw new Error('DB connection error IpTrackers 2');
@@ -52,7 +52,7 @@ module.exports = function(database){
                              });
                          }
                          else{
-                            console.log('IP used less than 6 hours ago');
+                            console.log('IP used less than 12 hours ago');
                             return callback('ip used' , null);
                          }
                      }

@@ -29,23 +29,23 @@
 //visit 3H 10S         ***
 
 module.exports = function(bucketObj) {
-	  console.log('Ip Search and test started');
+    console.log('Ip Search and test started');
 
-	  var request = require('request');
+    var request = require('request');
     var curl = require('curlrequest');
 
- 	  var LineByLineReader = require('line-by-line');
     var EventEmitter = require('events').EventEmitter;
     var moduleEvents = new EventEmitter;
 
- 	  //
+    //
     var untestedIps = [];
     var untestedIndex = 0;
-    var _max_ip_count = 1500;
+    var _max_ip_count = 200;
 
 	(function getIp(){
-		 request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
+            request.get('http://gimmeproxy.com/api/getProxy' , function(err , response , body){
             if(err){
+		console.log(err);
                 getIp();
             }
             else {
@@ -111,7 +111,7 @@ module.exports = function(bucketObj) {
             });
         }
         else{
-            if(untestedIndex == _max_ip_count ){
+            if(untestedIndex >= _max_ip_count ){
                console.log('All tested');
                return;
             }
@@ -122,7 +122,6 @@ module.exports = function(bucketObj) {
                 }, 30000);
             }
         }
-
 	})();
 
 	//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//

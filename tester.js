@@ -59,6 +59,7 @@ module.exports = function(bucketObj) {
                     }
                     else{
                         if(untestedIps.length < _max_ip_count){
+	                    console.log('good ip gotten');
                             untestedIps.push(raw.curl);
                             return getIp();
                         }

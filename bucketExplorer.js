@@ -62,13 +62,10 @@ module.exports = function(database){
                                                 throw new Error('DB connection error explorer Jammed lock');
                                             }
                                             else {
-                                                console.log('Database is unjammed continuing .....');  
-                                                ////
-                                                setTimeout(function(){
-                                                    accessingDomains = [];
-                                                    max_tries = 0;
-                                                    return checkLockAndModify();
-                                                } , 5000);    
+                                              console.log('Database is unjammed continuing .....');  
+                                              accessingDomains = [];
+                                              max_tries = 0;
+                                              return checkLockAndModify();  
                                             }
                                         });
                                     }

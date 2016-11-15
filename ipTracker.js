@@ -40,7 +40,7 @@ module.exports = function(database){
                      if(result.ipsVisited.indexOf(ip) >= 0){ // ip already used, then check and update last reset
                          let hours = (Date.now() - result.lastReset)/(1000*3600);
                          console.log(hours , 'hours');
-                         if(hours >=2){
+                         if(hours >=1){
                              IpTrackers.update({url:urlObj.urlName} , {"set":{ipsVisited:[] , lastReset: Date.now()}} , function(err , stats){
                                  if(err){
                                      throw new Error('DB connection error IpTrackers 2');

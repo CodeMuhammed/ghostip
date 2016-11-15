@@ -6,19 +6,16 @@ var max_tries = 0;
 
 //generate a random 20 bits token that clearly identifies this process
 var token = '';
-
-function generateRandomBitToken(){
+(function generateRandomBitToken(){
    if(token.length<20){
-         token+=Math.ceil(Math.random()*1000)%2;
-         generateRandomBitToken();
+      token+=Math.ceil(Math.random()*1000)%2;
+      generateRandomBitToken();
    }
    else{
     return;
    }   
-}
-generateRandomBitToken();
-console.log(token);
-  
+}());
+
 //
 module.exports = function(database){
     var Explorer = database.model('Explorer');

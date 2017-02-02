@@ -43,7 +43,6 @@ module.exports = function(dbName , app){
 			                     }
 			                     else {
 			                     	console.log('coll defined');
-			                     	console.log(result);
 			                        return cb();
 			                     }
 			                 });

@@ -2,46 +2,32 @@
 
 var express = require('express');
 var path = require('path');
-var app = express();
 var methodOverride = require('method-override');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var cors  = require('cors');
 
-app.use(cors({credentials: true, origin: true}));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}));
-
-var database = require('./database')('restapi' , app);
-
-var port = process.env.PORT || 5004;
-//
-var Greeting = 'Hello ghost';
-var counter = 0;
-var herokuAppsUrls = [];
-var visitedIps = [];
+var app = express();
+var agent = require('./server/agent');
+var database = require('./server/database')('restapi' , app);
 
 var bucketExplorer;
 var tester;
 var visitor;
-var agent = require('./agent');
+
 
 //init database get the urls specific to this session then run testers
 database.initColls(function(){
-
-	bucketExplorer  = require('./bucketExplorer')(database);
-	ipTracker = require('./ipTracker')(database);
-  visitor = require('./visitor')(agent , database , ipTracker);
-	app.use('/api' , require('./api')(database , visitor));
+	bucketExplorer  = require('./server/bucketExplorer')(database);
+	ipTracker = require('./server/ipTracker')(database);
+	visitor = require('./server/visitor')(agent , database , ipTracker);
 
 	(function getBucketFn(){
 		bucketExplorer.getBucket(function(bucketObj){
             if(bucketObj){
-                visitor.setBucket(bucketObj);
-                tester = require('./tester')(bucketObj);
-
-                //
+				visitor.setBucket(bucketObj);
+                tester = require('./server/tester')(bucketObj);
                 tester.on('ip' , function(ip){
                     visitor.visitWith(ip);
                 });
@@ -55,13 +41,16 @@ database.initColls(function(){
 		});
 	})();
 
-	//=============================================================================
-	//configure express static
+	// Bootstrap express app
+	app.use(cors({credentials: true, origin: true}));
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({extended:true}));
+
+	app.use('/api' , require('./server/api')(database , visitor));
 	app.use(express.static(path.join(__dirname , 'public')));
 
 	//Start the main Express server
-	app.listen(port, function() {
-	    console.log("Listening on " + port);
+	app.listen((process.env.PORT || 5004), function() {
+	    console.log("Listening on " + (process.env.PORT || 5004));
 	});
-
 });

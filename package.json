@@ -51,7 +51,7 @@
     "serve-index": "^1.1.6"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "app": "supervisor web"
   },
   "repository": {
     "type": "git",

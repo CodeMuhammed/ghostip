@@ -8,7 +8,7 @@ module.exports = (database) => {
            console.log('Tracking required for this url');
 
            //Find a document tracking this url
-           IpTrackers.findOne({ url:urlObj.urlName },(err , result) => {
+           return IpTrackers.findOne({ url:urlObj.urlName },(err , result) => {
                if(err) {
                    throw new Error('DB connection error IpTrackers');
                }
@@ -39,7 +39,7 @@ module.exports = (database) => {
                          let hours = (Date.now() - result.lastReset) / (1000*3600);
 
                          if(hours >= 6){
-                             IpTrackers.update({ url:urlObj.urlName } , { "set":{ipsVisited:[] , lastReset: Date.now()} },(err , stats) => {
+                             IpTrackers.update({ url:urlObj.urlName } , { "set":{ ipsVisited:[] , lastReset: Date.now()} },(err , stats) => {
                                  if(err) {
                                      throw new Error('DB connection error IpTrackers 2');
                                  }
@@ -67,10 +67,8 @@ module.exports = (database) => {
                  }
              });
         }
-        else{
-           console.log('Tracking not required for this url');
-           return callback(null, ip);
-        }
+        
+        return callback(null, ip);
     }
 
     //Returns public api methods

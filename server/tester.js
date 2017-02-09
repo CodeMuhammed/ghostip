@@ -80,10 +80,12 @@ module.exports = (bucketObj) => {
                     console.log('Proxy error: invalid');
                     return testIp();
                 } else {
-                    if(res) {
+                    /*if(res) {
                         moduleEvents.emit('ip' , proxy);
                         return testIp();
                     }
+                    return testIp();*/
+                    moduleEvents.emit('ip', proxy);
                     return testIp();
                 }
             });

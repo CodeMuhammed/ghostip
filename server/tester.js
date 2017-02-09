@@ -28,7 +28,7 @@ module.exports = (bucketObj) => {
     const moduleEvents = new EventEmitter;
     let untestedIps = [];
     let untestedIndex = 0;
-    let getDone = false;
+    let searching = true;
     
     // @method recursive getIp
 	(function getIp() {
@@ -40,14 +40,12 @@ module.exports = (bucketObj) => {
             else {
                 try {
                     const raw = JSON.parse(body);
-                    if(!raw.curl){
-                        setTimeout(() => {
-                            getDone = true;
-                            return;
-                        }, 1000)
-                    } else {
+                    if(raw.curl){
                         untestedIps.push(raw.curl);
                         return getIp();
+                    } else {
+                        searching = false;
+                        return;
                     }
                 } 
                 catch (err) {
@@ -78,25 +76,18 @@ module.exports = (bucketObj) => {
                     console.log('Proxy error: invalid');
                     return testIp();
                 } else {
-                    /* if(res) {
-                        moduleEvents.emit('ip' , proxy);
-                        return testIp();
-                    }
-                    return testIp(); */
                     moduleEvents.emit('ip', proxy);
                     return testIp();
                 }
             });
         } else {
-            if(getDone){
-               console.log('All tested');
-               return;
-            } else {
-                console.log('No ip yet retrying in 29 secs');
+            if(searching) {
+               console.log('No ip yet retrying in 29 secs');
                 setTimeout(() => {
                     return testIp();
                 }, 30000);
             }
+            return;
         }
 	})();
 

@@ -98,7 +98,7 @@ module.exports = function(agent , database , ipTracker) {
                     spooky.start();
                     spooky.then(() => {
                         this.page.customHeaders = {
-                            "Referer": 'https://taskcoin-demo.herokupp.com'
+                            "Referer": 'https://www.yahoo.com'
                         };
                     });
                     spooky.thenOpen(url);
@@ -126,10 +126,12 @@ module.exports = function(agent , database , ipTracker) {
                             this.then(() => {
                                 this.waitForSelector(selector, () => {
                                     this.thenClick(selector, () => {
-                                        return this.done(null, true);
+                                        this.wait(10000, () => {
+                                            return this.done(null, true);
+                                        });
                                     });
 
-                                }, () =>{
+                                }, () => {
                                     return this.done(true, null);
                                 }, 10000);
                             });
@@ -170,7 +172,6 @@ module.exports = function(agent , database , ipTracker) {
     }
     //++++++++++++++++++++++++++++++++END++++++++++++++++++++++++++++++++++++++++++
 
-    //
     function startVisitingDaemon() {
        let v_worker = V_WORKER();
 

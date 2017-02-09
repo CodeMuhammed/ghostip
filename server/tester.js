@@ -1,5 +1,5 @@
 'use strict';
-
+// @TODO figure out how to get unlimited ips
 //Alternatives to gimmeproxy are//
 //http://proxy.tekbreak.com/
 //https://happy-proxy.com/en
@@ -32,7 +32,7 @@ module.exports = (bucketObj) => {
     
     // @method recursive getIp
 	(function getIp() {
-        request.get('http://gimmeproxy.com/api/getProxy?country=US', (err, response, body) => {
+        request.get('http://gimmeproxy.com/api/getProxy', (err, response, body) => {
             if(err){
                 console.log(err);
                 getIp();

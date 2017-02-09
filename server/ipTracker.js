@@ -39,7 +39,15 @@ module.exports = (database) => {
                          let hours = (Date.now() - result.lastReset) / (1000*3600);
 
                          if(hours >= 6){
-                             IpTrackers.update({ url:urlObj.urlName } , { "set":{ ipsVisited:[] , lastReset: Date.now()} },(err , stats) => {
+                             IpTrackers.update(
+                                 { url:urlObj.urlName },
+                                 { $set: 
+                                    {
+                                        ipsVisited:[],
+                                        lastReset: Date.now()
+                                    } 
+                                 }, 
+                                 (err , stats) => {
                                  if(err) {
                                      throw new Error('DB connection error IpTrackers 2');
                                  }

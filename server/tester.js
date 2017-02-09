@@ -1,24 +1,30 @@
 'use strict';
 // @TODO figure out how to get unlimited ips
+// @TODO create a small node app that does that before integrating into ghostip.
+// Create a document IP_DUMP to save all good ips gotten
+// Read that document and use them to make request to gimmeproxy to get more ips
+// Shuffle the ips to make sure all the processes are not devouring the ips linearly
+
 //Alternatives to gimmeproxy are//
 //http://proxy.tekbreak.com/
-//https://happy-proxy.com/en
 //https://incloak.com/proxy-list/
 //https://kingproxies.com/register
-//http://www.getproxy.jp/en/api
-//https://getproxy.net/en/api/
 
-//gip = 41-45
-//gip1 = 36-40
-//gip2 = 21-25
-//gip3 = 1-5
-//gip4 = 6-10
-//gip5 = 11-15
-//gip6 = 16-20
-//gip7 = 26-30
-//gip8 = 31-35
-//gip9 = 46-50
-//gip10 = 51-55
+// =================================================================================
+//  Email addresses (@outlook.com)  ||  Heroku app range (ghostip{n}.herokuapp.com)
+// =================================================================================
+//  ghostip                         ||     41 - 45                                                                                      
+//  ghostip1                        ||     36 - 40                                         
+//  ghostip2                        ||     21 - 25                                       
+//  ghostip3                        ||      1 -  5                                     
+//  ghostip4                        ||      6   10                               
+//  ghostip5                        ||     11 - 15                                    
+//  ghostip6                        ||     16 - 20                                        
+//  ghostip7                        ||     26 - 30                                       
+//  ghostip8                        ||     31 - 35                                       
+//  ghostip9                        ||     46 - 50                                        
+//  ghostip10                       ||     51 - 55                                  
+// ==================================================================================
 
 module.exports = (bucketObj) => {
     const request = require('request');

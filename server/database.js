@@ -15,7 +15,7 @@ module.exports = function(dbName , app){
 	var initColls = function (cb) {
 		if(!isDBOpened()){
 			MongoClient.connect(url , function(err , db){
-				if(err){
+				if(err) {
 					throw new Error('DB connection error here');
 				}
                 else {
@@ -23,7 +23,7 @@ module.exports = function(dbName , app){
 					console.log('Connected correcctly to the database');
 					openedColls.Buckets = db.collection('Buckets');
 					openedColls.Explorer = db.collection('Explorer');
-          openedColls.IpTrackers = db.collection('IpTrackers');
+                    openedColls.IpTrackers = db.collection('IpTrackers');
 					DBOpened = true;
 
                     //Initialize explorer object
@@ -32,7 +32,6 @@ module.exports = function(dbName , app){
 		                     throw new Error('DB connection error here 1');
 		                  }
 		                  else if(results[0] == undefined){
-		                     console.log('coll not defined');
 		                     var explorerObj = {
 		                     	 locked: false,
 		                     	 accessingDomain: ''
@@ -42,7 +41,6 @@ module.exports = function(dbName , app){
 			                         throw new Error('DB connection error here 2');
 			                     }
 			                     else {
-			                     	console.log('coll defined');
 			                        return cb();
 			                     }
 			                 });
@@ -52,7 +50,6 @@ module.exports = function(dbName , app){
 		                     return cb();
 		                  }
 		            });
-
 				}
 			});
 		}
@@ -83,7 +80,7 @@ module.exports = function(dbName , app){
 	}
 
 	return {
-		initColls : initColls,
-		model : model
+		initColls,
+		model
 	};
 };

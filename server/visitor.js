@@ -225,7 +225,7 @@ module.exports = function(agent , database , ipTracker) {
                 else {
                     timer += 2;
                     if(timer >= 120){
-                        console.log('Maximum uptime of three hours exceeded exiting....');
+                        console.log('Maximum uptime of 2 hours exceeded exiting....');
                         process.exit(0);
                     }
                     console.log('bucket updated in cron job');

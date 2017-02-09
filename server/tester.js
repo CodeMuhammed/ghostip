@@ -28,11 +28,11 @@ module.exports = (bucketObj) => {
     const moduleEvents = new EventEmitter;
     let untestedIps = [];
     let untestedIndex = 0;
-    let _max_ip_count = 500;
+    let getDone = false;
     
     // @method recursive getIp
 	(function getIp() {
-        request.get('http://gimmeproxy.com/api/getProxy', (err, response, body) => {
+        request.get('http://gimmeproxy.com/api/getProxy?country=US', (err, response, body) => {
             if(err){
                 console.log(err);
                 getIp();
@@ -40,16 +40,14 @@ module.exports = (bucketObj) => {
             else {
                 try {
                     const raw = JSON.parse(body);
-                    if(raw.status == 429){
+                    if(!raw.curl){
                         setTimeout(() => {
-                            return getIp();
+                            getDone = true;
+                            return;
                         }, 1000)
                     } else {
-                        if(untestedIps.length < _max_ip_count){
-                            untestedIps.push(raw.curl);
-                            return getIp();
-                        }
-                        return;
+                        untestedIps.push(raw.curl);
+                        return getIp();
                     }
                 } 
                 catch (err) {
@@ -80,21 +78,20 @@ module.exports = (bucketObj) => {
                     console.log('Proxy error: invalid');
                     return testIp();
                 } else {
-                    /*if(res) {
+                    /* if(res) {
                         moduleEvents.emit('ip' , proxy);
                         return testIp();
                     }
-                    return testIp();*/
+                    return testIp(); */
                     moduleEvents.emit('ip', proxy);
                     return testIp();
                 }
             });
         } else {
-            if(untestedIndex >= _max_ip_count ){
+            if(getDone){
                console.log('All tested');
                return;
-            }
-            else{
+            } else {
                 console.log('No ip yet retrying in 29 secs');
                 setTimeout(() => {
                     return testIp();

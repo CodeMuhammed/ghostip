@@ -1,13 +1,12 @@
-'use strict';
 // @TODO figure out how to get unlimited ips
 // @TODO create a small node app that does that before integrating into ghostip.
 // Create a document IP_DUMP to save all good ips gotten
 // Read that document and use them to make request to gimmeproxy to get more ips
 // Shuffle the ips to make sure all the processes are not devouring the ips linearly
 
-//Alternatives to gimmeproxy are//
-//http://proxy.tekbreak.com/
-//https://incloak.com/proxy-list/
+//Alternatives to gimmeproxy are
+//http://proxy.tekbreak.com
+//https://incloak.com/proxy-list
 //https://kingproxies.com/register
 
 // =================================================================================
@@ -68,7 +67,7 @@ module.exports = (bucketObj) => {
         if(untestedIndex < untestedIps.length) {
            let proxy = untestedIps[untestedIndex];
            let options = {
-                url: 'http://google.com',
+                url: 'fg20.herokuapp.com',
                 retries: 1,
                 headers: {
                     'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',

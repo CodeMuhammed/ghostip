@@ -174,8 +174,6 @@ module.exports = function(agent , database , ipTracker) {
 
     function startVisitingDaemon() {
        let v_worker = V_WORKER();
-
-       //@TODO rewrite this function
        (function fillVisiting(currentIp) {
             if(currentIp < ipQueue.length && child_processes < 20){
                child_processes+=bucket.urls.length;

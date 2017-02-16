@@ -52,14 +52,17 @@ module.exports = () => {
                         moduleEvents.emit('ip', raw.curl);
                         return getIp();
                     } else {
-                        return;
+                        setTimeout(() => {
+                            // @TODO change proxy
+                            getIp();
+                        }, 10000);
                     }
                 } 
                 catch (err) {
                     setTimeout(() => {
                         // @TODO change proxy
                         getIp();
-                    }, 10000)
+                    }, 10000);
                 }
             }
         });

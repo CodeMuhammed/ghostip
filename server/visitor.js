@@ -185,7 +185,7 @@ module.exports = function(agent , database , ipTracker) {
                //spin all new workers for each urls
                (function validateUnique(urlIndex){
                     if(urlIndex < 0){
-                        console.log('ip round complete.. starting next round in 10 secs');
+                        console.log('ip round complete... starting next round in 10 secs');
                         setTimeout(() => {
                              return fillVisiting(++currentIp);
                         } , 10000);

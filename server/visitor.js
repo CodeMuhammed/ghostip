@@ -55,7 +55,7 @@ module.exports = function(agent , database , ipTracker) {
         console.log('Adding %s to queue' , ip);
         if(ipQueue.indexOf(ip) < 0){
             ipQueue.push(ip);
-            if(ipQueue.length == 1){
+            if(ipQueue.length === 1){
                 startUpdateDaemon();
                 startVisitingDaemon();
             }
@@ -64,6 +64,7 @@ module.exports = function(agent , database , ipTracker) {
 
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     const V_WORKER = () => {
+        console.log('we got here V_WORKER');
         let workerEvents = new EventEmitter;
 
         let visit = (ip, urlObj, index, userAgent) => {
@@ -173,8 +174,21 @@ module.exports = function(agent , database , ipTracker) {
     //++++++++++++++++++++++++++++++++END++++++++++++++++++++++++++++++++++++++++++
 
     function startVisitingDaemon() {
+       console.log('visiting daemon started');
        let v_worker = V_WORKER();
-       (function fillVisiting(currentIp) {
+
+       ipTracker.isUsable(ipQueue[0], bucket.urls[0], (err, ip) => {
+            if(ip) {
+                v_worker.visit(ip, bucket.urls[0], 0, agent.getAgent());
+            }
+       });
+
+       v_worker.status.on('done', (status) => {
+            console.log(status);
+            bucket.urls[status.index].statusText = status.status;
+            bucket.urls[status.index].visited++;
+       });
+       /*(function fillVisiting(currentIp) {
             if(currentIp < ipQueue.length && child_processes < 20){
                child_processes+=bucket.urls.length;
 
@@ -202,13 +216,7 @@ module.exports = function(agent , database , ipTracker) {
                      return fillVisiting(currentIp);
                 } , 10000);
             }
-       })(0);
-
-      v_worker.status.on('done', (status) => {
-            console.log(status);
-            bucket.urls[status.index].statusText = status.status;
-            bucket.urls[status.index].visited++;
-      });
+       })(0);*/
     }
 
     //updateBucket after every 120 secs of activity

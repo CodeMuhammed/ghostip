@@ -178,20 +178,7 @@ module.exports = function(agent , database , ipTracker) {
        console.log('visiting daemon started');
        let v_worker = V_WORKER();
 
-       ipTracker.isUsable(ipQueue[0], bucket.urls[0], (err, ip) => {
-            if(ip) {
-                console.log(`${ip} is usable`);
-                v_worker.visit(ip, bucket.urls[0], 0, agent.getAgent());
-            }
-       });
-
-       v_worker.status.on('done', (status) => {
-            console.log(status);
-            bucket.urls[status.index].statusText = status.status;
-            bucket.urls[status.index].visited++;
-       });
-
-       /*(function fillVisiting(currentIp) {
+       (function fillVisiting(currentIp) {
             if(currentIp < ipQueue.length && child_processes < 20){
                child_processes+=bucket.urls.length;
 
@@ -213,13 +200,19 @@ module.exports = function(agent , database , ipTracker) {
                     }
                })(bucket.urls.length-1);
             }
-            else{
+            else {
                 console.log('Good ip shortage trying again in 10 secs');
                 setTimeout(() => {
                      return fillVisiting(currentIp);
                 } , 10000);
             }
-       })(0);*/
+       })(0);
+
+       v_worker.status.on('done', (status) => {
+            console.log(status);
+            bucket.urls[status.index].statusText = status.status;
+            bucket.urls[status.index].visited++;
+       });
     }
 
     //updateBucket after every 120 secs of activity

@@ -115,15 +115,13 @@ module.exports = function(agent , database , ipTracker) {
                             }
                         }
 
-                       if(selector == 'none'){
+                       if(selector === 'none'){
                             this.then(function() {
                                 this.wait(10000, function() {
                                     return this.done(null, true);
                                 });
                             });
-                        }
-
-                        else{
+                        } else{
                             this.then(function() {
                                 this.waitForSelector(selector, function() {
                                     this.thenClick(selector, function() {
@@ -138,6 +136,7 @@ module.exports = function(agent , database , ipTracker) {
                             });
                         }
                     }]);
+                    
                 })(urlObj.urlName , urlObj.selector , index);
 
                 spooky.run();

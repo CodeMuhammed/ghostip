@@ -44,35 +44,34 @@ module.exports = (ipDump) => {
         curl.request(options, (err, res) => {
             if(err) {
                 console.log(err);
-                // @TODO change proxy
-                getIp();
+                proxy = ipDump.cycleIp();
             } else {
                  try {
                     const raw = JSON.parse(res);
                     if(raw.curl) {
                         moduleEvents.emit('ip', raw.curl);
-                        // @TODO save ip
-                        return getIp();
+                        ipDump.saveIp(raw.curl);
                     } else {
-                        setTimeout(() => {
-                            console.log('here no ip 1');
-                            // @TODO change proxy
-                            getIp();
-                        }, 10000);
+                        console.log(`${proxy} masked out`);
+                        proxy = ipDump.cycleIp();
                     }
-                } 
-                catch (err) {
-                    setTimeout(() => {
-                        // @TODO change proxy
-                        console.log('here no ip 2');
-                        getIp();
-                    }, 10000);
+                } catch (err) {
+                    console.log(res);
+                    proxy = ipDump.cycleIp();
                 }
             }
+
+            return setTimeout(() => {
+                return getIp();
+            }, 10000);
         });
 	};
 
-    //@TODO initialize dump and start getting ips
+    // initialize dump and start getting ips
+    ipDump.init(() => {
+        console.log('dump initialized');
+        getIp();
+    });
 
 	return moduleEvents;
 };

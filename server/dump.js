@@ -9,22 +9,50 @@ const ObjectId = require('mongodb').ObjectId;
 module.exports = (database) => {
     const IpDump = database.model('IpDump');
     let ipList = [];
+
     let cycleIndex = 0;
 
     const shuffleList = (ipList) => {
-        // @returns shuffled iplist
+        let i = 0;
+        let j = 0;
+        let temp = null;
+
+        for (let i = ipList.length - 1; i > 0; i -= 1) {
+            j = Math.floor(Math.random() * (i + 1))
+            temp = ipList[i]
+            ipList[i] = ipList[j]
+            ipList[j] = temp
+        }
+        
+        return ipList;
     }
 
     const init = (cb) => {
-        // @Read data and set
+        IpDump.find({}).toArray((err , results) => {
+			if(err) {
+				throw new Error(err);
+			} else if(!results[0]){
+				throw new Error('Could not read dump data');
+			} else {
+				//ipList = shuffleList(results[0].ips);
+                return cb();
+			}
+		});
     }
 
     const cycleIp = () => {
-        // @TODO
+        const ip = ipList[(cycleIndex++) % ipList.length] || '';
+        console.log(`${ip} cycled`);
+        return ip;
     }
 
-    const saveIp = () => {
-        // @TODO
+    const saveIp = (ip) => {
+        if(ipList.indexOf(ip) < 0) {
+            ipList.push(ip);
+        }
+
+        //@TODO update to database
+        console.log(`saving ${ip} to dump`);
     }
 
     return {

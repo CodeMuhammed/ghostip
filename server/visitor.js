@@ -97,13 +97,13 @@ module.exports = function(agent , database , ipTracker) {
                 ((url, selector, index) => {
                     console.log(userAgent);
                     spooky.start();
-                    spooky.then(() => {
+                    spooky.then(function() {
                         this.page.customHeaders = {
                             "Referer": 'https://www.yahoo.com'
                         };
                     });
                     spooky.thenOpen(url);
-                    spooky.then([{url:url, selector:selector, index:index}, () => {
+                    spooky.then([{url:url, selector:selector, index:index}, function() {
                         this.done = function(err , status) {
                             if(err){
                                 this.emit('done', {status:this.getCurrentUrl() , index:index});

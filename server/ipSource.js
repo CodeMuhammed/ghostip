@@ -19,7 +19,8 @@
 // palingram@outlook.com
 // These are other heroku accounts.
 
-module.exports = () => {
+module.exports = (ipDump) => {
+    console.log(ipDump);
     const request = require('request');
     const curl = require('curlrequest');
     const EventEmitter = require('events').EventEmitter;

@@ -197,7 +197,7 @@ module.exports = function(agent , database , ipTracker) {
                })(bucket.urls.length-1);
             }
             else{
-                console.log('Good ip shortage trying again in 15 secs');
+                console.log('Good ip shortage trying again in 10 secs');
                 setTimeout(() => {
                      return fillVisiting(currentIp);
                 } , 10000);

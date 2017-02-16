@@ -14,6 +14,7 @@
 //  ghostip10                       ||     51 - 55                                  
 // ==================================================================================
 
+
 module.exports = () => {
     const request = require('request');
     const curl = require('curlrequest');
@@ -54,7 +55,7 @@ module.exports = () => {
                     setTimeout(() => {
                         // @TODO change proxy
                         getIp();
-                    }, 1000)
+                    }, 10000)
                 }
             }
         });

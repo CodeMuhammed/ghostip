@@ -13,7 +13,11 @@
 //  ghostip9                        ||     46 - 50                                        
 //  ghostip10                       ||     51 - 55                                  
 // ==================================================================================
-
+// palingramblog@gmail.com
+// Henry4jenkins@gmail.com
+// codemuhammed@outlook.com
+// palingram@outlook.com
+// These are other heroku accounts.
 
 module.exports = () => {
     const request = require('request');

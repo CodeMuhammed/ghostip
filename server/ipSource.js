@@ -53,6 +53,7 @@ module.exports = () => {
                         return getIp();
                     } else {
                         setTimeout(() => {
+                            console.log('here no ip 1');
                             // @TODO change proxy
                             getIp();
                         }, 10000);
@@ -61,6 +62,7 @@ module.exports = () => {
                 catch (err) {
                     setTimeout(() => {
                         // @TODO change proxy
+                        console.log('here no ip 2');
                         getIp();
                     }, 10000);
                 }

@@ -18,11 +18,11 @@ var ipDump;
 
 
 //init database get the urls specific to this session then run ipSource
-database.initColls(function(){
+database.initColls(function() {
 	ipDump = require('./server/dump')(database);
     ipSource = require('./server/ipSource')(ipDump);
-    
-    ipSource.on('ip' , function(ip){
+
+    ipSource.on('ip' , function(ip) {
         console.log(ip);
     });
 	

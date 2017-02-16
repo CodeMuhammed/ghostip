@@ -107,11 +107,10 @@ module.exports = function(agent , database , ipTracker) {
                     spooky.then([{url:url, selector:selector, index:index}, function() {
                         this.done = function(err , status) {
                             if(err){
-                                this.emit('done', {status:this.getCurrentUrl() , index:index});
+                                this.emit('done', {status: this.getCurrentUrl(), index:index});
                                 return phantom.clearCookies();
-                            }
-                            else{
-                                this.emit('done', {status:this.getCurrentUrl() , index:index});
+                            } else {
+                                this.emit('done', {status: this.getCurrentUrl(), index:index});
                                 return phantom.clearCookies();
                             }
                         }
@@ -133,7 +132,7 @@ module.exports = function(agent , database , ipTracker) {
                                         });
                                     });
 
-                                }, () => {
+                                }, function() {
                                     return this.done(true, null);
                                 }, 10000);
                             });

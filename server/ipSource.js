@@ -30,7 +30,7 @@ module.exports = (ipDump) => {
     let proxy = "";
 
     // @method recursive getIp
-	(function getIp() {
+	function getIp() {
         let options = {
             url: 'http://gimmeproxy.com/api/getProxy',
             retries: 1,
@@ -51,6 +51,7 @@ module.exports = (ipDump) => {
                     const raw = JSON.parse(res);
                     if(raw.curl) {
                         moduleEvents.emit('ip', raw.curl);
+                        // @TODO save ip
                         return getIp();
                     } else {
                         setTimeout(() => {
@@ -69,7 +70,9 @@ module.exports = (ipDump) => {
                 }
             }
         });
-	})();
+	};
+
+    //@TODO initialize dump and start getting ips
 
 	return moduleEvents;
 };

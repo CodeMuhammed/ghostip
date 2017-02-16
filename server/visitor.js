@@ -104,7 +104,7 @@ module.exports = function(agent , database , ipTracker) {
                     });
                     spooky.thenOpen(url);
                     spooky.then([{url:url, selector:selector, index:index}, () => {
-                        this.done = (err , status) => {
+                        this.done = function(err , status) {
                             if(err){
                                 this.emit('done', {status:this.getCurrentUrl() , index:index});
                                 return phantom.clearCookies();
@@ -116,18 +116,18 @@ module.exports = function(agent , database , ipTracker) {
                         }
 
                        if(selector == 'none'){
-                            this.then(() => {
-                                this.wait(10000, () => {
+                            this.then(function() {
+                                this.wait(10000, function() {
                                     return this.done(null, true);
                                 });
                             });
                         }
 
                         else{
-                            this.then(() => {
-                                this.waitForSelector(selector, () => {
-                                    this.thenClick(selector, () => {
-                                        this.wait(10000, () => {
+                            this.then(function() {
+                                this.waitForSelector(selector, function() {
+                                    this.thenClick(selector, function() {
+                                        this.wait(10000, function() {
                                             return this.done(null, true);
                                         });
                                     });
@@ -179,6 +179,7 @@ module.exports = function(agent , database , ipTracker) {
 
        ipTracker.isUsable(ipQueue[0], bucket.urls[0], (err, ip) => {
             if(ip) {
+                console.log(`${ip} is usable`);
                 v_worker.visit(ip, bucket.urls[0], 0, agent.getAgent());
             }
        });
@@ -188,6 +189,7 @@ module.exports = function(agent , database , ipTracker) {
             bucket.urls[status.index].statusText = status.status;
             bucket.urls[status.index].visited++;
        });
+
        /*(function fillVisiting(currentIp) {
             if(currentIp < ipQueue.length && child_processes < 20){
                child_processes+=bucket.urls.length;

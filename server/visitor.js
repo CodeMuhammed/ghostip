@@ -3,9 +3,10 @@ module.exports = function(agent , database , ipTracker) {
   	const Spooky = require('spooky');
     const EventEmitter = require('events').EventEmitter;
     const domain = require('domain');
-    const ipQueue = [];
-    const child_processes = 0;
     const Buckets = database.model('Buckets');
+
+    let child_processes = 0;
+    let ipQueue = [];
     let bucket;
 
     // @method getBucket

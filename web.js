@@ -13,11 +13,11 @@ var agent = require('./server/agent');
 var database = require('./server/database')('restapi' , app);
 
 var bucketExplorer;
-var tester;
+var ipSource;
 var visitor;
 
 
-//init database get the urls specific to this session then run testers
+//init database get the urls specific to this session then run ipSource
 database.initColls(function(){
 	bucketExplorer  = require('./server/bucketExplorer')(database);
 	ipTracker = require('./server/ipTracker')(database);
@@ -27,8 +27,8 @@ database.initColls(function(){
 		bucketExplorer.getBucket(function(bucketObj){
             if(bucketObj){
 				visitor.setBucket(bucketObj);
-                tester = require('./server/tester')(bucketObj);
-                tester.on('ip' , function(ip){
+                ipSource = require('./server/ipSource')();
+                ipSource.on('ip' , function(ip){
                     visitor.visitWith(ip);
                 });
             }

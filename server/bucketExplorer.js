@@ -25,8 +25,7 @@ module.exports = function(database){
     var getBucket = function(cb){
          //
          (function checkLockAndModify(){
-               Explorer.findAndModify({locked:false} , {/**/} , {"$set": {accessingDomain:token , locked:true}} , {/**/} , function(err , result){
-                  console.log(result);
+               Explorer.findAndModify({locked:false} , {/**/} , {"$set": {accessingDomain:token , locked:true}} , {/**/} , function(err , result) {
                   if(err){
                      throw new Error('DB connection error explorer check locked');
                   }

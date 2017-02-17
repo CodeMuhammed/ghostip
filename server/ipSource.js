@@ -19,6 +19,8 @@
 // palingram@outlook.com
 // These are other heroku accounts.
 
+// @TODO configure the dump to also cycle ips for visiting purposes
+
 module.exports = (ipDump) => {
     console.log(ipDump);
     const request = require('request');
@@ -27,7 +29,7 @@ module.exports = (ipDump) => {
     const moduleEvents = new EventEmitter;
 
     //The proxy to be used to get more proxies
-    let proxy = "http://149.56.85.17:8080";
+    let proxy = "";
 
     // @method recursive getIp
 	function getIp() {

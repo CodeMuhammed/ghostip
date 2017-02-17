@@ -5,7 +5,6 @@ const ObjectId = require('mongodb').ObjectId;
 module.exports = (database) => {
     const IpDump = database.model('IpDump');
     let ipList = [];
-
     let cycleIndex = 0;
 
     // Fisher–Yates shuffle algorithm
@@ -15,10 +14,10 @@ module.exports = (database) => {
         let temp = null;
 
         for (let i = ipList.length - 1; i > 0; i -= 1) {
-            j = Math.floor(Math.random() * (i + 1))
-            temp = ipList[i]
-            ipList[i] = ipList[j]
-            ipList[j] = temp
+            j = Math.floor(Math.random() * (i + 1));
+            temp = ipList[i];
+            ipList[i] = ipList[j];
+            ipList[j] = temp;
         }
         
         return ipList;
@@ -32,7 +31,6 @@ module.exports = (database) => {
 				throw new Error('Could not read dump data');
 			} else {
 				ipList = shuffleList(results[0].ips);
-                console.log(ipList);
                 return cb();
 			}
 		});
@@ -49,12 +47,11 @@ module.exports = (database) => {
             ipList.push(ip);
         }
 
-        //@TODO update to database
+        // Update to database
         IpDump.update({ name: 'dump' }, {"$addToSet":{ips:ip}}, (err , stats) => {
-            if(err){
+            if(err) {
                 throw new Error('DB connection error IpDump 3');
-            }
-            else{
+            } else {
                 console.log(`saved ${ip} to dump`);
             }
         });

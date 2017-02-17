@@ -1,8 +1,4 @@
-// @TODO figure out how to get unlimited ips
-// @TODO create a small node app that does that before integrating into ghostip.
-// Create a document IP_DUMP to save all good ips gotten
-// Read that document and use them to make request to gimmeproxy to get more ips
-// Shuffle the ips to make sure all the processes are not devouring the ips linearly
+// This module manipulates the ip dump
 const MongoClient  = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 
@@ -12,6 +8,7 @@ module.exports = (database) => {
 
     let cycleIndex = 0;
 
+    // Fisher–Yates shuffle algorithm
     const shuffleList = (ipList) => {
         let i = 0;
         let j = 0;
@@ -34,7 +31,8 @@ module.exports = (database) => {
 			} else if(!results[0]){
 				throw new Error('Could not read dump data');
 			} else {
-				//ipList = shuffleList(results[0].ips);
+				ipList = shuffleList(results[0].ips);
+                console.log(ipList);
                 return cb();
 			}
 		});
@@ -52,7 +50,14 @@ module.exports = (database) => {
         }
 
         //@TODO update to database
-        console.log(`saving ${ip} to dump`);
+        IpDump.update({ name: 'dump' }, {"$addToSet":{ips:ip}}, (err , stats) => {
+            if(err){
+                throw new Error('DB connection error IpDump 3');
+            }
+            else{
+                console.log(`saved ${ip} to dump`);
+            }
+        });
     }
 
     return {

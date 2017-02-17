@@ -27,7 +27,7 @@ module.exports = (ipDump) => {
     const moduleEvents = new EventEmitter;
 
     //The proxy to be used to get more proxies
-    let proxy = "";
+    let proxy = "http://149.56.85.17:8080";
 
     // @method recursive getIp
 	function getIp() {
@@ -35,9 +35,6 @@ module.exports = (ipDump) => {
             url: 'http://gimmeproxy.com/api/getProxy',
             retries: 1,
             timeout: 10,
-            headers: {
-                'User-Agent':'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
-            },
             proxy: proxy
         };
 

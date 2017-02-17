@@ -41,12 +41,11 @@ module.exports = (database) => {
                     if(hours >= 6){
                         IpTrackers.update(
                             { url:urlObj.urlName },
-                            { $set: 
                             {
-                                ipsVisited:[],
+                                url: urlObj.urlName,
+                                ipsVisited: [],
                                 lastReset: Date.now()
-                            } 
-                            }, 
+                            },
                             (err , stats) => {
                             if(err) {
                                 throw new Error('DB connection error IpTrackers 2');

@@ -19,8 +19,6 @@
 // palingram@outlook.com
 // These are other heroku accounts.
 
-// @TODO configure the dump to also cycle ips for visiting purposes
-
 module.exports = (ipDump) => {
     console.log(ipDump);
     const request = require('request');
@@ -43,20 +41,19 @@ module.exports = (ipDump) => {
         curl.request(options, (err, res) => {
             if(err) {
                 console.log(err);
-                proxy = ipDump.cycleIp();
+                proxy = ipDump.cycleIp('sourcing');
             } else {
                  try {
                     const raw = JSON.parse(res);
                     if(raw.curl) {
-                        moduleEvents.emit('ip', raw.curl);
                         ipDump.saveIp(raw.curl);
                     } else {
                         console.log(`${proxy} masked out`);
-                        proxy = ipDump.cycleIp();
+                        proxy = ipDump.cycleIp('sourcing');
                     }
                 } catch (err) {
                     console.log(res);
-                    proxy = ipDump.cycleIp();
+                    proxy = ipDump.cycleIp('sourcing');
                 }
             }
 
@@ -66,10 +63,27 @@ module.exports = (ipDump) => {
         });
 	};
 
+    // @method source ips for visiting
+    function emitIps() {
+        let ip = ipDump.cycleIp('visiting');
+        if(ip !== '') {
+            moduleEvents.emit('ip', ip);
+            return setTimeout(() => {
+                return emitIps();
+            }, 500);
+        } else {
+            console.log('No ips yet retrying in 20 secs');
+            return setTimeout(() => {
+                return emitIps();
+            }, 20000);
+        }
+    };
+
     // initialize dump and start getting ips
     ipDump.init(() => {
         console.log('dump initialized');
         getIp();
+        emitIps();
     });
 
 	return moduleEvents;

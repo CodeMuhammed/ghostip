@@ -55,10 +55,9 @@ module.exports = (database) => {
                                 return callback(null , ip);
                             }
                         });
-                    }
-                    else{
-                    console.log('IP used less than 6 hours ago');
-                    return callback('ip used' , null);
+                    } else {
+                        console.log('IP used less than 6 hours ago');
+                        return callback('ip used' , null);
                     }
                 }
                 else {

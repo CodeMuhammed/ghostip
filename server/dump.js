@@ -5,7 +5,8 @@ const ObjectId = require('mongodb').ObjectId;
 module.exports = (database) => {
     const IpDump = database.model('IpDump');
     let ipList = [];
-    let cycleIndex = 0;
+    let ipSourceIndex = 0;
+    let visitingIndex = 0;
 
     // Fisher–Yates shuffle algorithm
     const shuffleList = (ipList) => {
@@ -36,9 +37,13 @@ module.exports = (database) => {
 		});
     }
 
-    const cycleIp = () => {
-        const ip = ipList[(cycleIndex++) % ipList.length] || '';
-        console.log(`${ip} cycled`);
+    const cycleIp = (useCase) => {
+        let ip;
+        if(useCase === 'sourcing') {
+            ip = ipList[(ipSourceIndex++) % ipList.length] || '';
+        } else if(useCase === 'visiting') {
+            ip = ipList[(visitingIndex++) % ipList.length] || '';
+        }
         return ip;
     }
 

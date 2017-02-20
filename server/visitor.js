@@ -181,22 +181,23 @@ module.exports = function(agent , database , ipTracker) {
                child_processes+=bucket.urls.length;
 
                //spin all new workers for each urls
-               for(let i=0; i<bucket.urls.length; i++) {
-                   (function (urlIndex) {
-                        ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
-                            if(ip) {
-                                console.log('there is an ip', urlIndex);
-                                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.next());
-                            }
-                            if(i === bucket.urls.length - 1) {
-                                console.log('ip round complete... starting next round in 10 secs');
-                                setTimeout(() => {
-                                    return fillVisiting(++currentIp);
-                                } , 10000);
-                            }
-                        });
-                    })(i);
-               }
+               (function validateUnique(urlIndex) {
+                    if(urlIndex < 0){
+                        console.log('ip round complete... starting next round in 10 secs');
+                        setTimeout(() => {
+                             return fillVisiting(++currentIp);
+                        } , 10000);
+                    } else {
+                       console.log(urlIndex);
+                       return ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
+                           if(ip) {
+                               console.log('there is an ip', bucket.urls[urlIndex]);
+                               v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
+                           }
+                           return validateUnique(--urlIndex);
+                       });
+                    }
+                })(bucket.urls.length-1);
             }
             else {
                 console.log('Good ip shortage trying again in 10 secs');

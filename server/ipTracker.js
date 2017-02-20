@@ -1,81 +1,53 @@
-const MongoClient  = require('mongodb').MongoClient;
-const ObjectId = require('mongodb').ObjectId;
-
 module.exports = (database) => {
+   const MongoClient  = require('mongodb').MongoClient;
+   const ObjectId = require('mongodb').ObjectId;
    const IpTrackers = database.model('IpTrackers');
+
+   // Do a find and modify query
+   // where you seach the document to see if this ip has been recorded in the ipsVisited list
+   // If it has, check the visit time
+   // if it has not add it to the list
+   // if the visit time is greater than the expiration time of 6hrs, remove it from the ipsVisited list.
+   const checkIpStatus = (ip, urlObj, cb) => {
+       console.log(`${ip} good to go`);
+       cb(true);
+   }
+
    const isUsable = (ip , urlObj , callback) => {
-   if(urlObj.ensureUniqueIp) {
-        console.log('Tracking required for this url');
+       if(urlObj.ensureUniqueIp) {
+           console.log('Tracking required for this url');
+           let ipObj = {
+               ip: ip,
+               visited: Date.now(),
+           };
 
-    //Find a document tracking this url
-    return IpTrackers.findOne({ url:urlObj.urlName },(err , result) => {
-        if(err) {
-            throw new Error('DB connection error IpTrackers');
-        }
+           IpTrackers.findOne({ url:urlObj.urlName },(err, result) => {
+               if(err) {
+                    throw new Error('DB connection error IpTrackers');
+                } else if(!result) { 
+                    let trackObj = {
+                        url: urlObj.urlName,
+                        ipsVisited: [ipObj],
+                    };
 
-        // when there is no document bearing the description create one
-        else if(!result) { 
-                //Default track object
-                let trackObj = {
-                url: urlObj.urlName,
-                ipsVisited: [ip],
-                lastReset: Date.now()  //The last time the ips was reset usually every 24hours
-                };
-
-                // Create a new document to track this url
-                IpTrackers.insertOne(trackObj, (err , stats) => {
-                    if(err) {
-                        throw new Error('DB connection error IpTrackers 1');
-                    }
-                    else {
-                        return callback(null , ip);
-                    }
-                });
-            }
-
-            //The document tracking this urlObj has been created before
-            else { 
-                if(result.ipsVisited.indexOf(ip) >= 0) {
-                    let hours = (Date.now() - result.lastReset) / (1000*3600);
-
-                    if(hours >= 6){
-                        IpTrackers.update(
-                            { url:urlObj.urlName },
-                            {
-                                url: urlObj.urlName,
-                                ipsVisited: [],
-                                lastReset: Date.now()
-                            },
-                            (err , stats) => {
-                            if(err) {
-                                throw new Error('DB connection error IpTrackers 2');
-                            }
-                            else {
-                                console.log('IP reset');
-                                return callback(null , ip);
-                            }
-                        });
-                    } else {
-                        console.log('IP used less than 6 hours ago');
-                        return callback('ip used' , null);
-                    }
-                }
-                else {
-                    IpTrackers.update({ url:urlObj.urlName }, {"$addToSet":{ipsVisited:ip}}, (err , stats) => {
-                        if(err){
-                            throw new Error('DB connection error IpTrackers 3');
+                    // Create a new document to track this url
+                    IpTrackers.insertOne(trackObj, (err , stats) => {
+                        if(err) {
+                            throw new Error('DB connection error IpTrackers 1');
                         }
-                        else{
-                            return callback(null , ip);
+                        else {
+                            return callback(ip);
                         }
                     });
-                }
-            }
-        });
+                } else {
+                    checkIpStatus(ip, urlObj, (status) => {
+                        return status ? callback(ip) : callback(null);
+                    });
+               }
+           });
+       }
+       return callback(ip);
     }
-    // @TODO add ip address to dump
-    return callback(null, ip);
-}
 
     //Returns public api methods
     return {

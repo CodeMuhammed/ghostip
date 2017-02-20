@@ -63,7 +63,7 @@ module.exports = (ipDump) => {
         });
 	};
 
-    // @method source ips for visiting
+    // @method recursive emits ips for visiting
     function emitIps() {
         let ip = ipDump.cycleIp('visiting');
         if(ip !== '') {

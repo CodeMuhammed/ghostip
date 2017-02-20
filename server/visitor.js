@@ -189,7 +189,7 @@ module.exports = function(agent , database , ipTracker) {
                         } , 10000);
                     }
                     else{
-                       ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (err , ip) => {
+                       ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
                            if(ip){
                                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
                            }

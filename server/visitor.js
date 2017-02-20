@@ -175,7 +175,37 @@ module.exports = function(agent , database , ipTracker) {
     function startVisitingDaemon() {
        console.log('visiting daemon started');
        let v_worker = V_WORKER();
-       fillVisiting(0, v_worker);
+
+       (function fillVisiting(currentIp) {
+            if(currentIp < ipQueue.length && child_processes < 20){
+               child_processes+=bucket.urls.length;
+
+               //spin all new workers for each urls
+               (function validateUnique(urlIndex) {
+                    if(urlIndex < 0){
+                        console.log('ip round complete... starting next round in 10 secs');
+                        return setTimeout(() => {
+                             return fillVisiting(++currentIp);
+                        } , 10000);
+                    } else {
+                       return ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
+                           if(ip) {
+                               console.log('there is an ip', bucket.urls[urlIndex]);
+                               console.log(urlIndex);
+                               v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
+                           }
+                           return validateUnique(--urlIndex);
+                       });
+                    }
+                })(bucket.urls.length-1);
+            }
+            else {
+                console.log('Good ip shortage trying again in 10 secs');
+                setTimeout(() => {
+                     return fillVisiting(currentIp);
+                } , 10000);
+            }
+       })(0);
 
        v_worker.status.on('done', (status) => {
             console.log(status);
@@ -183,40 +213,6 @@ module.exports = function(agent , database , ipTracker) {
             bucket.urls[status.index].visited++;
        });
     }
-    
-    //@method
-    function fillVisiting(currentIpIndex, v_worker) {
-        if(currentIpIndex < ipQueue.length && child_processes < 20){
-            child_processes+=bucket.urls.length;
-            validateUnique(bucket.urls.length-1, v_worker);
-        }
-        else {
-            console.log('Good ip shortage trying again in 10 secs');
-            return setTimeout(() => {
-                    return fillVisiting(currentIpIndex);
-            } , 10000);
-        }
-    };
-
-    //@method validate unique
-    function validateUnique(urlIndex, v_worker, currentIpIndex) {
-        if(urlIndex < 0) {
-            console.log('ip round complete... starting next round in 10 secs');
-            return setTimeout(() => {
-                fillVisiting(++currentIpIndex);
-            } , 10000);
-        } 
-        
-        return ipTracker.isUsable(ipQueue[currentIpIndex], bucket.urls[urlIndex], (ip) => {
-            if(ip) {
-                console.log('there is an ip', bucket.urls[urlIndex]);
-                console.log(urlIndex);
-                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
-            }
-            validateUnique(--urlIndex, v_worker, currentIpIndex);
-        });
-    };
-
 
     //updateBucket after every 120 secs of activity
     function startUpdateDaemon(){
@@ -240,7 +236,6 @@ module.exports = function(agent , database , ipTracker) {
           );
         } , 120000);
     }
-
     return {
         visitWith,
         getBucket,

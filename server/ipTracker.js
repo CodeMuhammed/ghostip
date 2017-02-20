@@ -42,7 +42,7 @@ module.exports = (database) => {
            console.log('Tracking required for this url');
            IpTrackers.findOne({ url:urlObj.urlName },(err, result) => {
                if(err) {
-                    throw new Error('DB connection error IpTrackers');
+                  throw new Error('DB connection error IpTrackers');
                 } else if(!result) {
                     let ipObj = {
                         ip: ip,

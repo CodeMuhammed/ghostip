@@ -190,7 +190,9 @@ module.exports = function(agent , database , ipTracker) {
                     }
                     else{
                        ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
-                           if(ip){
+                           if(ip) {
+                               console.log('there is an ip');
+                               console.log(bucket.urls[urlIndex]);
                                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
                            }
                            return validateUnique(--urlIndex);

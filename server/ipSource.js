@@ -57,9 +57,9 @@ module.exports = (ipDump) => {
                 }
             }
 
-            return setTimeout(() => {
+            setTimeout(() => {
                 return getIp();
-            }, 10000);
+            }, 60000);
         });
 	};
 

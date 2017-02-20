@@ -27,7 +27,7 @@ var lines = [];
 	});
 
 //
-function getAgent(){
+function next(){
 
 	if(agentloaded ){
 		currentAgent++;
@@ -40,5 +40,5 @@ function getAgent(){
 
 
 module.exports = {
-	getAgent : getAgent
+	next,
 }

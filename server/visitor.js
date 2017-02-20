@@ -186,7 +186,7 @@ module.exports = function(agent , database , ipTracker) {
                         ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
                             if(ip) {
                                 console.log('there is an ip', urlIndex);
-                                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
+                                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.next());
                             }
                             if(i === bucket.urls.length - 1) {
                                 console.log('ip round complete... starting next round in 10 secs');

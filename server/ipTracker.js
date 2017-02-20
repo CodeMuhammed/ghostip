@@ -69,8 +69,9 @@ module.exports = (database) => {
                     });
                }
            });
+       } else {
+           return callback(ip);
        }
-       return callback(ip);
     }
 
     // @returns public api methods

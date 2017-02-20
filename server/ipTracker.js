@@ -64,7 +64,7 @@ module.exports = (database) => {
                         }
                     });
                 } else {
-                    checkIpStatus(ip, urlObj, result, (status) => {
+                    return checkIpStatus(ip, urlObj, result, (status) => {
                         return status ? callback(ip) : callback(null);
                     });
                }

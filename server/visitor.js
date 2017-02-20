@@ -189,7 +189,7 @@ module.exports = function(agent , database , ipTracker) {
                         } , 10000);
                     }
                     else{
-                       ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
+                       return ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
                            if(ip) {
                                console.log('there is an ip', bucket.urls[urlIndex]);
                                console.log(urlIndex);

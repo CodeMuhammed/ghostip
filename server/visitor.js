@@ -182,22 +182,22 @@ module.exports = function(agent , database , ipTracker) {
 
                //spin all new workers for each urls
                (function validateUnique(urlIndex) {
-                    if(urlIndex < 0){
+                    if(urlIndex >= bucket.urls.length) {
                         console.log('ip round complete... starting next round in 10 secs');
                         setTimeout(() => {
                              return fillVisiting(++currentIp);
                         } , 10000);
                     } else {
-                       console.log(urlIndex);
-                       return ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
+                       ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
                            if(ip) {
+                               console.log(urlIndex);
                                console.log('there is an ip', bucket.urls[urlIndex]);
                                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
                            }
-                           return validateUnique(--urlIndex);
+                           validateUnique(--urlIndex);
                        });
                     }
-                })(bucket.urls.length-1);
+                })(0);
             }
             else {
                 console.log('Good ip shortage trying again in 10 secs');

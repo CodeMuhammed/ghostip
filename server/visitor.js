@@ -26,6 +26,8 @@ module.exports = function(agent , database , ipTracker) {
 
     // @method updateBucket
     const updateBucket = (bucketObj, meta) => {
+        console.log('updating bucket');
+        console.log(bucketObj);
     	if(bucket) {
             if(bucketObj._id+'' == bucket._id) {
 	           if(meta.action == 0) {

@@ -193,7 +193,7 @@ module.exports = function(agent , database , ipTracker) {
                            if(ip) {
                                console.log('there is an ip', bucket.urls[urlIndex]);
                                console.log(bucket.urls[urlIndex]);
-                               v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
+                               return v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
                            }
                            return validateUnique(--urlIndex);
                        });

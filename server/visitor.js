@@ -195,7 +195,8 @@ module.exports = function(agent , database , ipTracker) {
                                console.log(urlIndex);
                                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
                            }
-                           return validateUnique(--urlIndex);
+                           urlIndex -= 1;
+                           return validateUnique(urlIndex);
                        });
                     }
                })(bucket.urls.length-1);

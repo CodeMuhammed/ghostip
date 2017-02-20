@@ -2,29 +2,53 @@ module.exports = (database) => {
    const MongoClient  = require('mongodb').MongoClient;
    const ObjectId = require('mongodb').ObjectId;
    const IpTrackers = database.model('IpTrackers');
+   
+   //@method
+   const checkIpStatus = (ip, urlObj, trackerObj, cb) => {
+       let ipObj;
+       for(let i=0; i < trackerObj.ipsVisited.length; i++) {
+           if(trackerObj.ipsVisited[i].ip == ip) {
+               ipObj = trackerObj.ipsVisited[i];
+               break;
+           }
+       }
 
-   // Do a find and modify query
-   // where you seach the document to see if this ip has been recorded in the ipsVisited list
-   // If it has, check the visit time
-   // if it has not add it to the list
-   // if the visit time is greater than the expiration time of 6hrs, remove it from the ipsVisited list.
-   const checkIpStatus = (ip, urlObj, cb) => {
-       console.log(`${ip} good to go`);
-       cb(true);
+       if(ipObj) {
+           const hours = (Date.now() - ipObj.visited) / (1000*3600);
+           
+           if(hours >= 6) {
+               IpTrackers.update(
+                    { url:urlObj.urlName },
+                    { "$pull": { ipsVisited: { ip: ip} } },
+                    (err , result) => {
+                      return cb(true);
+                });
+           } else {
+                return cb(false);
+           }
+       } else {
+           IpTrackers.update(
+               { url:urlObj.urlName },
+               { "$addToSet": { ipsVisited: { ip: ip, visited: Date.now() } } },
+               (err , result) => {
+                 return cb(true);
+            });
+       }
    }
-
-   const isUsable = (ip , urlObj , callback) => {
+   
+   //@method
+   const isUsable = (ip, urlObj, callback) => {
        if(urlObj.ensureUniqueIp) {
            console.log('Tracking required for this url');
-           let ipObj = {
-               ip: ip,
-               visited: Date.now(),
-           };
-
            IpTrackers.findOne({ url:urlObj.urlName },(err, result) => {
                if(err) {
                     throw new Error('DB connection error IpTrackers');
-                } else if(!result) { 
+                } else if(!result) {
+                    let ipObj = {
+                        ip: ip,
+                        visited: Date.now(),
+                    };
+
                     let trackObj = {
                         url: urlObj.urlName,
                         ipsVisited: [ipObj],
@@ -40,7 +64,7 @@ module.exports = (database) => {
                         }
                     });
                 } else {
-                    checkIpStatus(ip, urlObj, (status) => {
+                    checkIpStatus(ip, urlObj, result, (status) => {
                         return status ? callback(ip) : callback(null);
                     });
                }
@@ -49,7 +73,7 @@ module.exports = (database) => {
        return callback(ip);
     }
 
-    //Returns public api methods
+    // @returns public api methods
     return {
         isUsable:isUsable
     };

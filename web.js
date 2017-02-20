@@ -14,6 +14,7 @@ var database = require('./server/database')('restapi' , app);
 
 var bucketExplorer;
 var ipSource;
+var ipTracker;
 var visitor;
 var ipDump;
 

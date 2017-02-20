@@ -13,6 +13,7 @@ var database = require('./server/database')('restapi' , app);
 
 var bucketExplorer;
 var ipSource;
+var ipTracker;
 var visitor;
 var ipDump;
 
@@ -21,10 +22,11 @@ var ipDump;
 database.initColls(function() {
 	ipDump = require('./server/dump')(database);
     ipSource = require('./server/ipSource')(ipDump);
+	ipTracker = require('./server/ipTracker')(database);
 
-    ipSource.on('ip' , function(ip) {
-        console.log(ip);
-    });
+    ipTracker.isUsable('123478', {ensureUniqueIp: true, urlName: 'http://www.testurl.com'}, (ip) => {
+		console.log(ip);
+	});
 	
 	// Bootstrap express app
 	app.use(cors({credentials: true, origin: true}));

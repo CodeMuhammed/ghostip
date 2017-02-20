@@ -205,16 +205,16 @@ module.exports = function(agent , database , ipTracker) {
             return setTimeout(() => {
                 fillVisiting(++currentIpIndex);
             } , 10000);
-        } else {
-            return ipTracker.isUsable(ipQueue[currentIpIndex], bucket.urls[urlIndex], (ip) => {
-                if(ip) {
-                    console.log('there is an ip', bucket.urls[urlIndex]);
-                    console.log(urlIndex);
-                    v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
-                }
-                validateUnique(--urlIndex, v_worker, currentIpIndex);
-            });
-        }
+        } 
+        
+        return ipTracker.isUsable(ipQueue[currentIpIndex], bucket.urls[urlIndex], (ip) => {
+            if(ip) {
+                console.log('there is an ip', bucket.urls[urlIndex]);
+                console.log(urlIndex);
+                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
+            }
+            validateUnique(--urlIndex, v_worker, currentIpIndex);
+        });
     };
 
 

@@ -200,10 +200,10 @@ module.exports = function(agent , database , ipTracker) {
 
     //@method validate unique
     function validateUnique(urlIndex, v_worker, currentIpIndex) {
-        if(urlIndex < 0){
+        if(urlIndex < 0) {
             console.log('ip round complete... starting next round in 10 secs');
             return setTimeout(() => {
-                    return fillVisiting(++currentIpIndex);
+                fillVisiting(++currentIpIndex);
             } , 10000);
         } else {
             return ipTracker.isUsable(ipQueue[currentIpIndex], bucket.urls[urlIndex], (ip) => {
@@ -212,7 +212,7 @@ module.exports = function(agent , database , ipTracker) {
                     console.log(urlIndex);
                     v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
                 }
-                return validateUnique(--urlIndex);
+                validateUnique(--urlIndex, v_worker, currentIpIndex);
             });
         }
     };
@@ -240,6 +240,7 @@ module.exports = function(agent , database , ipTracker) {
           );
         } , 120000);
     }
+
     return {
         visitWith,
         getBucket,

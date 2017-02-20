@@ -26,8 +26,6 @@ module.exports = function(agent , database , ipTracker) {
 
     // @method updateBucket
     const updateBucket = (bucketObj, meta) => {
-        console.log('updating bucket');
-        console.log(bucketObj);
     	if(bucket) {
             if(bucketObj._id+'' == bucket._id) {
 	           if(meta.action == 0) {
@@ -186,14 +184,14 @@ module.exports = function(agent , database , ipTracker) {
                (function validateUnique(urlIndex){
                     if(urlIndex < 0){
                         console.log('ip round complete... starting next round in 10 secs');
-                        setTimeout(() => {
+                        return setTimeout(() => {
                              return fillVisiting(++currentIp);
                         } , 10000);
                     }
                     else{
                        ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
                            if(ip) {
-                               console.log('there is an ip');
+                               console.log('there is an ip', bucket.urls[urlIndex]);
                                console.log(bucket.urls[urlIndex]);
                                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
                            }

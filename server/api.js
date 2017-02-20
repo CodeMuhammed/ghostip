@@ -48,8 +48,6 @@ module.exports = (database, visitor) => {
                  req.body.userToken = '';
                  req.body.lastModified = Date.now()+''; 
                  req.body._id = ObjectId(req.body._id);
-                 console.log(req.body);
-
                  return Buckets.update({_id : req.body._id}, req.body, (err , result) => {
                      if(err){
                         return res.status(500).send('Database error during update');

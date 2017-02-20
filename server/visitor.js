@@ -184,14 +184,14 @@ module.exports = function(agent , database , ipTracker) {
                (function validateUnique(urlIndex) {
                     if(urlIndex < 0){
                         console.log('ip round complete... starting next round in 10 secs');
-                        return setTimeout(() => {
+                        setTimeout(() => {
                              return fillVisiting(++currentIp);
                         } , 10000);
                     } else {
+                       console.log(urlIndex);
                        return ipTracker.isUsable(ipQueue[currentIp], bucket.urls[urlIndex], (ip) => {
                            if(ip) {
                                console.log('there is an ip', bucket.urls[urlIndex]);
-                               console.log(urlIndex);
                                v_worker.visit(ip, bucket.urls[urlIndex], urlIndex, agent.getAgent());
                            }
                            return validateUnique(--urlIndex);

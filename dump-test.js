@@ -1,43 +1,73 @@
-const curl = require('curlrequest');
-var express = require('express');
-var path = require('path');
-var methodOverride = require('method-override');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var session = require('express-session');
-var cors  = require('cors');
+const paymentQueue = require('./server2/payment_queue');
+const mock_data = require('./server2/mock_db');
 
-var app = express();
-var agent = require('./server/agent');
-var database = require('./server/database')('restapi' , app);
+const adminQueue = new paymentQueue('admin', mock_data);
+const userQueue = new paymentQueue('user', mock_data);
 
-var bucketExplorer;
-var ipSource;
-var ipTracker;
-var visitor;
-var ipDump;
+const newUser = {
+    _id: 45890,
+    userInfo: {
+        firstname: 'Merron',
+        lastname: 'jones',
+        email: 'merron@gmail.com',
+        phone: '08101639251',
+        role: 'user',
+        password: '12345#hashed'
+    },
+    accountInfo: {
+        accountName: 'merron jones',
+        accountNumber: '0116230622',
+        bankName: 'Guarantee Trust Bank'
+    },
+    paymentInfo: {
+        payTo: null,
+        recieveFrom: [],
+        ticketNUm: '',
+        defective: false
+    }
+};
 
-
-//init database get the urls specific to this session then run ipSource
-database.initColls(function() {
-	ipDump = require('./server/dump')(database);
-    ipSource = require('./server/ipSource')(ipDump);
-	ipTracker = require('./server/ipTracker')(database);
-
-    ipTracker.isUsable('123478', {ensureUniqueIp: true, urlName: 'http://www.testurl.com'}, (ip) => {
-		console.log(ip);
-	});
-	
-	// Bootstrap express app
-	app.use(cors({credentials: true, origin: true}));
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({extended:true}));
-
-	app.use('/api' , require('./server/api')(database , visitor));
-	app.use(express.static(path.join(__dirname , 'public')));
-
-	//Start the main Express server
-	app.listen((process.env.PORT || 5004), function() {
-	    console.log("Listening on " + (process.env.PORT || 5004));
-	});
+//@TODO pair this user up in a saga of methods
+userQueue.getDefective((reciever) => {
+    if(reciever) {
+        userQueue.pair(newUser, reciever, (stat) => {
+            console.log(stat);
+        });
+    } else {
+        userQueue.isEndOfQueue((status) => {
+            if(!status) {
+                userQueue.pair(newUser, undefined, (stat) => {
+                    console.log(stat);
+                });
+            } else {
+                userQueue.isCursorFilled((status) => {
+                    if(!status) {
+                        userQueue.pair(newUser, undefined, (stat) => {
+                            console.log(stat);
+                        });
+                    } else {
+                        checkAdminQueue();
+                    }
+                });
+            }
+        });
+    } 
 });
+
+function checkAdminQueue() {
+    adminQueue.getDefective((reciever) => {
+        if(reciever) {
+            adminQueue.pair(newUser, reciever, (stat) => {
+                console.log(stat);
+            });
+        } else {
+                adminQueue.pair(newUser, undefined, (stat) => {
+                console.log(stat);
+            });
+        }
+    });
+}
+
+//@TODO show that user has paid his peer
+//@TODO show that peer has recieved the payment and the action that follows
+//when a user is added to the queue for the first time, the queue object is added

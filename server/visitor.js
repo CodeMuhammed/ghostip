@@ -215,7 +215,7 @@ module.exports = function(agent , database , ipTracker) {
     }
 
     //updateBucket after every 120 secs of activity
-    function startUpdateDaemon(){
+    function startUpdateDaemon() {
         let timer = 0;
         console.log('Starting cron daemon');
         setInterval(() => {
@@ -236,6 +236,7 @@ module.exports = function(agent , database , ipTracker) {
           );
         } , 120000);
     }
+    
     return {
         visitWith,
         getBucket,

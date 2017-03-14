@@ -14,7 +14,7 @@ class PaymentQueue {
     //this method pair a user to someone they are to pay 
     //when they just signs up
     //the receiver id is optional in cases where we are trying
-    //to pair a user with a defected receiver
+    //to pair a user with a defective receiver
     pair(donor, receiver, cb) {
         if(receiver) {
             this.createTransaction(donor, receiver, (stat) => {
@@ -41,12 +41,12 @@ class PaymentQueue {
            return user.userInfo.role === this.role
                   && user.paymentInfo.ticketNum === ticketNum;
        })[0];
-       
+
        //update the cursor position then call the callback
        let cursor = parseInt(ticketNum);
        this.isEndOfQueue((status) => {
-           if(status && this.role === 'admin') { // add a check for super admin here also
-              cursor = 0;
+           if(status && this.role === 'admin') {
+              cursor = 1;
               this.updateCursor(cursor, () => {
                   return cb(receiver);
               });
@@ -57,6 +57,8 @@ class PaymentQueue {
                        this.updateCursor(cursor, () => {
                           return cb(receiver);
                        });
+                   } else {
+                       return cb(receiver);
                    }
                });
            }
@@ -76,11 +78,9 @@ class PaymentQueue {
     }
 
     createTransaction(donor, receiver, cb) {
-        // @TODO create a transaction
-        // update their references in the donor and receiver objects
         this.database.Users.push(donor); // simulates that the user is already in the db
         let transaction = {
-            _id: 123456,
+            _id: 123456 + donor._id, //@TODO generate random ids
             expiryDate: Date.now() + (1000 * 3600),
             amount: 10000,
             proof: 'payment_image',
@@ -233,7 +233,7 @@ class PaymentQueue {
                                 if(!status) {
                                    cb(null, {});
                                 } else {
-                                    cb(true, null);
+                                    cb(true);
                                 }
                             });
                         }
@@ -241,6 +241,41 @@ class PaymentQueue {
                 }
             }
         });
+    }
+
+    //this method adds a user to the queue
+    addDonorToQueue(donorId, cb) {
+        this.createTicket((err, ticket) => {
+            if(err) {
+                return cb(err);
+            }
+            this.database.Users = this.database.Users.map((user) => {
+                if(user._id == donorId) {
+                    user.paymentInfo.ticketNum = ticket;
+                }
+                return user;
+            });
+
+            cb(null, this.database);
+        });
+    }
+
+    //This method creates a new ticket
+    createTicket(cb) {
+        console.log('create ticket called');
+        // increment the current ticketSize by 1
+        let ticketSize;
+
+        //Do a find and update query
+        this.database.Queues = this.database.Queues.map((queue) => {
+            if(queue.role == 'user') {
+                queue.ticketSize += 1;
+                ticketSize = queue.ticketSize;
+            }
+            return queue;
+        });
+
+        cb(null, this.leftPad(ticketSize));
     }
 
     //this method leftpad a number string with zeros

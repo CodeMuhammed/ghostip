@@ -23,9 +23,9 @@ const Users = [
         },
         paymentInfo: {
             payTo: null,
-            recieveFrom: [],
+            receiveFrom: [],
             ticketNum: '000001',
-            defective: true
+            defective: false
         }
     },
     //At least an admin user must exist in the database
@@ -46,7 +46,7 @@ const Users = [
         },
         paymentInfo: {
             payTo: null,
-            recieveFrom: [],
+            receiveFrom: [],
             ticketNum: '000002',
             defective: false
         }
@@ -56,26 +56,19 @@ const Users = [
 const Queues = [
     {
         role: 'admin',
-        ticketCursor: 1, // default value starts from zero
+        ticketCursor: 1, // default value starts from 1
         ticketSize: 2
+    },
+    {
+        role: 'user',
+        ticketCursor: 1,
+        ticketSize: 0
     }
 ];
 
 const Transactions = [
     
 ];
-
-
-/**
- * transaction = {
-    expiryDate,
-    amount,
-    proof: 'image',
-    donorId,
-    recieverId,
-    confirmations: []
-}
- */
 
 module.exports = {
     Users,

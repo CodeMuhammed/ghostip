@@ -13,24 +13,23 @@ class PaymentQueue {
 
     //this method pair a user to someone they are to pay 
     //when they just signs up
-    //the reciever id is optional in cases where we are trying
-    //to pair a user with a defected reciever
-    pair(donor, reciever, cb) {
-        if(reciever) {
-            this.createTransaction(donor, reciever, (stat) => {
-                console.log(JSON.stringify(this.database, undefined, 2));
-                return cb(stat);
+    //the receiver id is optional in cases where we are trying
+    //to pair a user with a defected receiver
+    pair(donor, receiver, cb) {
+        if(receiver) {
+            this.createTransaction(donor, receiver, (stat) => {
+                return cb(this.database);
             });
         } else {
-            this.pairAtCursor(donor, (reciever) => {
-                return this.pair(donor, reciever, cb);
+            this.pairAtCursor(donor, (receiver) => {
+                return this.pair(donor, receiver, cb);
             });
         }
     }
 
-    //this gets the reciever at the cursor point and pair him with a donor
+    //this gets the receiver at the cursor point and pair him with a donor
     pairAtCursor(donor, cb) {
-       //query for reciever at cursor
+       //query for receiver at cursor
        //then call pair method.
        const queue = this.database.Queues.filter((queue) => {
             return queue.role === this.role;
@@ -38,7 +37,7 @@ class PaymentQueue {
 
        const ticketNum = this.leftPad(queue.ticketCursor);
 
-       const reciever = this.database.Users.filter((user) => {
+       const receiver = this.database.Users.filter((user) => {
            return user.userInfo.role === this.role
                   && user.paymentInfo.ticketNum === ticketNum;
        })[0];
@@ -46,17 +45,17 @@ class PaymentQueue {
        //update the cursor position then call the callback
        let cursor = parseInt(ticketNum);
        this.isEndOfQueue((status) => {
-           if(status && this.role === 'admin') {
+           if(status && this.role === 'admin') { // add a check for super admin here also
               cursor = 0;
               this.updateCursor(cursor, () => {
-                  return cb(reciever);
+                  return cb(receiver);
               });
            } else {
                this.isCursorFilled((stat) => {
                    if(stat) {
                        cursor += 1;
                        this.updateCursor(cursor, () => {
-                          return cb(reciever);
+                          return cb(receiver);
                        });
                    }
                });
@@ -64,7 +63,19 @@ class PaymentQueue {
        });
     }
 
-    createTransaction(donor, reciever, cb) {
+    //this method updates the cursor
+    updateCursor(cursor, cb) {
+        this.database.Queues = this.database.Queues.map((queue) => {
+            if(queue.role === this.role) {
+                queue.ticketCursor = cursor;
+            }
+            return queue;
+        });
+
+        return cb();
+    }
+
+    createTransaction(donor, receiver, cb) {
         // @TODO create a transaction
         // update their references in the donor and receiver objects
         this.database.Users.push(donor); // simulates that the user is already in the db
@@ -72,24 +83,65 @@ class PaymentQueue {
             _id: 123456,
             expiryDate: Date.now() + (1000 * 3600),
             amount: 10000,
-            proof: 'image',
+            proof: 'payment_image',
             donorId: donor._id,
-            recieverId: reciever._id,
+            receiverId: receiver._id,
             confirmations: []
         }
 
         // update their references in the donor and receiver objects
-        donor.paymentInfo.payTo = reciever._id;
-        reciever.paymentInfo.recieveFrom.push(donor._id);
+        donor.paymentInfo.payTo = transaction._id;
+        receiver.paymentInfo.receiveFrom.push(transaction._id);
 
-        this.updateUsers([donor, reciever], () => {
+        this.updateUsers([donor, receiver], () => {
             this.updateTransaction(transaction, (stat) => {
                 cb(stat);
             });
         });
     }
 
-     //this method takes an array of users and update them in sequence
+    //this method updates the transactions
+    updateTransaction(transaction, cb) {
+        this.database.Transactions.push(transaction);
+        return cb('transaction created successfully');
+    }
+
+    //this method confirms transactions and if the confirmations are complete,
+    // returns the id of the donor to be added to the queue
+    confirmTransaction(userId, transactionId, cb) {
+        // Check to see that the user is actually involve with this transaction
+        const transaction = this.database.Transactions.filter((trans) => {
+            return trans._id === transactionId
+                   && (trans.donorId === userId || trans.receiverId === userId)
+        })[0];
+
+        if(transaction) {
+            if (!transaction.confirmations.indexOf(userId) >= 0) {
+                transaction.confirmations.push(userId)
+            }
+
+            //update the transaction to the database
+            this.database.Transactions = this.database.Transactions.map((trans) => {
+                if(trans._id == transaction._id) {
+                    return transaction;
+                }
+                return trans;
+            });
+
+            let toQueue = transaction.confirmations.length >= 2 ? 
+                        transaction.donorId : 
+                        undefined;
+
+            return cb(null, {
+                msg: 'Transaction confirmed',
+                data: this.database,
+                toQueue
+            });
+        }
+        return cb({ msg:'donation could not be confirmed' }, null);
+    }
+
+    //this method takes an array of users and update them in sequence
     updateUsers(users, cb) {
         let seriesArr = [];
         const that = this;
@@ -115,24 +167,6 @@ class PaymentQueue {
         return cb(null, `${user._id} user updated`);
     }
 
-    //this method updates the transactions
-    updateTransaction(transaction, cb) {
-        this.database.Transactions.push(transaction);
-        return cb('transaction created successfully');
-    }
-
-    //this method updates the cursor
-    updateCursor(cursor, cb) {
-        this.database.Queues = this.database.Queues.map((queue) => {
-            if(queue.role === this.role) {
-                queue.ticketCursor = cursor;
-            }
-            return queue;
-        });
-
-        return cb();
-    }
-
     //
     isEndOfQueue(cb) {
         // check to see if the cursor is at the same point as the ticket size.
@@ -149,25 +183,28 @@ class PaymentQueue {
 
     //
     isCursorFilled(cb) {
-        //check to see if the reciever at the cursor has been paired fully
+        //check to see if the receiver at the cursor has been paired fully
         const queue = this.database.Queues.filter((queue) => {
             return queue.role === this.role;
         })[0];
         
         if(queue) {
             const ticketNum = this.leftPad(queue.ticketCursor);
-            const reciever = this.database.Users.filter((user) => {
-            return user.userInfo.role === this.role
-                    && user.paymentInfo.ticketNum === ticketNum;
+            const receiver = this.database.Users.filter((user) => {
+                    return user.userInfo.role === this.role
+                        && user.paymentInfo.ticketNum === ticketNum;
             })[0];
 
-            cb(reciever.paymentInfo.recieveFrom.length == 2);
-        } else {
-            cb(true);
+            //
+            if(!receiver) {
+                return cb(true);
+            }
+            return cb(receiver.paymentInfo.receiveFrom.length == 2);
         }
+        return cb(true);
     }
 
-    //this method get a recieverId that is defective (ie, still has a reciever slot that
+    //this method get a receiverId that is defective (ie, still has a receiver slot that
     //needs to be filled but somehow the cursor has passed him)
     getDefective(cb) {
         const defective = this.database.Users.filter((user) => {
@@ -176,6 +213,34 @@ class PaymentQueue {
         })[0];
 
         cb(defective);
+    }
+
+    //This method checks to see if new user can be paired with anyone on this queue
+    canPair(cb) {
+        this.getDefective((receiver) => {
+            if(receiver) {
+                cb(null, { receiver });
+            } else {
+                if(this.role === 'admin') {
+                    cb(null, {});
+                } else {
+                    //we need to carry out extra checks for normal users
+                    this.isEndOfQueue((status) => {
+                        if(!status) {
+                            cb(null, {});
+                        } else {
+                            this.isCursorFilled((status) => {
+                                if(!status) {
+                                   cb(null, {});
+                                } else {
+                                    cb(true, null);
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
     }
 
     //this method leftpad a number string with zeros

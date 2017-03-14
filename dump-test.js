@@ -21,53 +21,71 @@ const newUser = {
     },
     paymentInfo: {
         payTo: null,
-        recieveFrom: [],
+        receiveFrom: [],
         ticketNUm: '',
         defective: false
     }
 };
 
-//@TODO pair this user up in a saga of methods
-userQueue.getDefective((reciever) => {
-    if(reciever) {
-        userQueue.pair(newUser, reciever, (stat) => {
-            console.log(stat);
+//Pair this user up in a cascading mode first try with normal user then admin
+userQueue.canPair((err, stat) => {
+    let receiver;
+    if(err) {
+        console.log('cannot pair with user trying admin');
+        adminQueue.canPair((err, stat) => {
+            receiver = stat.receiver;
+            adminQueue.pair(newUser, receiver, (stat) => {
+                let donor = stat.Users.filter((user) => {
+                    return user._id == newUser._id;
+                })[0];
+
+                receiver = receiver || stat.Users.filter((user) => {
+                    return user.paymentInfo.receiveFrom.indexOf(donor.paymentInfo.payTo) >= 0;
+                })[0];
+
+                testConfirmations(donor, receiver);
+            });
         });
     } else {
-        userQueue.isEndOfQueue((status) => {
-            if(!status) {
-                userQueue.pair(newUser, undefined, (stat) => {
-                    console.log(stat);
-                });
-            } else {
-                userQueue.isCursorFilled((status) => {
-                    if(!status) {
-                        userQueue.pair(newUser, undefined, (stat) => {
-                            console.log(stat);
-                        });
-                    } else {
-                        checkAdminQueue();
-                    }
-                });
-            }
+        receiver = stat.receiver;
+        userQueue.pair(newUser, receiver, (stat) => {
+            let donor = stat.Users.filter((user) => {
+                return user._id == newUser._id;
+            })[0];
+
+            receiver = receiver || stat.Users.filter((user) => {
+                return user.paymentInfo.receiveFrom.indexOf(donor.paymentInfo.payTo) >= 0;
+            })[0];
+
+            testConfirmations(donor, receiver);
         });
-    } 
+    }
 });
 
-function checkAdminQueue() {
-    adminQueue.getDefective((reciever) => {
-        if(reciever) {
-            adminQueue.pair(newUser, reciever, (stat) => {
-                console.log(stat);
-            });
+function testConfirmations(donor, receiver) {
+    adminQueue.confirmTransaction(donor._id, donor.paymentInfo.payTo, (err, status) => {
+        if(status.toQueue) {
+            console.log('receiver just confirmed a transaction');
         } else {
-                adminQueue.pair(newUser, undefined, (stat) => {
-                console.log(stat);
-            });
+            console.log('donor just confirmed');
         }
+       adminQueue.confirmTransaction(receiver._id, receiver.paymentInfo.receiveFrom[0], (err, status) => {
+           if(status.toQueue) {
+               console.log('receiver just confirmed a transaction');
+           } else {
+               console.log('donor just confirmed');
+           }
+       });
     });
 }
 
-//@TODO show that user has paid his peer
-//@TODO show that peer has recieved the payment and the action that follows
-//when a user is added to the queue for the first time, the queue object is added
+function testAddingUserToQueue(donorId) {
+    //@TODO add the donor to payment queue after confirmation has been made
+}
+
+//@TODO when a user is added to queue, test the pairing all over again with yet
+//another new user
+//@TODO write a module that does this on app startup
+//Seed database with default data state
+//Admin users
+//payment queues for the 2 different categories

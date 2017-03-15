@@ -16,7 +16,8 @@ module.exports = {
         paymentInfo: {
             payTo: null,
             receiveFrom: [],
-            ticketNUm: '',
+            serialNum: '',
+            package: '',
             defective: false
         }
     },
@@ -37,7 +38,8 @@ module.exports = {
         paymentInfo: {
             payTo: null,
             receiveFrom: [],
-            ticketNUm: '',
+            serialNum: '',
+            package: '',
             defective: false
         }
     },
@@ -58,7 +60,8 @@ module.exports = {
         paymentInfo: {
             payTo: null,
             receiveFrom: [],
-            ticketNUm: '',
+            serialNum: '',
+            package: '',
             defective: false
         }
     },
@@ -79,7 +82,8 @@ module.exports = {
         paymentInfo: {
             payTo: null,
             receiveFrom: [],
-            ticketNUm: '',
+            serialNum: '',
+            package: '',
             defective: false
         }
     },

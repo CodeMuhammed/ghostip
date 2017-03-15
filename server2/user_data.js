@@ -1,6 +1,5 @@
 module.exports = {
     user1: {
-        _id: 45890,
         userInfo: {
             firstname: 'Merron',
             lastname: 'jones',
@@ -22,7 +21,6 @@ module.exports = {
         }
     },
     user2: {
-        _id: 73900,
         userInfo: {
             firstname: 'Jento',
             lastname: 'lax',
@@ -44,7 +42,6 @@ module.exports = {
         }
     },
     user3: {
-        _id: 873433,
         userInfo: {
             firstname: 'malbo',
             lastname: 'king',
@@ -66,7 +63,6 @@ module.exports = {
         }
     },
     user4: {
-        _id: 776450,
         userInfo: {
             firstname: 'merk',
             lastname: 'lois',

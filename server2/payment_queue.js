@@ -1,13 +1,16 @@
+const async = require('async');
+
 /**
  * @class
  * this class takes in a couple of configuration objects and creates a queue
  * exposes a set of API methods for ease of use
  */
-const async = require('async');
-
 class PaymentQueue {
-    constructor(role, database) {
+    constructor(role, database, r_database) {
         this.database = database;
+        this.User = r_database.model('User');
+        this.Queue = r_database.model('Queue');
+        this.Transaction = r_database.model('Transaction');
         this.role = role;
     }
 
@@ -18,7 +21,7 @@ class PaymentQueue {
     pair(donor, receiver, cb) {
         if(receiver) {
             this.createTransaction(donor, receiver, (stat) => {
-                return cb(this.database);
+                return cb({ donor, receiver });
             });
         } else {
             this.pairAtCursor(donor, (receiver) => {
@@ -29,40 +32,58 @@ class PaymentQueue {
 
     //this gets the receiver at the cursor point and pair him with a donor
     pairAtCursor(donor, cb) {
-       //query for receiver at cursor
-       //then call pair method.
-       const queue = this.database.Queues.filter((queue) => {
-            return queue.role === this.role;
-       })[0];
-
-       const ticketNum = this.leftPad(queue.ticketCursor);
-
-       const receiver = this.database.Users.filter((user) => {
-           return user.userInfo.role === this.role
-                  && user.paymentInfo.ticketNum === ticketNum;
-       })[0];
-
-       //update the cursor position then call the callback
-       let cursor = parseInt(ticketNum);
-       this.isEndOfQueue((status) => {
-           if(status && this.role === 'admin') {
-              cursor = 1;
-              this.updateCursor(cursor, () => {
-                  return cb(receiver);
-              });
+       this.Queue.find({
+           role: this.role
+       }).toArray((err, results) => {
+           if(err) {
+               throw new Error('Error in DB layer in pairAtCursor');
            } else {
-               this.isCursorFilled((stat) => {
-                   if(stat) {
-                       cursor += 1;
-                       this.updateCursor(cursor, () => {
-                          return cb(receiver);
-                       });
-                   } else {
-                       return cb(receiver);
-                   }
+               const ticketNum = this.leftPad(results[0].ticketCursor);
+               let cursor = parseInt(ticketNum);
+               let receiver;
+
+               this.User.find({
+                   'userInfo.role': this.role,
+                   'paymentInfo.ticketNum': ticketNum
+               }).toArray((err, results) => {
+                   receiver = results[0];
+                   //update the cursor position then call the callback
+                    let cursor = parseInt(ticketNum);
+                    this.isEndOfQueue((status) => {
+                        if(this.role === 'admin') {
+                            cursor = status? 1 : (cursor += 1);
+                            this.updateCursor(cursor, () => {
+                                return cb(receiver);
+                            });
+                        } else {
+                            this.isCursorFilled((stat) => {
+                                if(status && stat) {
+                                    cursor += 1;
+                                    this.updateCursor(cursor, () => {
+                                        return cb(receiver);
+                                    });
+                                } else {
+                                    return cb(receiver);
+                                }
+                            });
+                        }
+                    });
                });
            }
        });
+    }
+
+    //
+    isEndOfQueue(cb) {
+        // check to see if the cursor is at the same point as the ticket size.
+        const queue = this.database.Queues.filter((queue) => {
+            return queue.role === this.role;
+        })[0];
+
+        if(!queue) {
+            return cb(true);
+        }
+        return cb(queue.ticketCursor >= queue.ticketSize);
     }
 
     //this method updates the cursor
@@ -165,20 +186,6 @@ class PaymentQueue {
     //this method updates a user to the database
     updateUser(user, cb) {
         return cb(null, `${user._id} user updated`);
-    }
-
-    //
-    isEndOfQueue(cb) {
-        // check to see if the cursor is at the same point as the ticket size.
-        const queue = this.database.Queues.filter((queue) => {
-            return queue.role === this.role;
-        })[0];
-
-        //
-        if(!queue) {
-            return cb(true);
-        }
-        return cb(queue.ticketCursor >= queue.ticketSize -1);
     }
 
     //

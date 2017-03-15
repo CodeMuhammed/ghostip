@@ -67,22 +67,18 @@ const users = normalUsers.concat([
     }
 ]);
 
-const queues = [
+const stats = [
     {
-        role: 'admin',
-        ticketCursor: 1,
-        ticketSize: 2
-    },
-    {
-        role: 'user',
-        ticketCursor: 1,
-        ticketSize: 0
+        transactionVolume: 0,
+        pairedWithAdmin: 0,
+        pairedWithUser: 0,
+        adminSize: 2
     }
 ];
 
 module.exports = function(database) {
     const User = database.model('User');
-    const Queue = database.model('Queue');
+    const Stat = database.model('Stat');
     const Package = database.model('Package');
 
     const seedUsers = (cb) => {
@@ -127,14 +123,14 @@ module.exports = function(database) {
         });
     }
 
-    const seedQueues = (cb) => {
+    const seedStat = (cb) => {
         // check that no admin users exists before seeding
-        Queue.find({ }).toArray((err, results) => {
+        Stat.find({ }).toArray((err, results) => {
             if(err) {
                 return cb(err);
             } else {
                 if(!results[0]) {
-                    Queue.insertMany(queues, (err, stat) => {
+                    Stat.insertMany(stats, (err, stat) => {
                         if(err) {
                             return cb(err);
                         } else {
@@ -158,7 +154,7 @@ module.exports = function(database) {
         }()))
          seriesArr.push((function() {
             return (next) => {
-                seedQueues(next)
+                seedStat(next)
             }
         }()))
          seriesArr.push((function() {

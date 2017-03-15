@@ -8,7 +8,7 @@ const async = require('async');
 class PaymentQueue {
     constructor(role, database) {
         this.User = database.model('User');
-        this.Queue = database.model('Queue');
+        this.Stat = database.model('Stat');
         this.Transaction = database.model('Transaction');
         this.role = role;
     }
@@ -38,7 +38,9 @@ class PaymentQueue {
             }
 
             this.updateUsers([donor, receiver], () => {
-                cb(null, { donor, receiver });
+                this.recordStat('pair', (err, stat) => {
+                    cb(null, { donor, receiver });
+                });
             });
         });
     }
@@ -128,26 +130,24 @@ class PaymentQueue {
     //this method get a receiverId that is defective (ie, still has a receiver slot that
     //needs to be filled but somehow the cursor has passed him)
     getDefective(packageId, cb) {
-        this.User.find({
-            'paymentInfo.defective': true,
-            'userInfo.role': this.role,
-            'paymentInfo.package': packageId,
-        }).toArray((err, results) => {
-            if(err) {
-                throw new Error('Error in DB layer in getDefective');
-            } else {
-                 if(results[0]) {
-                     cb(null, results[0]);
-                 } else {
-                     cb(true);
-                 }
-            }
+        this.queryForDefectiveUser(packageId, (err, query) => {
+            this.User.find(query).toArray((err, results) => {
+                if(err) {
+                    throw new Error('Error in DB layer in getDefective');
+                } else {
+                    if(results[0]) {
+                        cb(null, results[0]);
+                    } else {
+                        cb(true);
+                    }
+                }
+            });
         });
+        
     }
 
     //this method adds a user to the queue
     addDonorToQueue(donorId, cb) {
-        console.log('adding donor to queue');
         this.User.update(
             { _id: donorId },
             {
@@ -163,6 +163,53 @@ class PaymentQueue {
                 }
             }
         );
+    }
+
+    //this method returns the serial number of the admin to be 
+    //paired with based on the number of admin pairs recorded
+    queryForDefectiveUser(packageId, cb) {
+        let query = {
+            'paymentInfo.defective': true,
+            'userInfo.role': this.role,
+            'paymentInfo.package': packageId,
+        };
+
+        if(this.role == 'admin') {
+            this.Stat.findOne({}, (err, result) => {
+                if(err) {
+                    throw new Error('Error in DB layer in getDefective');
+                } else {
+                    let serial = (result.pairedWithAdmin % result.adminSize) + 1;
+                    query['paymentInfo.serialNum'] = parseInt(serial);
+                    cb(null, query);
+                }
+            });
+        } else {
+            cb(null, query);
+        }
+    }
+
+    //this method updates the stats and record metrics
+    recordStat(action, cb) {
+        let updateQuery = {}; 
+        if(action == 'pair') {
+            let key = this.role == 'admin'? 'pairedWithAdmin' : 'pairedWithUser';
+            updateQuery = {
+               $inc: { 
+                   [key]: 1
+                }
+            }
+
+            this.Stat.updateOne({ }, updateQuery, (err, stat) => {
+                if(err) {
+                    throw new Error('Error in DB layer in getDefective');
+                } else {
+                    cb(null, true);
+                }
+            });
+        } else {
+            cb(null, true);
+        }
     }
 }
 

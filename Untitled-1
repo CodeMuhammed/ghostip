@@ -1,0 +1,128 @@
+const Database = require('./server2/database');
+const seed = require('./server2/seed');
+const paymentQueue = require('./server2/payment_queue');
+
+let softworkDB;
+let adminQueue;
+let userQueue;
+
+
+
+// test connection to database
+function initDatabase(cb) {
+    const dbName = 'softworkco';
+    const collections = [
+        'User',
+        'Transaction',
+        'Stat',
+        'Package',
+        'Test'
+    ];
+
+    let url;
+    if(!process.env.NODE_ENV || process.env.NODE_ENV == 'development'){
+       url = `mongodb://127.0.0.1:27017/${dbName}`;
+	} else {
+       url = `mongodb://${process.env.dbuser}:${process.env.dbpassword}@ds051738.mongolab.com:51738/${dbName}`;
+	}
+
+    (new Database({ collections, url })).connect((err, database) => {
+       seed(database).run((err, status) => {
+            if(err) {
+                cb(err);
+            } else {
+                cb(null, database);
+            }
+       });
+    });
+}
+
+initDatabase((err, database) => {
+    if(err) {
+        console.log('could not initialize db');
+    } else {
+        bootstrap(database);
+    }
+});
+
+//This setsup the app
+function bootstrap(database) {
+    softworkDB = database;
+    adminQueue = new paymentQueue('admin', database);
+    userQueue = new paymentQueue('user', database);
+
+    let User = database.model('User');
+
+    User.findOne({ 'userInfo.role': 'user' }, (err, result) => {
+        testpairing(result, (err, stat) => {
+            if(stat) {
+                console.log('confirming transactions');
+                testConfirmations(stat.donor, stat.receiver, (err, userToQueue) => {
+                    testAddingUserToQueue(userToQueue, (err, stat) => {
+                        console.log(stat);
+                    });
+                });
+            }
+        });
+    });
+} 
+
+
+//Pair this user up in a cascading mode first try with normal user then admin
+function testpairing(newUser, cb) {
+    userQueue.getDefective('12345', (err, receiver) => {
+        if(err) {
+            console.log('cannot pair with user trying admin');
+            adminQueue.getDefective('all', (err, receiver) => {
+                getuser(receiver._id, (e, user) => {
+                    adminQueue.pair(user, receiver, (err, stat) => {
+                        cb(null, stat);
+                    });
+                });
+            });
+        } else {
+            console.log('trying to pair with user');
+            /*userQueue.pair(newUser, receiver, (stat) => {
+                cb(null, stat);
+            });*/
+        }
+    });
+}
+
+//gets a normal defective user that is not the receiver
+function getuser(receiverId, cb) {
+    softworkDB.model('User').find( {'userInfo.role': 'user', _id: { $nin: [receiverId] } }).toArray((err, results) => {
+        if(results[0]) {
+            cb(null, results[0]);
+        }
+    });
+}
+
+function testConfirmations(donor, receiver, cb) {
+    adminQueue.confirmTransaction(donor._id, donor.paymentInfo.payTo, (err, status) => {
+        if(status.toQueue) {
+            console.log('receiver just confirmed a transaction');
+            cb(null, status.toQueue);
+        } else {
+            console.log('donor just confirmed');
+        }
+       adminQueue.confirmTransaction(receiver._id, donor.paymentInfo.payTo, (err, status) => {
+           if(status.toQueue) {
+               console.log('receiver just confirmed a transaction');
+               cb(null, status.toQueue);
+           } else {
+               console.log('donor just confirmed');
+           }
+       });
+    });
+}
+
+function testAddingUserToQueue(donorId, cb) {
+    adminQueue.addDonorToQueue(donorId, (err, stat) => {
+        cb(null, stat);
+    });
+}
+
+
+// @TODO spread pairing with admin user.
+// @TODO start designing the API endpoints

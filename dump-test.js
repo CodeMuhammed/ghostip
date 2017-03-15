@@ -14,7 +14,7 @@ function initDatabase(cb) {
     const collections = [
         'User',
         'Transaction',
-        'Queue',
+        'Stat',
         'Package',
         'Test'
     ];
@@ -50,75 +50,6 @@ function bootstrap(database) {
     softworkDB = database;
     adminQueue = new paymentQueue('admin', database);
     userQueue = new paymentQueue('user', database);
-
-    console.log('@TODO rethink the algorith for pairing users');
-    let User = database.model('User');
-
-    User.findOne({ 'userInfo.role': 'user' }, (err, result) => {
-        testpairing(result, (err, stat) => {
-            // @TODO test confirmation of transaction
-            if(stat) {
-                console.log('confirming transactions');
-                testConfirmations(stat.donor, stat.receiver, (err, userToQueue) => {
-                    console.log(err ||  userToQueue);
-                });
-            }
-        });
-    });
+    // @TODO start designing the API endpoints
+    // @TODO make this an independent repo on github
 } 
-
-
-//Pair this user up in a cascading mode first try with normal user then admin
-function testpairing(newUser, cb) {
-    userQueue.getDefective('12345', (err, receiver) => {
-        if(err) {
-            console.log('cannot pair with user trying admin');
-            adminQueue.getDefective('all', (err, receiver) => {
-                getuser(receiver._id, (e, user) => {
-                    adminQueue.pair(user, receiver, (err, stat) => {
-                        cb(null, stat);
-                    });
-                });
-            });
-        } else {
-            console.log('trying to pair with user');
-            /*userQueue.pair(newUser, receiver, (stat) => {
-                cb(null, stat);
-            });*/
-        }
-    });
-}
-
-//gets a normal defective user that is not the receiver
-function getuser(receiverId, cb) {
-    softworkDB.model('User').find( {'userInfo.role': 'user', _id: { $nin: [receiverId] } }).toArray((err, results) => {
-        if(results[0]) {
-            cb(null, results[0]);
-        }
-    });
-}
-
-function testConfirmations(donor, receiver, cb) {
-    adminQueue.confirmTransaction(donor._id, donor.paymentInfo.payTo, (err, status) => {
-        if(status.toQueue) {
-            console.log('receiver just confirmed a transaction');
-            cb(null, status.toQueue);
-        } else {
-            console.log('donor just confirmed');
-        }
-       adminQueue.confirmTransaction(receiver._id, donor.paymentInfo.payTo, (err, status) => {
-           if(status.toQueue) {
-               console.log('receiver just confirmed a transaction');
-               cb(null, status.toQueue);
-           } else {
-               console.log('donor just confirmed');
-           }
-       });
-    });
-}
-
-function testAddingUserToQueue(donorId, cb) {
-    adminQueue.addDonorToQueue(donorId, (err, stat) => {
-        cb(null, stat);
-    });
-}

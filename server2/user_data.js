@@ -16,7 +16,6 @@ module.exports = {
         paymentInfo: {
             payTo: null,
             receiveFrom: [],
-            serialNum: '',
             package: '',
             defective: false
         }
@@ -38,7 +37,6 @@ module.exports = {
         paymentInfo: {
             payTo: null,
             receiveFrom: [],
-            serialNum: '',
             package: '',
             defective: false
         }
@@ -60,7 +58,6 @@ module.exports = {
         paymentInfo: {
             payTo: null,
             receiveFrom: [],
-            serialNum: '',
             package: '',
             defective: false
         }
@@ -82,7 +79,6 @@ module.exports = {
         paymentInfo: {
             payTo: null,
             receiveFrom: [],
-            serialNum: '',
             package: '',
             defective: false
         }

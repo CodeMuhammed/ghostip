@@ -18,7 +18,7 @@
 // codemuhammed@outlook.com
 // palingram@outlook.com
 // These are other heroku accounts.
-// 0x9d6585961457503871587E42804b2D134E57fEf4
+// 0x9d6585961457503871587E42804b2D134E57fEf4 my ether wallet for those who wants to surprise me!
 
 module.exports = (ipDump) => {
     console.log(ipDump);
